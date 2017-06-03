@@ -1,8 +1,21 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime;
 using System.Threading;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Attributes.Columns;
+using BenchmarkDotNet.Attributes.Exporters;
+using BenchmarkDotNet.Attributes.Jobs;
+using BenchmarkDotNet.Columns;
+using BenchmarkDotNet.Configs;
+using BenchmarkDotNet.Diagnosers;
+using BenchmarkDotNet.Engines;
+using BenchmarkDotNet.Exporters;
+using BenchmarkDotNet.Loggers;
+using BenchmarkDotNet.Running;
+using BenchmarkDotNet.Validators;
 using FluentAssertions;
 using HotFix.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -17,7 +30,7 @@ namespace HotFix.Test.Core
         [TestMethod]
         public void timestamp()
         {
-            var result = "20170327 15:45:13".GetDateTime();
+            var result = "20170327-15:45:13".GetDateTime();
 
             result.Should().Be(DateTime.Parse("27/03/2017 15:45:13"));
         }
@@ -25,9 +38,29 @@ namespace HotFix.Test.Core
         [TestMethod]
         public void timestamp_with_milliseconds()
         {
-            var result = "20170327 15:45:13.596".GetDateTime();
+            var result = "20170327-15:45:13.596".GetDateTime();
 
             result.Should().Be(DateTime.Parse("27/03/2017 15:45:13.596"));
+        }
+
+        [TestMethod]
+        public void benchmark()
+        {
+            var summary = BenchmarkRunner.Run<Benchmark>(
+                ManualConfig
+                .Create(new ManualConfig())
+                .With(NullLogger.Instance)
+                .With(MemoryDiagnoser.Default)
+                .With(StatisticColumn.AllStatistics));
+
+            // TODO: Figure out how to extract metrics we care about and assert on them...
+
+            var all = summary.Reports.Where(x => !x.Benchmark.Target.Baseline).ToList();
+
+            var logger = ConsoleLogger.Default;
+            var exporter = MarkdownExporter.GitHub;
+
+            exporter.ExportToLog(summary, logger);
         }
 
         [TestMethod]
@@ -133,8 +166,23 @@ namespace HotFix.Test.Core
         }
     }
 
-    public static class Performance
+    [MemoryDiagnoser]
+    [AllStatisticsColumn]
+    [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 1000)]
+    public class Benchmark
     {
-        
+        public string Raw { get; set; }
+
+        [Setup]
+        public void Setup()
+        {
+            Raw = "20170327-15:45:13.596";
+        }
+
+        [Benchmark(Baseline = true)]
+        public DateTime Standard() => DateTime.ParseExact(Raw, "yyyyMMdd-HH:mm:ss.fff", null);
+
+        [Benchmark]
+        public DateTime Hotfix() => Raw.GetDateTime();
     }
 }
