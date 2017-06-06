@@ -17,7 +17,7 @@ namespace HotFix.Test.Core
         [TestMethod]
         public void timestamp()
         {
-            var result = "20170327 15:45:13".GetDateTime();
+            var result = "20170327-15:45:13".GetDateTime();
 
             result.Should().Be(DateTime.Parse("27/03/2017 15:45:13"));
         }
@@ -25,11 +25,11 @@ namespace HotFix.Test.Core
         [TestMethod]
         public void timestamp_with_milliseconds()
         {
-            var result = "20170327 15:45:13.596".GetDateTime();
+            var result = "20170327-15:45:13.596".GetDateTime();
 
             result.Should().Be(DateTime.Parse("27/03/2017 15:45:13.596"));
         }
-
+        
         [TestMethod]
         [TestCategory("Performance")]
         public void performance_hotfix()
@@ -131,10 +131,5 @@ namespace HotFix.Test.Core
 
             Console.WriteLine(results[12345]);
         }
-    }
-
-    public static class Performance
-    {
-        
     }
 }
