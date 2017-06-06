@@ -1,13 +1,8 @@
 using System;
-using System.Linq;
-using BenchmarkDotNet.Analysers;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Columns;
 using BenchmarkDotNet.Attributes.Jobs;
-using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Diagnosers;
 using BenchmarkDotNet.Engines;
-using BenchmarkDotNet.Loggers;
 using BenchmarkDotNet.Running;
 using FluentAssertions;
 using HotFix.Core;
