@@ -63,7 +63,7 @@
     <Compile Include="Core\DateTimes.cs" />
     <Compile Include="Core\Floats.cs" />
     <Compile Include="Core\Ints.cs" />
-    <Compile Include="Core\Messages.cs" />
+    <Compile Include="Core\parsing_a_message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
