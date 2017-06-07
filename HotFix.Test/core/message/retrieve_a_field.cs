@@ -3,7 +3,7 @@ using FluentAssertions;
 using HotFix.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace HotFix.Test.Core.message
+namespace HotFix.Test.core.message
 {
     [TestClass]
     public class retrieve_a_field

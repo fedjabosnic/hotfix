@@ -65,8 +65,8 @@
     <Compile Include="utilities\parser\datetimes.cs" />
     <Compile Include="utilities\parser\floats.cs" />
     <Compile Include="utilities\parser\ints.cs" />
-    <Compile Include="corex\message\parse_from_string.cs" />
-    <Compile Include="corex\message\retrieve_a_field.cs" />
+    <Compile Include="core\message\parse_from_string.cs" />
+    <Compile Include="core\message\retrieve_a_field.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="utilities\parser\longs.cs" />
   </ItemGroup>
