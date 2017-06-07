@@ -151,7 +151,7 @@ namespace HotFix.Utilities
         }
 
         /// <summary>
-        /// Parses an datetime from the provided string.
+        /// Parses a datetime from the provided string.
         /// </summary>
         /// <remarks>
         /// High performance, garbage free implementation (10x faster than bcl).
@@ -165,7 +165,7 @@ namespace HotFix.Utilities
         }
 
         /// <summary>
-        /// Parses an datetime from the provided string.
+        /// Parses a datetime from the provided string.
         /// </summary>
         /// <remarks>
         /// High performance, garbage free implementation (10x faster than bcl).
