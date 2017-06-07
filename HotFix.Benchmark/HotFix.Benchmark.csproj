@@ -166,6 +166,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Suites\Basic.cs" />
     <Compile Include="Suites\Messages.cs" />
+    <Compile Include="Suites\Parsing\DateTimes.cs" />
+    <Compile Include="Suites\Parsing\Floats.cs" />
+    <Compile Include="Suites\Parsing\Ints.cs" />
+    <Compile Include="Suites\Parsing\Longs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

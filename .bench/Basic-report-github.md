@@ -12,7 +12,7 @@ TargetCount=10  WarmupCount=5
 ```
  |             Method |      Mean |     Error |    StdDev |    StdErr |    Median |       Min |        Q1 |        Q3 |       Max |           Op/s | Allocated |
  |------------------- |----------:|----------:|----------:|----------:|----------:|----------:|----------:|----------:|----------:|---------------:|----------:|
- |               Noop | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns |       Infinity |      0 kB |
- |  IndexingFirstItem | 0.0604 ns | 0.0638 ns | 0.0422 ns | 0.0133 ns | 0.0664 ns | 0.0060 ns | 0.0060 ns | 0.0966 ns | 0.1268 ns | 16564024925.54 |      0 kB |
- | IndexingMiddleItem | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns |       Infinity |      0 kB |
- |   IndexingLastItem | 0.0402 ns | 0.0419 ns | 0.0277 ns | 0.0088 ns | 0.0493 ns | 0.0040 ns | 0.0040 ns | 0.0644 ns | 0.0644 ns | 24845831614.83 |      0 kB |
+ |               Noop | 0.0231 ns | 0.0471 ns | 0.0311 ns | 0.0098 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0503 ns | 0.0805 ns | 43210356658.28 |      0 kB |
+ |  IndexingFirstItem | 0.0586 ns | 0.0482 ns | 0.0252 ns | 0.0089 ns | 0.0624 ns | 0.0322 ns | 0.0322 ns | 0.0775 ns | 0.0926 ns | 17061643718.76 |      0 kB |
+ | IndexingMiddleItem | 0.1771 ns | 0.4408 ns | 0.2623 ns | 0.0874 ns | 0.0463 ns | 0.0161 ns | 0.0161 ns | 0.3481 ns | 0.6802 ns |   5646807263.8 |      0 kB |
+ |   IndexingLastItem | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns | 0.0000 ns |       Infinity |      0 kB |
