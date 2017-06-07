@@ -12,7 +12,7 @@ namespace HotFix.Benchmark
             BenchmarkRunner.Run<Basic>();
             BenchmarkRunner.Run<Messages>();
 
-            Directory.Delete(@"..\..\..\.bench");
+            Directory.Delete(@"..\..\..\.bench", true);
             Directory.Move(@"BenchmarkDotNet.Artifacts\results", @"..\..\..\.bench");
         }
     }
