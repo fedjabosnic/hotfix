@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace HotFix.Core
+namespace HotFix.Utilities
 {
-    public static class Extensions
+    public static class Parser
     {
         /// <summary>
-        /// Parses an integer from the provided string.
+        /// Parses an integer (Int32) from the provided string.
         /// </summary>
         /// <remarks>
         /// High performance, garbage free implementation (5x faster than bcl).
@@ -20,7 +20,7 @@ namespace HotFix.Core
         }
 
         /// <summary>
-        /// Parses an integer from the provided string.
+        /// Parses an integer (Int32) from the provided string.
         /// </summary>
         /// <remarks>
         /// High performance, garbage free implementation (5x faster than bcl).
@@ -33,6 +33,51 @@ namespace HotFix.Core
         public static int GetInt(this string source, int offset, int count)
         {
             var value = 0;
+            var sign = source[offset] == '-' ? -1 : +1;
+
+            var skip = sign < 0 ? 1 : 0;
+
+            for (var i = 0; i < count - skip; i++)
+            {
+                var b = source[offset + skip + i];
+
+                if (b < '0' || b > '9') throw new Exception("Not a valid int");
+
+                value *= 10;
+                value += b - '0';
+            }
+
+            return value * sign;
+        }
+
+        /// <summary>
+        /// Parses a long (Int64) from the provided string.
+        /// </summary>
+        /// <remarks>
+        /// High performance, garbage free implementation (5x faster than bcl).
+        /// </remarks>
+        /// <param name="source">The source string to parse.</param>
+        /// <returns>The parsed integer.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long GetLong(this string source)
+        {
+            return source.GetLong(0, source.Length);
+        }
+
+        /// <summary>
+        /// Parses a long (Int64) from the provided string.
+        /// </summary>
+        /// <remarks>
+        /// High performance, garbage free implementation (5x faster than bcl).
+        /// </remarks>
+        /// <param name="source">The source string to parse.</param>
+        /// <param name="offset">The offset in the string to start parsing from.</param>
+        /// <param name="count">The number of characters to parse.</param>
+        /// <returns>The parsed integer.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static long GetLong(this string source, int offset, int count)
+        {
+            var value = 0L;
             var sign = source[offset] == '-' ? -1 : +1;
 
             var skip = sign < 0 ? 1 : 0;
@@ -133,6 +178,11 @@ namespace HotFix.Core
         public static DateTime GetDateTime(this string source, int offset, int count)
         {
             if (count != 17 && count != 21) throw new Exception("Not a valid datetime");
+
+            //if (source[ 8] != '-') throw new Exception("Not a valid datetime");
+            //if (source[11] != ':') throw new Exception("Not a valid datetime");
+            //if (source[14] != ':') throw new Exception("Not a valid datetime");
+            //if (source[17] != '.') throw new Exception("Not a valid datetime");
 
             var year = source.GetInt(offset + 00, 4);
             var month = source.GetInt(offset + 04, 2);

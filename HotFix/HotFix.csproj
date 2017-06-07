@@ -55,7 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Configuration.cs" />
-    <Compile Include="Core\Extensions.cs" />
+    <Compile Include="Utilities\Parser.cs" />
     <Compile Include="Core\Field.cs" />
     <Compile Include="Core\IConfiguration.cs" />
     <Compile Include="Core\Segment.cs" />
