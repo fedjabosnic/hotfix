@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>Basic</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet=v0.10.4, OS=Windows 10.0.10586
+Processor=Intel Core i7-3770 CPU 3.40GHz (Ivy Bridge), ProcessorCount=8
+Frequency=3312789 Hz, Resolution=301.8605 ns, Timer=TSC
+  [Host]     : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
+  Job-YPJJZU : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
+</code></pre>
+<pre><code>InvocationCount=10000  LaunchCount=1  RunStrategy=Throughput  
+TargetCount=10  WarmupCount=5  
+</code></pre>
+
+<table>
+<thead><tr><th>      Method</th><th>Mean</th><th>Error</th><th>StdDev</th><th>StdErr</th><th>Median</th><th>Min</th><th> Q1</th><th> Q3</th><th>Max</th><th>     Op/s</th><th>Allocated</th>
+</tr>
+</thead><tbody><tr><td>        Noop</td><td>0.0211 ns</td><td>0.0376 ns</td><td>0.0249 ns</td><td>0.0079 ns</td><td>0.0121 ns</td><td>0.0000 ns</td><td>0.0000 ns</td><td>0.0543 ns</td><td>0.0543 ns</td><td>47325404750.52</td><td>0 kB</td>
+</tr><tr><td>IndexingFirstItem</td><td>0.0010 ns</td><td>0.0048 ns</td><td>0.0032 ns</td><td>0.0010 ns</td><td>0.0000 ns</td><td>0.0000 ns</td><td>0.0000 ns</td><td>0.0000 ns</td><td>0.0101 ns</td><td>993838203140.53</td><td>0 kB</td>
+</tr><tr><td>IndexingMiddleItem</td><td>0.0483 ns</td><td>0.0000 ns</td><td>0.0000 ns</td><td>0.0000 ns</td><td>0.0483 ns</td><td>0.0483 ns</td><td>0.0483 ns</td><td>0.0483 ns</td><td>0.0483 ns</td><td>20704791088.66</td><td>0 kB</td>
+</tr><tr><td>IndexingLastItem</td><td>0.0332 ns</td><td>0.0454 ns</td><td>0.0300 ns</td><td>0.0095 ns</td><td>0.0302 ns</td><td>0.0000 ns</td><td>0.0000 ns</td><td>0.0604 ns</td><td>0.0906 ns</td><td>30116309186.08</td><td>0 kB</td>
+</tr></tbody></table>
+</body>
+</html>

@@ -8,7 +8,7 @@ namespace Hotfix.Benchmark.Suites
 {
     [MemoryDiagnoser]
     [AllStatisticsColumn]
-    [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 100000000)]
+    [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 10000)]
     public class Basic
     {
         private byte[] Bytes { get; set; }

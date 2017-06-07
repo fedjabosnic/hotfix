@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>Messages</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet=v0.10.4, OS=Windows 10.0.10586
+Processor=Intel Core i7-3770 CPU 3.40GHz (Ivy Bridge), ProcessorCount=8
+Frequency=3312789 Hz, Resolution=301.8605 ns, Timer=TSC
+  [Host]     : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
+  Job-LJQWSI : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
+</code></pre>
+<pre><code>InvocationCount=1000  LaunchCount=1  RunStrategy=Throughput  
+TargetCount=10  UnrollFactor=1  WarmupCount=5  
+</code></pre>
+
+<table>
+<thead><tr><th>                     Method</th><th>   Mean</th><th>Error</th><th>StdDev</th><th>StdErr</th><th>    Min</th><th>     Q1</th><th> Median</th><th>     Q3</th><th>    Max</th><th>Op/s</th><th>Allocated</th>
+</tr>
+</thead><tbody><tr><td>             ParseHeartbeat</td><td>228.7876 ns</td><td>5.5482 ns</td><td>2.9018 ns</td><td>1.0259 ns</td><td>224.8257 ns</td><td>225.8822 ns</td><td>229.6554 ns</td><td>231.4666 ns</td><td>231.4666 ns</td><td>4370866.49</td><td>0 kB</td>
+</tr><tr><td>       ParseExecutionReport</td><td>877.0052 ns</td><td>11.4667 ns</td><td>6.8236 ns</td><td>2.2745 ns</td><td>871.7730 ns</td><td>872.0749 ns</td><td>874.1879 ns</td><td>880.8288 ns</td><td>892.6014 ns</td><td>1140244.04</td><td>0 kB</td>
+</tr><tr><td>ParseMarketDataIncrementalRefresh</td><td>2,372.7453 ns</td><td>33.0964 ns</td><td>17.3101 ns</td><td>6.1200 ns</td><td>2,353.1621 ns</td><td>2,361.9160 ns</td><td>2,366.8967 ns</td><td>2,385.0083 ns</td><td>2,401.1579 ns</td><td>421452.74</td><td>0 kB</td>
+</tr></tbody></table>
+</body>
+</html>
