@@ -55,7 +55,9 @@
     </When>
     <Otherwise>
       <ItemGroup>
-        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework" />
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework">
+          <Private>False</Private>
+        </Reference>
       </ItemGroup>
     </Otherwise>
   </Choose>
@@ -63,7 +65,8 @@
     <Compile Include="Core\DateTimes.cs" />
     <Compile Include="Core\Floats.cs" />
     <Compile Include="Core\Ints.cs" />
-    <Compile Include="Core\parsing_a_message.cs" />
+    <Compile Include="Core\message\parse_from_string.cs" />
+    <Compile Include="Core\message\retrieve_a_field.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

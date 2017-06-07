@@ -87,7 +87,7 @@ namespace HotFix.Core
                 var b = message[position];
 
                 if (b == '\u0001') break;
-                if (b == '=') throw new Exception("Not a valid value");
+                if (b == '=') throw new Exception("Not a valid value"); // NOTE: Legit?
 
                 length++;
             }

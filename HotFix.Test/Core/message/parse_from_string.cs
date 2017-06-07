@@ -3,10 +3,10 @@ using FluentAssertions;
 using HotFix.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace HotFix.Test.Core
+namespace HotFix.Test.Core.message
 {
     [TestClass]
-    public class parsing_a_message
+    public class parse_from_string
     {
         public Message Message { get; set; }
         public string Logon { get; set; }
