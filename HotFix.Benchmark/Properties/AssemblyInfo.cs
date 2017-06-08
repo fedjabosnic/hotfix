@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("HotFix.Test")]
+[assembly: AssemblyTitle("Hotfix.Benchmark")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("HotFix.Test")]
+[assembly: AssemblyProduct("Hotfix.Benchmark")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("c61bd99a-8c18-400b-a857-805b1cac29db")]
+[assembly: Guid("9e4f63a8-6d22-4bbf-b358-6bead6f56e1e")]
 
 // Version information for an assembly consists of the following four values:
 //
