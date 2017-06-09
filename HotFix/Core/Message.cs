@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace HotFix.Core
@@ -8,6 +9,7 @@ namespace HotFix.Core
         internal string Raw { get; private set; }
         internal Field[] Fields { get; private set; }
         public int Count { get; private set; }
+        public bool Valid { get; private set; }
 
         public Message()
         {
@@ -21,30 +23,41 @@ namespace HotFix.Core
         /// <returns>A reference to this instance, built from the parsed message.</returns>
         public Message Parse(string message)
         {
-            Raw = message;
-            Count = 0;
-
-            var length = 0;
-            var checksum = 0;
-
-            for (var position = 0; position < message.Length; position++)
+            try
             {
-                var field = ParseField(message, ref position);
+                Raw = message;
+                Count = 0;
 
-                Fields[Count++] = field;
+                var length = 0;
+                var checksum = 0;
 
-                length += field.Length;
-                checksum += field.Checksum;
+                for (var position = 0; position < message.Length; position++)
+                {
+                    var field = ParseField(message, ref position);
+
+                    Fields[Count++] = field;
+
+                    length += field.Length;
+                    checksum += field.Checksum;
+                }
+
+                // Validate message
+                if (Fields[0].Tag !=  8) throw new Exception("BeginString field not found at expected position");
+                if (Fields[1].Tag !=  9) throw new Exception("BodyLength field not found at expected position");
+                if (Fields[2].Tag != 35) throw new Exception("MsgType field not found at expected position");
+                if (Fields[Count - 1].Tag != 10) throw new Exception("CheckSum field not found at expected position");
+
+                if (this[9].Int != length - this[8].Length - this[9].Length - this[10].Length) throw new Exception("BodyLength of the message does not match");
+                if (this[10].Int != (checksum - this[10].Checksum) % 256) throw new Exception("CheckSum of the message does not match");
+
+                Valid = true;
             }
-
-            // Validate message
-            if (Fields[0].Tag !=  8) throw new Exception("BeginString field not found at expected position");
-            if (Fields[1].Tag !=  9) throw new Exception("BodyLength field not found at expected position");
-            if (Fields[2].Tag != 35) throw new Exception("MsgType field not found at expected position");
-            if (Fields[Count - 1].Tag != 10) throw new Exception("CheckSum field not found at expected position");
-
-            if (this[9].Int != length - this[8].Length - this[9].Length - this[10].Length) throw new Exception("BodyLength of the message does not match");
-            if (this[10].Int != (checksum - this[10].Checksum) % 256) throw new Exception("CheckSum of the message does not match");
+            catch (Exception e)
+            {
+                Debug.WriteLine($"Failed to parse message because {e.Message}");
+                Valid = false;
+                Count = 0;
+            }
 
             return this;
         }

@@ -15,7 +15,7 @@
 <pre><code>
 BenchmarkDotNet=v0.10.4, OS=Windows 10.0.10586
 Processor=Intel Core i7-3770 CPU 3.40GHz (Ivy Bridge), ProcessorCount=8
-Frequency=3316022 Hz, Resolution=301.5662 ns, Timer=TSC
+Frequency=3312789 Hz, Resolution=301.8605 ns, Timer=TSC
   [Host]     : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
   Job-LJQWSI : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
 </code></pre>
@@ -26,8 +26,8 @@ TargetCount=10  UnrollFactor=1  WarmupCount=5
 <table>
 <thead><tr><th>Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>StdErr</th><th>  Min</th><th>   Q1</th><th>Median</th><th>   Q3</th><th>  Max</th><th> Op/s</th><th>Scaled</th><th>ScaledSD</th><th>Allocated</th>
 </tr>
-</thead><tbody><tr><td>Standard</td><td>782.1369 ns</td><td>32.9629 ns</td><td>19.6157 ns</td><td>6.5386 ns</td><td>758.8158 ns</td><td>768.9183 ns</td><td>773.2910 ns</td><td>795.3053 ns</td><td>822.4463 ns</td><td>1278548.47</td><td>1.00</td><td>0.00</td><td>0 kB</td>
-</tr><tr><td>Hotfix</td><td>58.1467 ns</td><td>1.5386 ns</td><td>1.0177 ns</td><td>0.3218 ns</td><td>57.0912 ns</td><td>57.0912 ns</td><td>58.2975 ns</td><td>58.9006 ns</td><td>59.5038 ns</td><td>17197876.39</td><td>0.07</td><td>0.00</td><td>0 kB</td>
+</thead><tbody><tr><td>Standard</td><td>784.5353 ns</td><td>36.0433 ns</td><td>23.8404 ns</td><td>7.5390 ns</td><td>752.7494 ns</td><td>768.4462 ns</td><td>777.8038 ns</td><td>795.6136 ns</td><td>834.8555 ns</td><td>1274639.86</td><td>1.00</td><td>0.00</td><td>0 kB</td>
+</tr><tr><td>Hotfix</td><td>56.6324 ns</td><td>1.5311 ns</td><td>0.9112 ns</td><td>0.3037 ns</td><td>55.6933 ns</td><td>55.6933 ns</td><td>57.2026 ns</td><td>57.3535 ns</td><td>57.8063 ns</td><td>17657744.18</td><td>0.07</td><td>0.00</td><td>0 kB</td>
 </tr></tbody></table>
 </body>
 </html>

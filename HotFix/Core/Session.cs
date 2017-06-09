@@ -30,6 +30,7 @@ namespace HotFix.Core
 
             // Logon
             Send("A", $"98=0|108={Configuration.HeartbeatInterval}|141=Y|");
+            Configuration.LoggingOn = true;
 
             var tail = 0;
             var head = 0;
@@ -58,12 +59,14 @@ namespace HotFix.Core
                             }
                         }
                     }
-
-                    if (tail == head) tail = head = 0;
                 }
                 catch (Exception e)
                 {
                     Debug.WriteLine($"! {e.Message}");
+                }
+                finally
+                {
+                    if (tail == head) tail = head = 0;
                 }
 
                 CheckSessionState();
@@ -73,11 +76,14 @@ namespace HotFix.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Process(Message message)
         {
+            if (!message.Valid) return;
+
             Configuration.InboundUpdatedAt = DateTime.UtcNow;
 
-            if (!VerifyBeginString(message)) return;
-            if (!VerifyParties(message)) return;
-            if (!VerifySeqNum(message)) return;
+            if (!VerifyBeginString(message)) return; // Logout and disconnect
+            if (!VerifyParties(message)) return; // Session level Reject, increment inbound SeqNum, logout and then disconnect
+            if (!VerifySeqNum(message)) return; // Too high: resend request, too low: error and exit
+            if (!VerifyLoggedOn(message)) return; // Error and disconnect
 
             switch (message[35].String)
             {
@@ -219,12 +225,34 @@ namespace HotFix.Core
 
             if (seqnum < expected)
             {
-                throw new Exception("Inbound sequence number too low");
+                throw new Exception("Inbound sequence number too low"); // Disconnect and error
             }
 
             Configuration.Synchronised = true;
 
             return true;
+        }
+
+        /// <summary>
+        /// Returns true if the session is already logged on or this message is a logon response. Any message
+        /// other than logon received while the session is not logged on will cause termination of the session.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool VerifyLoggedOn(Message message)
+        {
+            if (Configuration.LoggedOn) return true;
+
+            if (Configuration.LoggingOn && message[35].String == "A")
+            {
+                // TODO: Validate logon message
+                Configuration.LoggedOn = true;
+                Configuration.LoggingOn = false;
+                return true;
+            }
+
+            throw new Exception("First message not a logon");
         }
 
         /// <summary>

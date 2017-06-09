@@ -17,6 +17,11 @@ namespace HotFix.Core
         int InboundBufferSize { get; set; }
         int OutboundBufferSize { get; set; }
 
+        bool LoggingOn { get; set; }
+        bool LoggedOn { get; set; }
+        bool LoggingOut { get; set; }
+        bool LoggedOut { get; set; }
+
         bool Synchronised { get; set; }
 
         long InboundSeqNum { get; set; }

@@ -17,11 +17,16 @@ namespace HotFix.Core
         public int InboundBufferSize { get; set; }
         public int OutboundBufferSize { get; set; }
 
+        public bool LoggingOn { get; set; }
+        public bool LoggedOn { get; set; }
+        public bool LoggingOut { get; set; }
+        public bool LoggedOut { get; set; }
+
         public bool Synchronised { get; set; }
 
         public long InboundSeqNum { get; set; }
         public long OutboundSeqNum { get; set; }
-        
+
         public DateTime InboundUpdatedAt { get; set; }
         public DateTime OutboundUpdatedAt { get; set; }
 
