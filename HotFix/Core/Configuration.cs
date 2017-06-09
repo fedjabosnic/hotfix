@@ -13,11 +13,16 @@ namespace HotFix.Core
 
         public string Host { get; set; }
         public int Port { get; set; }
-        
+
+        public bool Synchronised { get; set; }
+
         public long InboundSeqNum { get; set; }
         public long OutboundSeqNum { get; set; }
 
         public int InboundBufferSize { get; set; }
         public int OutboundBufferSize { get; set; }
+        
+        public DateTime InboundUpdatedAt { get; set; }
+        public DateTime OutboundUpdatedAt { get; set; }
     }
 }

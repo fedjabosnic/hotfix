@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using HotFix.Transport;
+using HotFix.Utilities;
 
 namespace HotFix.Core
 {
@@ -24,73 +25,69 @@ namespace HotFix.Core
         public void Run()
         {
             var buffer = new byte[Configuration.InboundBufferSize];
-            var builder = new StringBuilder(Configuration.InboundBufferSize);
+            var message = new StringBuilder(Configuration.InboundBufferSize);
 
             // Logon
             Send("A", $"98=0|108={Configuration.HeartbeatInterval}|141=Y|");
 
             var tail = 0;
             var head = 0;
-            var heartbeat = DateTime.UtcNow;
 
             while (true)
             {
-                if (DateTime.UtcNow - heartbeat > TimeSpan.FromSeconds(Configuration.HeartbeatInterval))
-                {
-                    Send("0", "");
-
-                    heartbeat = DateTime.UtcNow;
-                }
-
                 try
                 {
-                    var read = Transport.Inbound.Read(buffer, head, buffer.Length - head);
-
-                    head += read;
+                    head += Transport.Inbound.Read(buffer, head, buffer.Length - head);
 
                     for (; tail < head; tail++)
                     {
-                        var c = (char)buffer[tail];
-
-                        builder.Append(c);
-
-                        if (c == '\u0001')
+                        if (message.Build((char) buffer[tail]))
                         {
-                            var l = builder.Length - 1;
-
-                            if (l > 7 && builder[l - 7] == '\u0001' && builder[l - 6] == '1' && builder[l - 5] == '0' && builder[l - 4] == '=')
+                            try
                             {
-                                try
-                                {
-                                    // Parse message
-                                    InboundMessage.Parse(builder.ToString());
+                                // Parse message
+                                InboundMessage.Parse(message.ToString());
 
-                                    // Process message
-                                    Process(InboundMessage);
-                                }
-                                finally
-                                {
-                                    builder.Clear();
-                                }
+                                // Process message
+                                Process(InboundMessage);
+                            }
+                            finally
+                            {
+                                message.Clear();
                             }
                         }
                     }
 
-                    if (tail == head)
-                    {
-                        tail = 0;
-                        head = 0;
-                    }
+                    if (tail == head) tail = head = 0;
                 }
                 catch (Exception e)
                 {
                     Debug.WriteLine($"! {e.Message}");
                 }
+
+                // Send heartbeats
+                if (DateTime.UtcNow - Configuration.OutboundUpdatedAt > TimeSpan.FromSeconds(Configuration.HeartbeatInterval)) Send("0", "");
             }
         }
 
         private void Process(Message message)
         {
+            var seqnum = message[34].Long;
+            var expected = Configuration.InboundSeqNum + 1;
+
+            if (seqnum > expected)
+            {
+                SendResendRequest();
+                return;
+            }
+
+            if (seqnum < expected)
+            {
+                throw new Exception("Inbound sequence number too low");
+            }
+
+            Configuration.Synchronised = true;
+
             switch (message[35].String)
             {
                 case "0":
@@ -120,36 +117,55 @@ namespace HotFix.Core
             }
 
             Inbound?.Invoke(message);
+
+            Configuration.InboundSeqNum++;
+        }
+
+        public void SendResendRequest()
+        {
+            if (!Configuration.Synchronised) return;
+
+            Configuration.Synchronised = false;
+
+            Send("2", $"7={Configuration.InboundSeqNum + 1}|16=0|");
         }
 
         public void Send(string type, string bodypart)
         {
-            // NOTE: This is temporary until we implement an efficient message builder
+            var message = Extensions.Prepare(Configuration, type, bodypart);
+            var data = Encoding.UTF8.GetBytes(message);
 
-            var version = Configuration.Version;
-            var sender = Configuration.Sender;
-            var target = Configuration.Target;
-            var seqnum = Configuration.OutboundSeqNum++;
-            var timestamp = DateTime.UtcNow;
+            Transport.Outbound.Write(data, 0, data.Length);
 
-            var body = $"35={type}|34={seqnum}|49={sender}|52={timestamp:yyyyMMdd-HH:mm:ss.fff}|56={target}|{bodypart}".Replace("|", "\u0001");
-            var header = $"8={version}|9={body.Length}|".Replace("|", "\u0001");
-            var trailer = $"10={((header + body).ToCharArray().Select(x => (int)x).Sum() % 256):D3}|".Replace("|", "\u0001");
-
-            var message = header + body + trailer;
-            var msg = Encoding.UTF8.GetBytes(message);
-
-            // TODO: Do we want to decrement the sequence number if creating/sending the message fails?
-
-            Debug.WriteLine($"> {timestamp:yyyyMMdd HH:mm:ss.fff}: Sending '{type}'");
-            Debug.WriteLine($"  {message}");
-
-            Transport.Outbound.Write(msg, 0, msg.Length);
+            Configuration.OutboundSeqNum++;
+            Configuration.OutboundUpdatedAt = DateTime.UtcNow;
         }
 
         public void Dispose()
         {
             Transport?.Dispose();
+        }
+    }
+
+    public static class Extensions
+    {
+        public static string Prepare(IConfiguration configuration, string type, string bodypart)
+        {
+            // NOTE: This is temporary until we implement an efficient message builder
+
+            var version = configuration.Version;
+            var sender = configuration.Sender;
+            var target = configuration.Target;
+            var seqnum = configuration.OutboundSeqNum;
+            var timestamp = DateTime.UtcNow;
+
+            var body = $"35={type}|34={seqnum + 1}|49={sender}|52={timestamp:yyyyMMdd-HH:mm:ss.fff}|56={target}|{bodypart}".Replace("|", "\u0001");
+            var header = $"8={version}|9={body.Length}|".Replace("|", "\u0001");
+            var trailer = $"10={((header + body).ToCharArray().Select(x => (int)x).Sum() % 256):D3}|".Replace("|", "\u0001");
+
+            var message = header + body + trailer;
+
+            return message;
         }
     }
 }

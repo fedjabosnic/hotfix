@@ -1,10 +1,33 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace HotFix.Utilities
 {
     public static class Parser
     {
+        /// <summary>
+        /// Appends the given character to the string builder and returns true if it now forms a
+        /// complete fix message.
+        /// </summary>
+        /// <param name="builder">The string builder.</param>
+        /// <param name="c">The additional character.</param>
+        /// <returns>True if the builder contains a complete fix message, false otherwise.</returns>
+        public static bool Build(this StringBuilder builder, char c)
+        {
+            builder.Append(c);
+
+            if (c != '\u0001') return false;
+
+            var length = builder.Length;
+
+            return length > 8 &&
+                   builder[length - 8] == '\u0001' &&
+                   builder[length - 7] == '1' &&
+                   builder[length - 6] == '0' &&
+                   builder[length - 5] == '=';
+        }
+
         /// <summary>
         /// Parses an integer (Int32) from the provided string.
         /// </summary>

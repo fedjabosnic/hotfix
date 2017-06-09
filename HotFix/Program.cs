@@ -18,8 +18,8 @@ namespace HotFix
                 Port = 1234,
                 Sender = "DAEV",
                 Target = "TARGET",
-                InboundSeqNum = 1,
-                OutboundSeqNum = 1,
+                InboundSeqNum = 0,
+                OutboundSeqNum = 0,
                 HeartbeatInterval = 5,
                 InboundBufferSize = 65536,
                 OutboundBufferSize = 65536
