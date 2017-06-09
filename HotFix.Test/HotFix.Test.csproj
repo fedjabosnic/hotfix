@@ -62,6 +62,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="core\message\checking_for_a_field.cs" />
     <Compile Include="utilities\parser\datetimes.cs" />
     <Compile Include="utilities\parser\floats.cs" />
     <Compile Include="utilities\parser\ints.cs" />

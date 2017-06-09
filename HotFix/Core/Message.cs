@@ -157,6 +157,24 @@ namespace HotFix.Core
             }
         }
 
+        public bool Contains(int tag, int instance = 0)
+        {
+            switch (tag)
+            {
+                case 8:
+                case 9:
+                case 35:
+                case 10:
+                    return true;
+                default:
+                    // Linear search for relevant field (don't worry it's pretty fast)
+                    for (var i = 3; i < Count - 1; i++)
+                        if (Fields[i].Tag == tag && --instance < 0)
+                            return true;
+                    return false;
+            }
+        }
+
         public override string ToString()
         {
             return Raw;

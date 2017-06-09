@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using HotFix.Transport;
 using HotFix.Utilities;
@@ -65,32 +66,23 @@ namespace HotFix.Core
                     Debug.WriteLine($"! {e.Message}");
                 }
 
-                // Send heartbeats
-                if (DateTime.UtcNow - Configuration.OutboundUpdatedAt > TimeSpan.FromSeconds(Configuration.HeartbeatInterval)) Send("0", "");
+                CheckSessionState();
             }
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private void Process(Message message)
         {
-            var seqnum = message[34].Long;
-            var expected = Configuration.InboundSeqNum + 1;
+            Configuration.InboundUpdatedAt = DateTime.UtcNow;
 
-            if (seqnum > expected)
-            {
-                SendResendRequest();
-                return;
-            }
-
-            if (seqnum < expected)
-            {
-                throw new Exception("Inbound sequence number too low");
-            }
-
-            Configuration.Synchronised = true;
+            if (!VerifyBeginString(message)) return;
+            if (!VerifyParties(message)) return;
+            if (!VerifySeqNum(message)) return;
 
             switch (message[35].String)
             {
                 case "0":
+                    VerifyTestResponse(message);
                     Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Heartbeat");
                     break;
                 case "A":
@@ -121,13 +113,135 @@ namespace HotFix.Core
             Configuration.InboundSeqNum++;
         }
 
-        public void SendResendRequest()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void CheckSessionState()
         {
-            if (!Configuration.Synchronised) return;
+            if (OutboundHeartbeatExpired()) Send("0", "");
+            if (InboundHeartbeatExpired()) Send("1", $"112={Configuration.OutboundTestReqId = DateTime.UtcNow.ToString("yyyyMMdd-HH:mm:ss.fff")}|");
+            if (InboundTestResponseExpired()) throw new Exception("Didn't receive a test response");
+        }
 
-            Configuration.Synchronised = false;
+        /// <summary>
+        /// Returns true when no messages have been sent for longer than the heartbeat interval.
+        /// </summary>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool OutboundHeartbeatExpired()
+        {
+            var now = DateTime.UtcNow;
+            var last = Configuration.OutboundUpdatedAt;
+            var timeout = TimeSpan.FromSeconds(Configuration.HeartbeatInterval);
 
-            Send("2", $"7={Configuration.InboundSeqNum + 1}|16=0|");
+            return now - last > timeout;
+        }
+
+        /// <summary>
+        /// Returns true when no messages have been received for longer than the heartbeat interval.
+        /// </summary>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool InboundHeartbeatExpired()
+        {
+            if (Configuration.OutboundTestReqId != null) return false;
+
+            var now = DateTime.UtcNow;
+            var last = Configuration.InboundUpdatedAt;
+            var timeout = TimeSpan.FromSeconds(Configuration.HeartbeatInterval * 1.2);
+
+            return now - last > timeout;
+        }
+
+        /// <summary>
+        /// Returns true when a requested test response has not been received for longer than the heartbeat interval.
+        /// </summary>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public bool InboundTestResponseExpired()
+        {
+            if (Configuration.OutboundTestReqId == null) return false;
+
+            var now = DateTime.UtcNow;
+            var last = Configuration.OutboundTestReqId.GetDateTime();
+            var timeout = TimeSpan.FromSeconds(Configuration.HeartbeatInterval * 2);
+
+            return now - last > timeout;
+        }
+
+        /// <summary>
+        /// Returns true if the message specifies the expected begin string (fix protocol version).
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool VerifyBeginString(Message message)
+        {
+            // TODO: Error/fail here?
+            return message[8].String == Configuration.Version;
+        }
+
+        /// <summary>
+        /// Returns true if the message specifies the expected target and sender identifiers.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool VerifyParties(Message message)
+        {
+            // TODO: Error/fail here?
+            return message[49].String == Configuration.Target && message[56].String == Configuration.Sender;
+        }
+
+        /// <summary>
+        /// Returns true if the message specifies the expected sequence number. If the sequence number is higher
+        /// than expected, a resend request will be sent to fill the gap (unless one is already in flight) and
+        /// false will be returned. If the sequence number is lower than expected, an exception will be thrown.
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private bool VerifySeqNum(Message message)
+        {
+            var seqnum = message[34].Long;
+            var expected = Configuration.InboundSeqNum + 1;
+
+            if (seqnum > expected)
+            {
+                if (Configuration.Synchronised)
+                {
+                    Configuration.Synchronised = false;
+
+                    // Send resend request
+                    Send("2", $"7={Configuration.InboundSeqNum + 1}|16=0|");
+                }
+
+                return false;
+            }
+
+            if (seqnum < expected)
+            {
+                throw new Exception("Inbound sequence number too low");
+            }
+
+            Configuration.Synchronised = true;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Fulfills the current test request if the message contains a valid test response.
+        /// </summary>
+        /// <param name="message"></param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void VerifyTestResponse(Message message)
+        {
+            // Not awaiting a test response
+            if (Configuration.OutboundTestReqId == null) return;
+
+            // If there is a test id, confirm that it's valid
+            if (message.Contains(112) && message[112].String == Configuration.OutboundTestReqId)
+            {
+                Configuration.OutboundTestReqId = null;
+            }
         }
 
         public void Send(string type, string bodypart)
