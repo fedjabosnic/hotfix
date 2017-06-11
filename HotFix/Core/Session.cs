@@ -85,32 +85,32 @@ namespace HotFix.Core
             if (!VerifySeqNum(message)) return; // Too high: resend request, too low: error and exit
             if (!VerifyLoggedOn(message)) return; // Error and disconnect
 
-            switch (message[35].String)
+            switch (message[35].AsString)
             {
                 case "0":
                     VerifyTestResponse(message);
-                    Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Heartbeat");
+                    Debug.WriteLine($"< {message[52].AsDateTime:yyyyMMdd HH:mm:ss.fff}: Heartbeat");
                     break;
                 case "A":
-                    Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Logon");
+                    Debug.WriteLine($"< {message[52].AsDateTime:yyyyMMdd HH:mm:ss.fff}: Logon");
                     break;
                 case "5":
-                    Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Logout");
+                    Debug.WriteLine($"< {message[52].AsDateTime:yyyyMMdd HH:mm:ss.fff}: Logout");
                     break;
                 case "3":
-                    Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Reject");
+                    Debug.WriteLine($"< {message[52].AsDateTime:yyyyMMdd HH:mm:ss.fff}: Reject");
                     break;
                 case "2":
-                    Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Resend request");
+                    Debug.WriteLine($"< {message[52].AsDateTime:yyyyMMdd HH:mm:ss.fff}: Resend request");
                     break;
                 case "4":
-                    Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Sequence reset");
+                    Debug.WriteLine($"< {message[52].AsDateTime:yyyyMMdd HH:mm:ss.fff}: Sequence reset");
                     break;
                 case "1":
-                    Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Test request");
+                    Debug.WriteLine($"< {message[52].AsDateTime:yyyyMMdd HH:mm:ss.fff}: Test request");
                     break;
                 default:
-                    Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Application message ({message[35].String})");
+                    Debug.WriteLine($"< {message[52].AsDateTime:yyyyMMdd HH:mm:ss.fff}: Application message ({message[35].AsString})");
                     break;
             }
 
@@ -182,7 +182,7 @@ namespace HotFix.Core
         private bool VerifyBeginString(Message message)
         {
             // TODO: Error/fail here?
-            return message[8].String == Configuration.Version;
+            return message[8].AsString == Configuration.Version;
         }
 
         /// <summary>
@@ -194,7 +194,7 @@ namespace HotFix.Core
         private bool VerifyParties(Message message)
         {
             // TODO: Error/fail here?
-            return message[49].String == Configuration.Target && message[56].String == Configuration.Sender;
+            return message[49].AsString == Configuration.Target && message[56].AsString == Configuration.Sender;
         }
 
         /// <summary>
@@ -207,7 +207,7 @@ namespace HotFix.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private bool VerifySeqNum(Message message)
         {
-            var seqnum = message[34].Long;
+            var seqnum = message[34].AsLong;
             var expected = Configuration.InboundSeqNum + 1;
 
             if (seqnum > expected)
@@ -244,7 +244,7 @@ namespace HotFix.Core
         {
             if (Configuration.LoggedOn) return true;
 
-            if (Configuration.LoggingOn && message[35].String == "A")
+            if (Configuration.LoggingOn && message[35].AsString == "A")
             {
                 // TODO: Validate logon message
                 Configuration.LoggedOn = true;
@@ -266,7 +266,7 @@ namespace HotFix.Core
             if (Configuration.OutboundTestReqId == null) return;
 
             // If there is a test id, confirm that it's valid
-            if (message.Contains(112) && message[112].String == Configuration.OutboundTestReqId)
+            if (message.Contains(112) && message[112].AsString == Configuration.OutboundTestReqId)
             {
                 Configuration.OutboundTestReqId = null;
             }
