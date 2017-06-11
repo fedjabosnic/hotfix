@@ -18,14 +18,14 @@ namespace HotFix.Core
         public string AsString => _message.Substring(_segment.Offset, _segment.Length);
         public DateTime AsDateTime => _message.GetDateTime(_segment.Offset, _segment.Length);
 
-        public Field(string message, int tag, int length, int checksum, Segment segment)
+        public Field(string message, int tag, Segment segment, int length, int checksum)
         {
+            _message = message;
+            _segment = segment;
+
             Tag = tag;
             Length = length;
             Checksum = checksum;
-
-            _message = message;
-            _segment = segment;
         }
     }
 }

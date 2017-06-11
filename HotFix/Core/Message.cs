@@ -73,7 +73,7 @@ namespace HotFix.Core
             var value = ParseValue(message, ref position, ref length, ref checksum);
 
             // Create the relevant field
-            return new Field(message, tag, length, checksum, value);
+            return new Field(message, tag, value, length, checksum);
         }
 
         /// <summary>
@@ -131,7 +131,6 @@ namespace HotFix.Core
                 checksum += b;
 
                 if (b == '\u0001') break;
-                if (b == '=') throw new Exception("Not a valid value"); // TODO: Check whether this is legit?
             }
 
             var valueLength = position - offset;
