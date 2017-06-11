@@ -28,12 +28,12 @@ namespace HotFix.Core
             var buffer = new byte[Configuration.InboundBufferSize];
             var message = new StringBuilder(Configuration.InboundBufferSize);
 
+            var tail = 0;
+            var head = 0;
+
             // Logon
             Send("A", $"98=0|108={Configuration.HeartbeatInterval}|141=Y|");
             Configuration.LoggingOn = true;
-
-            var tail = 0;
-            var head = 0;
 
             while (true)
             {
@@ -43,6 +43,8 @@ namespace HotFix.Core
 
                     for (; tail < head; tail++)
                     {
+                        // NOTE: Using a string builder and parsing to string isn't ideal...
+
                         if (message.Build((char) buffer[tail]))
                         {
                             try
@@ -66,6 +68,7 @@ namespace HotFix.Core
                 }
                 finally
                 {
+                    // All received data processed, reset buffer
                     if (tail == head) tail = head = 0;
                 }
 
@@ -119,6 +122,9 @@ namespace HotFix.Core
             Configuration.InboundSeqNum++;
         }
 
+        /// <summary>
+        /// Checks the session state by performing house-keeping tasks such as heartbeating and test request tracking.
+        /// </summary>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void CheckSessionState()
         {
@@ -148,6 +154,7 @@ namespace HotFix.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool InboundHeartbeatExpired()
         {
+            // There's already a test request in-flight, do nothing
             if (Configuration.OutboundTestReqId != null) return false;
 
             var now = DateTime.UtcNow;
@@ -164,6 +171,7 @@ namespace HotFix.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public bool InboundTestResponseExpired()
         {
+            // We're not waiting for a test response right now, do nothing
             if (Configuration.OutboundTestReqId == null) return false;
 
             var now = DateTime.UtcNow;
@@ -262,10 +270,10 @@ namespace HotFix.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void VerifyTestResponse(Message message)
         {
-            // Not awaiting a test response
+            // Not awaiting a test response, do nothing
             if (Configuration.OutboundTestReqId == null) return;
 
-            // If there is a test id, confirm that it's valid
+            // If there is a test id, confirm that it's valid and reset state
             if (message.Contains(112) && message[112].AsString == Configuration.OutboundTestReqId)
             {
                 Configuration.OutboundTestReqId = null;
