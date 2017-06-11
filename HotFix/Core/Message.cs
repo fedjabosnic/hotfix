@@ -17,7 +17,8 @@ namespace HotFix.Core
         }
 
         /// <summary>
-        /// Parses a message from a string, expecting the entire message in one go.
+        /// Parses a message from a string, expecting an entire message to be provided as a string. Any parsing errors will
+        /// result in the message being invalid where the Valid property will return false and no fields will be accessible.
         /// </summary>
         /// <param name="message">The message to parse.</param>
         /// <returns>A reference to this instance, built from the parsed message.</returns>
@@ -41,7 +42,7 @@ namespace HotFix.Core
                     checksum += field.Checksum;
                 }
 
-                // Validate message
+                // Validate message (any errors at this point result in an invalid/garbled message)
                 if (Fields[0].Tag !=  8) throw new Exception("BeginString field not found at expected position");
                 if (Fields[1].Tag !=  9) throw new Exception("BodyLength field not found at expected position");
                 if (Fields[2].Tag != 35) throw new Exception("MsgType field not found at expected position");
@@ -62,6 +63,13 @@ namespace HotFix.Core
             return this;
         }
 
+        /// <summary>
+        /// Parses a fix field from the message from the provided position. Parsing will fail with an error
+        /// if an illegal character is seen whilst parsing the tag or value.
+        /// </summary>
+        /// <param name="message">The message to parse.</param>
+        /// <param name="position">The position to parse from.</param>
+        /// <returns>The parsed field.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Field ParseField(string message, ref int position)
         {
