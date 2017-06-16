@@ -4,7 +4,7 @@ using FluentAssertions;
 using HotFix.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace HotFix.Test.utilities.parser
+namespace HotFix.Test.utilities.reading
 {
     [TestClass]
     public class datetimes

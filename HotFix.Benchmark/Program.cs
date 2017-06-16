@@ -1,6 +1,9 @@
 ﻿using System;
 using System.IO;
 using BenchmarkDotNet.Running;
+using HotFix.Benchmark.suites;
+using HotFix.Benchmark.suites.reading;
+using HotFix.Benchmark.suites.writing;
 
 namespace HotFix.Benchmark
 {
@@ -8,13 +11,19 @@ namespace HotFix.Benchmark
     {
         static void Main(string[] args)
         {
-            BenchmarkRunner.Run<Suites.Basic>();
-            BenchmarkRunner.Run<Suites.Messages>();
-            BenchmarkRunner.Run<Suites.Parsing.Ints>();
-            BenchmarkRunner.Run<Suites.Parsing.Longs>();
-            BenchmarkRunner.Run<Suites.Parsing.Floats>();
-            BenchmarkRunner.Run<Suites.Parsing.Strings>();
-            BenchmarkRunner.Run<Suites.Parsing.DateTimes>();
+            BenchmarkRunner.Run<basic>();
+            BenchmarkRunner.Run<parsing_messages>();
+            BenchmarkRunner.Run<writing_messages>();
+            BenchmarkRunner.Run<reading_ints>();
+            BenchmarkRunner.Run<reading_longs>();
+            BenchmarkRunner.Run<reading_floats>();
+            BenchmarkRunner.Run<reading_strings>();
+            BenchmarkRunner.Run<reading_datetimes>();
+            BenchmarkRunner.Run<writing_ints>();
+            BenchmarkRunner.Run<writing_longs>();
+            BenchmarkRunner.Run<writing_floats>();
+            BenchmarkRunner.Run<writing_strings>();
+            BenchmarkRunner.Run<writing_datetimes>();
 
             Directory.Delete(@"..\..\..\.bench", true);
             Directory.Move(@"BenchmarkDotNet.Artifacts\results", @"..\..\..\.bench");

@@ -4,12 +4,12 @@ using BenchmarkDotNet.Attributes.Columns;
 using BenchmarkDotNet.Attributes.Jobs;
 using BenchmarkDotNet.Engines;
 
-namespace HotFix.Benchmark.Suites
+namespace HotFix.Benchmark.suites
 {
     [MemoryDiagnoser]
     [AllStatisticsColumn]
     [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 10000)]
-    public class Basic
+    public class basic
     {
         private byte[] Bytes { get; set; }
 
@@ -20,15 +20,15 @@ namespace HotFix.Benchmark.Suites
         }
 
         [Benchmark]
-        public string Noop() => string.Empty;
+        public string noop() => string.Empty;
 
         [Benchmark]
-        public byte IndexingFirstItem() => Bytes[0];
+        public byte indexing_first_item() => Bytes[0];
 
         [Benchmark]
-        public byte IndexingMiddleItem() => Bytes[512000];
+        public byte indexing_middle_item() => Bytes[512000];
 
         [Benchmark]
-        public byte IndexingLastItem() => Bytes[1024000 - 1];
+        public byte indexing_last_item() => Bytes[1024000 - 1];
     }
 }

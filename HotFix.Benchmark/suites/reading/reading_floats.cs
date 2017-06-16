@@ -6,12 +6,12 @@ using BenchmarkDotNet.Attributes.Jobs;
 using BenchmarkDotNet.Engines;
 using HotFix.Utilities;
 
-namespace HotFix.Benchmark.Suites.Parsing
+namespace HotFix.Benchmark.suites.reading
 {
     [MemoryDiagnoser]
     [AllStatisticsColumn]
     [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 1000)]
-    public class Floats
+    public class reading_floats
     {
         public byte[] Raw { get; set; }
 
@@ -22,9 +22,9 @@ namespace HotFix.Benchmark.Suites.Parsing
         }
 
         [Benchmark(Baseline = true)]
-        public double Standard() => double.Parse(Encoding.ASCII.GetString(Raw));
+        public double standard() => double.Parse(Encoding.ASCII.GetString(Raw));
 
         [Benchmark]
-        public double Hotfix() => Raw.GetFloat();
+        public double hotfix() => Raw.GetFloat();
     }
 }

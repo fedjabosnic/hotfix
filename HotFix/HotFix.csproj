@@ -54,6 +54,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\MessageWriter.cs" />
     <Compile Include="Core\Configuration.cs" />
     <Compile Include="Utilities\Parser.cs" />
     <Compile Include="Core\Field.cs" />

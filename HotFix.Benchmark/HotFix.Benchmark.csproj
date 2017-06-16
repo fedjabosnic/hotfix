@@ -164,13 +164,19 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Suites\Basic.cs" />
-    <Compile Include="Suites\Messages.cs" />
-    <Compile Include="Suites\Parsing\DateTimes.cs" />
-    <Compile Include="Suites\Parsing\Floats.cs" />
-    <Compile Include="Suites\Parsing\Ints.cs" />
-    <Compile Include="Suites\Parsing\Longs.cs" />
-    <Compile Include="Suites\Parsing\Strings.cs" />
+    <Compile Include="suites\writing_messages.cs" />
+    <Compile Include="suites\basic.cs" />
+    <Compile Include="suites\parsing_messages.cs" />
+    <Compile Include="suites\reading\reading_datetimes.cs" />
+    <Compile Include="suites\reading\reading_floats.cs" />
+    <Compile Include="suites\reading\reading_ints.cs" />
+    <Compile Include="suites\reading\reading_longs.cs" />
+    <Compile Include="suites\reading\reading_strings.cs" />
+    <Compile Include="suites\writing\writing_datetimes.cs" />
+    <Compile Include="suites\writing\writing_floats.cs" />
+    <Compile Include="suites\writing\writing_ints.cs" />
+    <Compile Include="suites\writing\writing_longs.cs" />
+    <Compile Include="suites\writing\writing_strings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -186,6 +192,7 @@
       <Name>HotFix</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

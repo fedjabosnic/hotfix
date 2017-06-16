@@ -6,12 +6,12 @@ using BenchmarkDotNet.Attributes.Jobs;
 using BenchmarkDotNet.Engines;
 using HotFix.Utilities;
 
-namespace HotFix.Benchmark.Suites.Parsing
+namespace HotFix.Benchmark.suites.reading
 {
     [MemoryDiagnoser]
     [AllStatisticsColumn]
     [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 1000)]
-    public class DateTimes
+    public class reading_datetimes
     {
         public byte[] Raw { get; set; }
 
@@ -25,9 +25,9 @@ namespace HotFix.Benchmark.Suites.Parsing
         //       which is possibly an issue in the benchmarking library (investigate)
 
         [Benchmark(Baseline = true)]
-        public long Standard() => DateTime.ParseExact(Encoding.ASCII.GetString(Raw), "yyyyMMdd-HH:mm:ss.fff", null).Ticks;
+        public long standard() => DateTime.ParseExact(Encoding.ASCII.GetString(Raw), "yyyyMMdd-HH:mm:ss.fff", null).Ticks;
 
         [Benchmark]
-        public long Hotfix() => Raw.GetDateTime().Ticks;
+        public long hotfix() => Raw.GetDateTime().Ticks;
     }
 }

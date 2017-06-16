@@ -6,12 +6,12 @@ using BenchmarkDotNet.Attributes.Jobs;
 using BenchmarkDotNet.Engines;
 using HotFix.Core;
 
-namespace HotFix.Benchmark.Suites
+namespace HotFix.Benchmark.suites
 {
     [MemoryDiagnoser]
     [AllStatisticsColumn]
     [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 1000)]
-    public class Messages
+    public class parsing_messages
     {
         public byte[] Heartbeat { get; set; }
         public byte[] ExecutionReport { get; set; }
@@ -55,12 +55,12 @@ namespace HotFix.Benchmark.Suites
         }
 
         [Benchmark]
-        public Message ParseHeartbeat() => Message.Parse(Heartbeat, 0, Heartbeat.Length);
+        public Message small() => Message.Parse(Heartbeat, 0, Heartbeat.Length);
 
         [Benchmark]
-        public Message ParseExecutionReport() => Message.Parse(ExecutionReport, 0, ExecutionReport.Length);
+        public Message medium() => Message.Parse(ExecutionReport, 0, ExecutionReport.Length);
 
         [Benchmark]
-        public Message ParseMarketDataIncrementalRefresh() => Message.Parse(MarketDataIncrementalRefresh, 0, MarketDataIncrementalRefresh.Length);
+        public Message large() => Message.Parse(MarketDataIncrementalRefresh, 0, MarketDataIncrementalRefresh.Length);
     }
 }
