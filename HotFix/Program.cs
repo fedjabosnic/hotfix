@@ -65,7 +65,7 @@ namespace HotFix
             for (var i = 0; i < count; i++)
             {
                 // Parse message and retrieve timestamp field
-                results.Add(message.Parse(md)[52].DateTime);
+                results.Add(message.Parse(md)[52].AsDateTime);
             }
 
             timer.Stop();

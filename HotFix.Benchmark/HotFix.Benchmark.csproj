@@ -170,6 +170,7 @@
     <Compile Include="Suites\Parsing\Floats.cs" />
     <Compile Include="Suites\Parsing\Ints.cs" />
     <Compile Include="Suites\Parsing\Longs.cs" />
+    <Compile Include="Suites\Parsing\Strings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -62,6 +62,11 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="core\field\checking_the_value_for_datetime_equality.cs" />
+    <Compile Include="core\field\checking_the_value_for_double_equality.cs" />
+    <Compile Include="core\field\checking_the_value_for_integer_equality.cs" />
+    <Compile Include="core\field\checking_the_value_for_long_equality.cs" />
+    <Compile Include="core\field\checking_the_value_for_string_equality.cs" />
     <Compile Include="utilities\parser\datetimes.cs" />
     <Compile Include="utilities\parser\floats.cs" />
     <Compile Include="utilities\parser\ints.cs" />

@@ -154,6 +154,36 @@ namespace HotFix.Utilities
         /// Parses a datetime from the provided string.
         /// </summary>
         /// <remarks>
+        /// High performance implementation (allocates a new string).
+        /// </remarks>
+        /// <param name="source">The source string to parse.</param>
+        /// <returns>The parsed string.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string GetString(this string source)
+        {
+            return source.GetString(0, source.Length);
+        }
+
+        /// <summary>
+        /// Parses a string from the provided string.
+        /// </summary>
+        /// <remarks>
+        /// High performance implementation (allocates a new string).
+        /// </remarks>
+        /// <param name="source">The source string to parse.</param>
+        /// <param name="offset">The offset in the string to start parsing from.</param>
+        /// <param name="count">The number of characters to parse.</param>
+        /// <returns>The parsed string.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static string GetString(this string source, int offset, int count)
+        {
+            return source.Substring(offset, count);
+        }
+
+        /// <summary>
+        /// Parses a datetime from the provided string.
+        /// </summary>
+        /// <remarks>
         /// High performance, garbage free implementation (10x faster than bcl).
         /// </remarks>
         /// <param name="source">The source string to parse.</param>
