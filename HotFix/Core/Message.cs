@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 
 namespace HotFix.Core
@@ -7,7 +8,9 @@ namespace HotFix.Core
     {
         internal string Raw { get; private set; }
         internal Field[] Fields { get; private set; }
+
         public int Count { get; private set; }
+        public bool Valid { get; private set; }
 
         public Message()
         {
@@ -15,40 +18,61 @@ namespace HotFix.Core
         }
 
         /// <summary>
-        /// Parses a message from a string, expecting the entire message in one go.
+        /// Parses a message from a string, expecting an entire message to be provided as a string. Any parsing errors will
+        /// result in the message being invalid where the Valid property will return false and no fields will be accessible.
         /// </summary>
         /// <param name="message">The message to parse.</param>
         /// <returns>A reference to this instance, built from the parsed message.</returns>
         public Message Parse(string message)
         {
-            Raw = message;
-            Count = 0;
-
-            var length = 0;
-            var checksum = 0;
-
-            for (var position = 0; position < message.Length; position++)
+            try
             {
-                var field = ParseField(message, ref position);
+                Raw = message;
+                Count = 0;
 
-                Fields[Count++] = field;
+                var length = 0;
+                var checksum = 0;
 
-                length += field.Length;
-                checksum += field.Checksum;
+                for (var position = 0; position < message.Length; position++)
+                {
+                    var field = ParseField(message, ref position);
+
+                    Fields[Count++] = field;
+
+                    length += field.Length;
+                    checksum += field.Checksum;
+                }
+
+                // Validate message (any errors at this point result in an invalid/garbled message) 
+                if (Fields[0].Tag != 8) throw new Exception("BeginString field not found at expected position");
+                if (Fields[1].Tag != 9) throw new Exception("BodyLength field not found at expected position");
+                if (Fields[2].Tag != 35) throw new Exception("MsgType field not found at expected position");
+                if (Fields[Count - 1].Tag != 10) throw new Exception("CheckSum field not found at expected position");
+
+                if (this[9].AsInt != length - this[8].Length - this[9].Length - this[10].Length) throw new Exception("BodyLength of the message does not match");
+                if (this[10].AsInt != (checksum - this[10].Checksum) % 256) throw new Exception("CheckSum of the message does not match");
+
+                Valid = true;
             }
+            catch (Exception e)
+            {
+                // TODO: Find a better way to do this than exceptions...
 
-            // Validate message
-            if (Fields[0].Tag !=  8) throw new Exception("BeginString field not found at expected position");
-            if (Fields[1].Tag !=  9) throw new Exception("BodyLength field not found at expected position");
-            if (Fields[2].Tag != 35) throw new Exception("MsgType field not found at expected position");
-            if (Fields[Count - 1].Tag != 10) throw new Exception("CheckSum field not found at expected position");
-
-            if (this[9].AsInt != length - this[8].Length - this[9].Length - this[10].Length) throw new Exception("BodyLength of the message does not match");
-            if (this[10].AsInt != (checksum - this[10].Checksum) % 256) throw new Exception("CheckSum of the message does not match");
+                Debug.WriteLine($"Failed to parse message because {e.Message}");
+                Valid = false;
+                Count = 0;
+            }
 
             return this;
         }
 
+        /// <summary>
+        /// Parses a fix field from the message from the provided position. Parsing will fail with an error
+        /// if an illegal character is seen whilst parsing the tag or value.
+        /// </summary>
+        /// <param name="message">The message to parse.</param>
+        /// <param name="position">The position to parse from.</param>
+        /// <returns>The parsed field.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Field ParseField(string message, ref int position)
         {
@@ -143,8 +167,8 @@ namespace HotFix.Core
 
                 switch (tag)
                 {
-                    case  8: return Fields[0];
-                    case  9: return Fields[1];
+                    case 8: return Fields[0];
+                    case 9: return Fields[1];
                     case 35: return Fields[2];
                     case 10: return Fields[Count - 1];
                     default:
@@ -154,6 +178,29 @@ namespace HotFix.Core
                                 return Fields[i];
                         throw new Exception("Field not found");
                 }
+            }
+        }
+
+        /// <summary>
+        /// Returns true if a field with the specified tag, as the specified instance, exists.
+        /// </summary>
+        /// <param name="tag">The tag of the field to check.</param>
+        /// <param name="instance">The instance of the field (if there are multiple).</param>
+        public bool Contains(int tag, int instance = 0)
+        {
+            switch (tag)
+            {
+                case 8:
+                case 9:
+                case 35:
+                case 10:
+                    return true;
+                default:
+                    // Linear search for relevant field (don't worry it's pretty fast) 
+                    for (var i = 3; i < Count - 1; i++)
+                        if (Fields[i].Tag == tag && --instance < 0)
+                            return true;
+                    return false;
             }
         }
 
