@@ -43,8 +43,8 @@ namespace HotFix.Core
             if (Fields[2].Tag != 35) throw new Exception("MsgType field not found at expected position");
             if (Fields[Count - 1].Tag != 10) throw new Exception("CheckSum field not found at expected position");
 
-            if (this[9].Int != length - this[8].Length - this[9].Length - this[10].Length) throw new Exception("BodyLength of the message does not match");
-            if (this[10].Int != (checksum - this[10].Checksum) % 256) throw new Exception("CheckSum of the message does not match");
+            if (this[9].AsInt != length - this[8].Length - this[9].Length - this[10].Length) throw new Exception("BodyLength of the message does not match");
+            if (this[10].AsInt != (checksum - this[10].Checksum) % 256) throw new Exception("CheckSum of the message does not match");
 
             return this;
         }
@@ -60,7 +60,7 @@ namespace HotFix.Core
             var value = ParseValue(message, ref position, ref length, ref checksum);
 
             // Create the relevant field
-            return new Field(message, tag, length, checksum, value);
+            return new Field(message, tag, value, length, checksum);
         }
 
         /// <summary>

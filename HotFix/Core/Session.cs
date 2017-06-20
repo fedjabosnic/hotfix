@@ -91,31 +91,31 @@ namespace HotFix.Core
 
         private void Process(Message message)
         {
-            switch (message[35].String)
+            switch (message[35].AsString)
             {
                 case "0":
-                    Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Heartbeat");
+                    Debug.WriteLine($"< {message[52].AsDateTime:yyyyMMdd HH:mm:ss.fff}: Heartbeat");
                     break;
                 case "A":
-                    Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Logon");
+                    Debug.WriteLine($"< {message[52].AsDateTime:yyyyMMdd HH:mm:ss.fff}: Logon");
                     break;
                 case "5":
-                    Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Logout");
+                    Debug.WriteLine($"< {message[52].AsDateTime:yyyyMMdd HH:mm:ss.fff}: Logout");
                     break;
                 case "3":
-                    Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Reject");
+                    Debug.WriteLine($"< {message[52].AsDateTime:yyyyMMdd HH:mm:ss.fff}: Reject");
                     break;
                 case "2":
-                    Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Resend request");
+                    Debug.WriteLine($"< {message[52].AsDateTime:yyyyMMdd HH:mm:ss.fff}: Resend request");
                     break;
                 case "4":
-                    Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Sequence reset");
+                    Debug.WriteLine($"< {message[52].AsDateTime:yyyyMMdd HH:mm:ss.fff}: Sequence reset");
                     break;
                 case "1":
-                    Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Test request");
+                    Debug.WriteLine($"< {message[52].AsDateTime:yyyyMMdd HH:mm:ss.fff}: Test request");
                     break;
                 default:
-                    Debug.WriteLine($"< {message[52].DateTime:yyyyMMdd HH:mm:ss.fff}: Application message ({message[35].String})");
+                    Debug.WriteLine($"< {message[52].AsDateTime:yyyyMMdd HH:mm:ss.fff}: Application message ({message[35].AsString})");
                     break;
             }
 

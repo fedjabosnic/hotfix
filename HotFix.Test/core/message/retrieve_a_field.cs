@@ -23,17 +23,17 @@ namespace HotFix.Test.core.message
         {
             Message.Parse(Logon);
 
-            Message[  8].String.Should().Be("FIX.4.2");
-            Message[  9].String.Should().Be("70");
-            Message[ 35].String.Should().Be("A");
-            Message[ 34].String.Should().Be("1");
-            Message[ 52].String.Should().Be("20170607-12:17:52.355");
-            Message[ 49].String.Should().Be("DAEV");
-            Message[ 56].String.Should().Be("TARGET");
-            Message[ 98].String.Should().Be("0");
-            Message[108].String.Should().Be("5");
-            Message[141].String.Should().Be("Y");
-            Message[ 10].String.Should().Be("231");
+            Message[  8].AsString.Should().Be("FIX.4.2");
+            Message[  9].AsString.Should().Be("70");
+            Message[ 35].AsString.Should().Be("A");
+            Message[ 34].AsString.Should().Be("1");
+            Message[ 52].AsString.Should().Be("20170607-12:17:52.355");
+            Message[ 49].AsString.Should().Be("DAEV");
+            Message[ 56].AsString.Should().Be("TARGET");
+            Message[ 98].AsString.Should().Be("0");
+            Message[108].AsString.Should().Be("5");
+            Message[141].AsString.Should().Be("Y");
+            Message[ 10].AsString.Should().Be("231");
         }
 
         [TestMethod]

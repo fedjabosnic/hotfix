@@ -13,6 +13,7 @@ namespace HotFix.Benchmark
             BenchmarkRunner.Run<Suites.Parsing.Ints>();
             BenchmarkRunner.Run<Suites.Parsing.Longs>();
             BenchmarkRunner.Run<Suites.Parsing.Floats>();
+            BenchmarkRunner.Run<Suites.Parsing.Strings>();
             BenchmarkRunner.Run<Suites.Parsing.DateTimes>();
 
             Directory.Delete(@"..\..\..\.bench", true);
