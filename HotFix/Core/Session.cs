@@ -91,6 +91,8 @@ namespace HotFix.Core
 
         private void Process(Message message)
         {
+            if (!message.Valid) return;
+
             switch (message[35].AsString)
             {
                 case "0":

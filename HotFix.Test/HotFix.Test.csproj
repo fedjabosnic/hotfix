@@ -67,6 +67,7 @@
     <Compile Include="core\field\checking_the_value_for_integer_equality.cs" />
     <Compile Include="core\field\checking_the_value_for_long_equality.cs" />
     <Compile Include="core\field\checking_the_value_for_string_equality.cs" />
+    <Compile Include="core\message\check_for_a_field.cs" />
     <Compile Include="utilities\parser\datetimes.cs" />
     <Compile Include="utilities\parser\floats.cs" />
     <Compile Include="utilities\parser\ints.cs" />
