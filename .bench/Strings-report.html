@@ -17,17 +17,15 @@ BenchmarkDotNet=v0.10.4, OS=Windows 10.0.10586
 Processor=Intel Core i7-3770 CPU 3.40GHz (Ivy Bridge), ProcessorCount=8
 Frequency=3312788 Hz, Resolution=301.8605 ns, Timer=TSC
   [Host]     : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
-  Job-LJQWSI : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
+  DefaultJob : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
 </code></pre>
-<pre><code>InvocationCount=1000  LaunchCount=1  RunStrategy=Throughput  
-TargetCount=10  UnrollFactor=1  WarmupCount=5  
-</code></pre>
+<pre><code></code></pre>
 
 <table>
-<thead><tr><th>Method</th><th>Mean</th><th>Error</th><th>StdDev</th><th>StdErr</th><th> Min</th><th>  Q1</th><th>Median</th><th>  Q3</th><th> Max</th><th> Op/s</th><th>Scaled</th><th>ScaledSD</th><th>Allocated</th>
+<thead><tr><th>Method</th><th>Mean</th><th>Error</th><th>StdDev</th><th>StdErr</th><th> Min</th><th>  Q1</th><th>Median</th><th>  Q3</th><th> Max</th><th> Op/s</th><th>Scaled</th><th>ScaledSD</th><th>Gen 0</th><th>Allocated</th>
 </tr>
-</thead><tbody><tr><td>Standard</td><td>14.4605 ns</td><td>2.7060 ns</td><td>1.4153 ns</td><td>0.5004 ns</td><td>11.3287 ns</td><td>14.1963 ns</td><td>14.9510 ns</td><td>15.2528 ns</td><td>15.5547 ns</td><td>69154117.21</td><td>1.00</td><td>0.00</td><td>0.03 kB</td>
-</tr><tr><td>Hotfix</td><td>15.3086 ns</td><td>0.8522 ns</td><td>0.3784 ns</td><td>0.1430 ns</td><td>14.7912 ns</td><td>15.0930 ns</td><td>15.0930 ns</td><td>15.6968 ns</td><td>15.6968 ns</td><td>65322570.79</td><td>1.07</td><td>0.12</td><td>0.03 kB</td>
+</thead><tbody><tr><td>Standard</td><td>26.5307 ns</td><td>0.1906 ns</td><td>0.1592 ns</td><td>0.0441 ns</td><td>26.3598 ns</td><td>26.3825 ns</td><td>26.4795 ns</td><td>26.6694 ns</td><td>26.8031 ns</td><td>37692117.06</td><td>1.00</td><td>0.00</td><td>0.0068</td><td>0 GB</td>
+</tr><tr><td>Hotfix</td><td>19.1744 ns</td><td>0.3250 ns</td><td>0.3040 ns</td><td>0.0785 ns</td><td>18.7622 ns</td><td>18.9578 ns</td><td>19.1217 ns</td><td>19.3635 ns</td><td>19.7573 ns</td><td>52152996.62</td><td>0.72</td><td>0.01</td><td>0.0072</td><td>0 GB</td>
 </tr></tbody></table>
 </body>
 </html>

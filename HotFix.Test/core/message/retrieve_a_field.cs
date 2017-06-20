@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using FluentAssertions;
 using HotFix.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,7 +22,8 @@ namespace HotFix.Test.core.message
         [TestMethod]
         public void succeeds_when_the_field_exists()
         {
-            Message.Parse(Logon);
+            var bytes = Encoding.ASCII.GetBytes(Logon);
+            Message.Parse(bytes, 0, bytes.Length);
 
             Message[  8].AsString.Should().Be("FIX.4.2");
             Message[  9].AsString.Should().Be("70");

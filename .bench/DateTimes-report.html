@@ -15,19 +15,17 @@
 <pre><code>
 BenchmarkDotNet=v0.10.4, OS=Windows 10.0.10586
 Processor=Intel Core i7-3770 CPU 3.40GHz (Ivy Bridge), ProcessorCount=8
-Frequency=3316022 Hz, Resolution=301.5662 ns, Timer=TSC
+Frequency=3312788 Hz, Resolution=301.8605 ns, Timer=TSC
   [Host]     : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
-  Job-LJQWSI : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
+  DefaultJob : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
 </code></pre>
-<pre><code>InvocationCount=1000  LaunchCount=1  RunStrategy=Throughput  
-TargetCount=10  UnrollFactor=1  WarmupCount=5  
-</code></pre>
+<pre><code></code></pre>
 
 <table>
-<thead><tr><th>Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>StdErr</th><th>  Min</th><th>   Q1</th><th>Median</th><th>   Q3</th><th>  Max</th><th> Op/s</th><th>Scaled</th><th>ScaledSD</th><th>Allocated</th>
+<thead><tr><th>Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>StdErr</th><th>  Min</th><th>   Q1</th><th>Median</th><th>   Q3</th><th>  Max</th><th>Op/s</th><th>Scaled</th><th>ScaledSD</th><th>Gen 0</th><th>Allocated</th>
 </tr>
-</thead><tbody><tr><td>Standard</td><td>782.1369 ns</td><td>32.9629 ns</td><td>19.6157 ns</td><td>6.5386 ns</td><td>758.8158 ns</td><td>768.9183 ns</td><td>773.2910 ns</td><td>795.3053 ns</td><td>822.4463 ns</td><td>1278548.47</td><td>1.00</td><td>0.00</td><td>0 kB</td>
-</tr><tr><td>Hotfix</td><td>58.1467 ns</td><td>1.5386 ns</td><td>1.0177 ns</td><td>0.3218 ns</td><td>57.0912 ns</td><td>57.0912 ns</td><td>58.2975 ns</td><td>58.9006 ns</td><td>59.5038 ns</td><td>17197876.39</td><td>0.07</td><td>0.00</td><td>0 kB</td>
+</thead><tbody><tr><td>Standard</td><td>806.8647 ns</td><td>7.8552 ns</td><td>7.3478 ns</td><td>1.8972 ns</td><td>798.9380 ns</td><td>800.6865 ns</td><td>804.5970 ns</td><td>812.9705 ns</td><td>824.3249 ns</td><td>1239365.18</td><td>1.00</td><td>0.00</td><td>0.0045</td><td>0.07 kB</td>
+</tr><tr><td>Hotfix</td><td>57.8101 ns</td><td>0.3910 ns</td><td>0.3466 ns</td><td>0.0926 ns</td><td>57.3533 ns</td><td>57.5079 ns</td><td>57.8991 ns</td><td>58.1409 ns</td><td>58.3507 ns</td><td>17298016.1</td><td>0.07</td><td>0.00</td><td>-</td><td>0 kB</td>
 </tr></tbody></table>
 </body>
 </html>

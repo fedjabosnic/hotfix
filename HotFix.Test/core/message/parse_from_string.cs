@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using FluentAssertions;
 using HotFix.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -21,7 +22,7 @@ namespace HotFix.Test.core.message
         [TestMethod]
         public void succeeds_when_the_message_is_valid()
         {
-            Message.Parse(Logon);
+            Message.Parse(Encoding.ASCII.GetBytes(Logon), 0, Logon.Length);
 
             Message.Valid.Should().Be(true);
             Message.Count.Should().Be(11);
@@ -32,7 +33,7 @@ namespace HotFix.Test.core.message
         {
             Logon = Logon.Replace("8=FIX.4.2\u0001", "");
 
-            Message.Parse(Logon);
+            Message.Parse(Encoding.ASCII.GetBytes(Logon), 0, Logon.Length);
 
             Message.Valid.Should().Be(false);
             Message.Count.Should().Be(0);
@@ -43,7 +44,7 @@ namespace HotFix.Test.core.message
         {
             Logon = Logon.Replace("9=70\u0001", "");
 
-            Message.Parse(Logon);
+            Message.Parse(Encoding.ASCII.GetBytes(Logon), 0, Logon.Length);
 
             Message.Valid.Should().Be(false);
             Message.Count.Should().Be(0);
@@ -54,7 +55,7 @@ namespace HotFix.Test.core.message
         {
             Logon = Logon.Replace("35=A\u0001", "");
 
-            Message.Parse(Logon);
+            Message.Parse(Encoding.ASCII.GetBytes(Logon), 0, Logon.Length);
 
             Message.Valid.Should().Be(false);
             Message.Count.Should().Be(0);
@@ -65,7 +66,7 @@ namespace HotFix.Test.core.message
         {
             Logon = Logon.Replace("10=231\u0001", "");
 
-            Message.Parse(Logon);
+            Message.Parse(Encoding.ASCII.GetBytes(Logon), 0, Logon.Length);
 
             Message.Valid.Should().Be(false);
             Message.Count.Should().Be(0);
@@ -76,7 +77,7 @@ namespace HotFix.Test.core.message
         {
             Logon = Logon.Replace("34=1\u0001", "=1\u0001");
 
-            Message.Parse(Logon);
+            Message.Parse(Encoding.ASCII.GetBytes(Logon), 0, Logon.Length);
 
             Message.Valid.Should().Be(false);
             Message.Count.Should().Be(0);
@@ -87,7 +88,7 @@ namespace HotFix.Test.core.message
         {
             Logon = Logon.Replace("9=70\u0001", "9=81\u0001");
 
-            Message.Parse(Logon);
+            Message.Parse(Encoding.ASCII.GetBytes(Logon), 0, Logon.Length);
 
             Message.Valid.Should().Be(false);
             Message.Count.Should().Be(0);
@@ -98,7 +99,7 @@ namespace HotFix.Test.core.message
         {
             Logon = Logon.Replace("10=231\u0001", "10=100\u0001");
 
-            Message.Parse(Logon);
+            Message.Parse(Encoding.ASCII.GetBytes(Logon), 0, Logon.Length);
 
             Message.Valid.Should().Be(false);
             Message.Count.Should().Be(0);
@@ -109,7 +110,7 @@ namespace HotFix.Test.core.message
         {
             Logon = Logon.Replace("34=1\u0001", "3X=1\u0001");
 
-            Message.Parse(Logon);
+            Message.Parse(Encoding.ASCII.GetBytes(Logon), 0, Logon.Length);
 
             Message.Valid.Should().Be(false);
             Message.Count.Should().Be(0);
@@ -120,7 +121,7 @@ namespace HotFix.Test.core.message
         {
             Logon = Logon.Replace("34=1\u0001", "34=\u0001");
 
-            Message.Parse(Logon);
+            Message.Parse(Encoding.ASCII.GetBytes(Logon), 0, Logon.Length);
 
             Message.Valid.Should().Be(false);
             Message.Count.Should().Be(0);

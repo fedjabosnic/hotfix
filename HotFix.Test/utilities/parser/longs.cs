@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using FluentAssertions;
 using HotFix.Utilities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -11,31 +12,31 @@ namespace HotFix.Test.utilities.parser
         [TestMethod]
         public void zero()
         {
-            "0".GetLong().Should().Be(0);
+            Encoding.ASCII.GetBytes("0").GetLong().Should().Be(0);
         }
 
         [TestMethod]
         public void positive()
         {
-            "1234567890987654321".GetLong().Should().Be(1234567890987654321L);
+            Encoding.ASCII.GetBytes("1234567890987654321").GetLong().Should().Be(1234567890987654321L);
         }
 
         [TestMethod]
         public void positive_with_leading_zeros()
         {
-            "0001234567890987654321".GetLong().Should().Be(1234567890987654321L);
+            Encoding.ASCII.GetBytes("0001234567890987654321").GetLong().Should().Be(1234567890987654321L);
         }
 
         [TestMethod]
         public void negative()
         {
-            "-1234567890987654321".GetLong().Should().Be(-1234567890987654321L);
+            Encoding.ASCII.GetBytes("-1234567890987654321").GetLong().Should().Be(-1234567890987654321L);
         }
 
         [TestMethod]
         public void negative_with_leading_zeros()
         {
-            "-0001234567890987654321".GetLong().Should().Be(-1234567890987654321L);
+            Encoding.ASCII.GetBytes("-0001234567890987654321").GetLong().Should().Be(-1234567890987654321L);
         }
     }
 }

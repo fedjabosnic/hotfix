@@ -24,13 +24,15 @@ namespace HotFix.Core
         public void Run()
         {
             var buffer = new byte[Configuration.InboundBufferSize];
-            var builder = new StringBuilder(Configuration.InboundBufferSize);
+            var builder = new byte[Configuration.InboundBufferSize];
 
             // Logon
             Send("A", $"98=0|108={Configuration.HeartbeatInterval}|141=Y|");
 
             var tail = 0;
             var head = 0;
+            var nose = 0;
+
             var heartbeat = DateTime.UtcNow;
 
             while (true)
@@ -44,15 +46,11 @@ namespace HotFix.Core
 
                 try
                 {
-                    var read = Transport.Inbound.Read(buffer, head, buffer.Length - head);
-
-                    head += read;
+                    head += Transport.Inbound.Read(buffer, head, buffer.Length - head);
 
                     for (; tail < head; tail++)
                     {
-                        var c = (char)buffer[tail];
-
-                        builder.Append(c);
+                        var c = (char)(builder[nose++] = buffer[tail]);
 
                         if (c == '\u0001')
                         {
@@ -63,14 +61,14 @@ namespace HotFix.Core
                                 try
                                 {
                                     // Parse message
-                                    InboundMessage.Parse(builder.ToString());
+                                    InboundMessage.Parse(builder, 0, nose);
 
                                     // Process message
                                     Process(InboundMessage);
                                 }
                                 finally
                                 {
-                                    builder.Clear();
+                                    nose = 0;
                                 }
                             }
                         }
