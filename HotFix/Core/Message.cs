@@ -1,41 +1,51 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace HotFix.Core
 {
     public class Message
     {
-        internal string Raw { get; private set; }
-        internal Field[] Fields { get; private set; }
+        internal byte[] Raw { get; private set; }
+        internal int Length { get; private set; }
 
+        internal Field[] Fields { get; private set; }
         public int Count { get; private set; }
+
         public bool Valid { get; private set; }
 
         public Message()
         {
+            Raw = new byte[4096];
             Fields = new Field[1000];
         }
 
         /// <summary>
-        /// Parses a message from a string, expecting an entire message to be provided as a string. Any parsing errors will
-        /// result in the message being invalid where the Valid property will return false and no fields will be accessible.
+        /// Parses a message from a byte array, expecting an entire message to be available at the specified offset and count.
+        /// Any parsing errors will result in the message being invalid where the Valid property will return false and no fields
+        /// will be accessible.
         /// </summary>
         /// <param name="message">The message to parse.</param>
+        /// <param name="offset"></param>
+        /// <param name="count"></param>
         /// <returns>A reference to this instance, built from the parsed message.</returns>
-        public Message Parse(string message)
+        public Message Parse(byte[] message, int offset, int count)
         {
             try
             {
-                Raw = message;
+                // TODO: Verify performance impact...
+                Buffer.BlockCopy(message, offset, Raw, 0, count);
+
+                Length = count;
                 Count = 0;
 
                 var length = 0;
                 var checksum = 0;
 
-                for (var position = 0; position < message.Length; position++)
+                for (var position = 0; position < Length; position++)
                 {
-                    var field = ParseField(message, ref position);
+                    var field = ParseField(Raw, ref position);
 
                     Fields[Count++] = field;
 
@@ -74,7 +84,7 @@ namespace HotFix.Core
         /// <param name="position">The position to parse from.</param>
         /// <returns>The parsed field.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Field ParseField(string message, ref int position)
+        private Field ParseField(byte[] message, ref int position)
         {
             var length = 0;
             var checksum = 0;
@@ -97,11 +107,11 @@ namespace HotFix.Core
         /// <param name="checksum">The current checksum of the whole field</param>
         /// <returns>The tag number as an integer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private int ParseTag(string message, ref int position, ref int length, ref int checksum)
+        private int ParseTag(byte[] message, ref int position, ref int length, ref int checksum)
         {
             var tag = 0;
 
-            for (; position < message.Length; position++)
+            for (; position < Length; position++)
             {
                 var b = message[position];
 
@@ -131,11 +141,11 @@ namespace HotFix.Core
         /// <param name="checksum">The current checksum of the whole field</param>
         /// <returns>The value as a segment of the original message.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Segment ParseValue(string message, ref int position, ref int length, ref int checksum)
+        private Segment ParseValue(byte[] message, ref int position, ref int length, ref int checksum)
         {
             var offset = position;
 
-            for (; position < message.Length; position++)
+            for (; position < Length; position++)
             {
                 var b = message[position];
 
@@ -206,7 +216,7 @@ namespace HotFix.Core
 
         public override string ToString()
         {
-            return Raw;
+            return Encoding.ASCII.GetString(Raw, 0, Length);
         }
     }
 }

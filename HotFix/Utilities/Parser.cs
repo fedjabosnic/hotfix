@@ -14,7 +14,7 @@ namespace HotFix.Utilities
         /// <param name="source">The source string to parse.</param>
         /// <returns>The parsed integer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int GetInt(this string source)
+        public static int GetInt(this byte[] source)
         {
             return source.GetInt(0, source.Length);
         }
@@ -30,7 +30,7 @@ namespace HotFix.Utilities
         /// <param name="count">The number of characters to parse.</param>
         /// <returns>The parsed integer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int GetInt(this string source, int offset, int count)
+        public static int GetInt(this byte[] source, int offset, int count)
         {
             var value = 0;
             var sign = source[offset] == '-' ? -1 : +1;
@@ -59,7 +59,7 @@ namespace HotFix.Utilities
         /// <param name="source">The source string to parse.</param>
         /// <returns>The parsed integer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long GetLong(this string source)
+        public static long GetLong(this byte[] source)
         {
             return source.GetLong(0, source.Length);
         }
@@ -75,7 +75,7 @@ namespace HotFix.Utilities
         /// <param name="count">The number of characters to parse.</param>
         /// <returns>The parsed integer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long GetLong(this string source, int offset, int count)
+        public static long GetLong(this byte[] source, int offset, int count)
         {
             var value = 0L;
             var sign = source[offset] == '-' ? -1 : +1;
@@ -104,7 +104,7 @@ namespace HotFix.Utilities
         /// <param name="source">The source string to parse.</param>
         /// <returns>The parsed double.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double GetFloat(this string source)
+        public static double GetFloat(this byte[] source)
         {
             return source.GetFloat(0, source.Length);
         }
@@ -120,7 +120,7 @@ namespace HotFix.Utilities
         /// <param name="count">The number of characters to parse.</param>
         /// <returns>The parsed double.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double GetFloat(this string source, int offset, int count)
+        public static double GetFloat(this byte[] source, int offset, int count)
         {
             var value = 0L;
             var exponent = 0d;
@@ -159,7 +159,7 @@ namespace HotFix.Utilities
         /// <param name="source">The source string to parse.</param>
         /// <returns>The parsed string.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetString(this string source)
+        public static string GetString(this byte[] source)
         {
             return source.GetString(0, source.Length);
         }
@@ -175,9 +175,20 @@ namespace HotFix.Utilities
         /// <param name="count">The number of characters to parse.</param>
         /// <returns>The parsed string.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetString(this string source, int offset, int count)
+        public static unsafe string GetString(this byte[] source, int offset, int count)
         {
-            return source.Substring(offset, count);
+            char* chars = stackalloc char[count + 1];
+
+            for (var i = 0; i < count; i++)
+            {
+                *(chars + i) = (char)source[offset + i];
+            }
+
+            chars[count] = '\0';
+
+            var s = new string(chars);
+
+            return s;
         }
 
         /// <summary>
@@ -189,7 +200,7 @@ namespace HotFix.Utilities
         /// <param name="source">The source string to parse.</param>
         /// <returns>The parsed datetime.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DateTime GetDateTime(this string source)
+        public static DateTime GetDateTime(this byte[] source)
         {
             return source.GetDateTime(0, source.Length);
         }
@@ -205,7 +216,7 @@ namespace HotFix.Utilities
         /// <param name="count">The number of characters to parse.</param>
         /// <returns>The parsed datetime.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DateTime GetDateTime(this string source, int offset, int count)
+        public static DateTime GetDateTime(this byte[] source, int offset, int count)
         {
             if (count != 17 && count != 21) throw new Exception("Not a valid datetime");
 

@@ -15,19 +15,17 @@
 <pre><code>
 BenchmarkDotNet=v0.10.4, OS=Windows 10.0.10586
 Processor=Intel Core i7-3770 CPU 3.40GHz (Ivy Bridge), ProcessorCount=8
-Frequency=3316022 Hz, Resolution=301.5662 ns, Timer=TSC
+Frequency=3312788 Hz, Resolution=301.8605 ns, Timer=TSC
   [Host]     : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
-  Job-LJQWSI : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
+  DefaultJob : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
 </code></pre>
-<pre><code>InvocationCount=1000  LaunchCount=1  RunStrategy=Throughput  
-TargetCount=10  UnrollFactor=1  WarmupCount=5  
-</code></pre>
+<pre><code></code></pre>
 
 <table>
-<thead><tr><th>Method</th><th>Mean</th><th>Error</th><th>StdDev</th><th>StdErr</th><th> Min</th><th>  Q1</th><th>Median</th><th>  Q3</th><th> Max</th><th>  Op/s</th><th>Scaled</th><th>ScaledSD</th><th>Allocated</th>
+<thead><tr><th>Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>StdErr</th><th>  Min</th><th>   Q1</th><th>Median</th><th>   Q3</th><th>  Max</th><th>  Op/s</th><th>Scaled</th><th>ScaledSD</th><th>Gen 0</th><th>Allocated</th>
 </tr>
-</thead><tbody><tr><td>Standard</td><td>97.5717 ns</td><td>1.7599 ns</td><td>1.1641 ns</td><td>0.3681 ns</td><td>96.2750 ns</td><td>96.8781 ns</td><td>97.1797 ns</td><td>98.6875 ns</td><td>99.5922 ns</td><td>10248870.35</td><td>1.00</td><td>0.00</td><td>0 kB</td>
-</tr><tr><td>Hotfix</td><td>9.2882 ns</td><td>1.7361 ns</td><td>1.1483 ns</td><td>0.3631 ns</td><td>7.6296 ns</td><td>8.2328 ns</td><td>9.7406 ns</td><td>9.7406 ns</td><td>11.2484 ns</td><td>107663023.35</td><td>0.10</td><td>0.01</td><td>0 kB</td>
+</thead><tbody><tr><td>Standard</td><td>129.8995 ns</td><td>1.4792 ns</td><td>1.3836 ns</td><td>0.3573 ns</td><td>128.6132 ns</td><td>128.9361 ns</td><td>129.4471 ns</td><td>130.7102 ns</td><td>132.8646 ns</td><td>7698259.74</td><td>1.00</td><td>0.00</td><td>0.0062</td><td>0.04 kB</td>
+</tr><tr><td>Hotfix</td><td>9.1639 ns</td><td>0.1100 ns</td><td>0.1029 ns</td><td>0.0266 ns</td><td>9.0762 ns</td><td>9.0867 ns</td><td>9.1243 ns</td><td>9.2364 ns</td><td>9.4178 ns</td><td>109124357.92</td><td>0.07</td><td>0.00</td><td>-</td><td>0 kB</td>
 </tr></tbody></table>
 </body>
 </html>

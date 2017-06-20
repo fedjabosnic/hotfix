@@ -5,7 +5,7 @@ namespace HotFix.Core
 {
     public struct Field
     {
-        private readonly string _message;
+        private readonly byte[] _message;
         private readonly Segment _value;
 
         public int Tag { get; }
@@ -18,7 +18,7 @@ namespace HotFix.Core
         public string AsString => _message.GetString(_value.Offset, _value.Length);
         public DateTime AsDateTime => _message.GetDateTime(_value.Offset, _value.Length);
 
-        public Field(string message, int tag, Segment value, int length, int checksum)
+        public Field(byte[] message, int tag, Segment value, int length, int checksum)
         {
             _message = message;
             _value = value;
