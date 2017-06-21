@@ -11,6 +11,8 @@ namespace HotFix.Benchmark
     {
         static void Main(string[] args)
         {
+            Directory.Delete(@"..\..\..\.bench", true);
+
             BenchmarkRunner.Run<basic>();
             BenchmarkRunner.Run<parsing_messages>();
             BenchmarkRunner.Run<writing_messages>();
@@ -25,7 +27,6 @@ namespace HotFix.Benchmark
             BenchmarkRunner.Run<writing_strings>();
             BenchmarkRunner.Run<writing_datetimes>();
 
-            Directory.Delete(@"..\..\..\.bench", true);
             Directory.Move(@"BenchmarkDotNet.Artifacts\results", @"..\..\..\.bench");
         }
     }
