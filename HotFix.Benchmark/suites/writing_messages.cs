@@ -17,158 +17,154 @@ namespace HotFix.Benchmark.suites
         private readonly DateTime _transactTime = DateTime.Parse("2017/05/31 08:18:01.767");
         private readonly DateTime _tradeDate = DateTime.Parse("2017/05/31");
 
+        private readonly MessageWriter _message = new MessageWriter(1000, "FIX.4.2");
+
         [Benchmark]
         public void small()
         {
-            var message = new MessageWriter(1000, "FIX.4.2");
+            _message.Prepare("0");
+            _message.Set(34, 8059);
+            _message.Set(52, _sendingTime);
+            _message.Set(49, "SENDER....");
+            _message.Set(56, "RECEIVER.....");
 
-            message.Prepare("0");
-            message.Set(34, 8059);
-            message.Set(52, _sendingTime);
-            message.Set(49, "SENDER....");
-            message.Set(56, "RECEIVER.....");
-
-            message.Build();
+            _message.Build();
         }
 
         [Benchmark]
         public void medium()
         {
-            var message = new MessageWriter(1000, "FIX.4.2");
+            _message.Prepare("8");
+            _message.Set(34, 8059);
+            _message.Set(52, _sendingTime);
+            _message.Set(49, "SENDER....");
+            _message.Set(56, "RECEIVER.....");
+            _message.Set(20, 0);
+            _message.Set(39, 2);
+            _message.Set(150, 2);
+            _message.Set(17, "U201:053117:00000079:B");
+            _message.Set(40, 2);
+            _message.Set(55, "EUR/CAD");
+            _message.Set(54, 1);
+            _message.Set(38, 900000); //f
+            _message.Set(151, 0); //f
+            _message.Set(14, 900000); //f
+            _message.Set(32, 100000); //f
+            _message.Set(32, 1); //f 1.503850
+            _message.Set(6, 1); //f 1.503940
+            _message.Set(64, _futSettleDate); // should be in YYYYMMDD format
+            _message.Set(60, _transactTime);
+            _message.Set(75, _tradeDate); // should be in YYYYMMDD format
+            _message.Set(9200, 'S');
+            _message.Set(9300, 647);
+            _message.Set(9500, 0); //f
+            _message.Set(37, "0804188884");
+            _message.Set(15, "EUR");
+            _message.Set(44, 1); //f 1.504200
 
-            message.Prepare("8");
-            message.Set(34, 8059);
-            message.Set(52, _sendingTime);
-            message.Set(49, "SENDER....");
-            message.Set(56, "RECEIVER.....");
-            message.Set(20, 0);
-            message.Set(39, 2);
-            message.Set(150, 2);
-            message.Set(17, "U201:053117:00000079:B");
-            message.Set(40, 2);
-            message.Set(55, "EUR/CAD");
-            message.Set(54, 1);
-            message.Set(38, 900000); //f
-            message.Set(151, 0); //f
-            message.Set(14, 900000); //f
-            message.Set(32, 100000); //f
-            message.Set(32, 1); //f 1.503850
-            message.Set(6, 1); //f 1.503940
-            message.Set(64, _futSettleDate); // should be in YYYYMMDD format
-            message.Set(60, _transactTime);
-            message.Set(75, _tradeDate); // should be in YYYYMMDD format
-            message.Set(9200, 'S');
-            message.Set(9300, 647);
-            message.Set(9500, 0); //f
-            message.Set(37, "0804188884");
-            message.Set(15, "EUR");
-            message.Set(44, 1); //f 1.504200
-
-            message.Build();
+            _message.Build();
         }
 
         [Benchmark]
         public void large()
         {
-            var message = new MessageWriter(1000, "FIX.4.2");
+            _message.Prepare("0");
+            _message.Set(34, 8059);
+            _message.Set(52, _sendingTime);
+            _message.Set(49, "SENDER....");
+            _message.Set(56, "RECEIVER.....");
+            _message.Set(262, "c6424b19-af74-4c17-8266-9c52ca583ad2");
+            _message.Set(268, 8);
 
-            message.Prepare("0");
-            message.Set(34, 8059);
-            message.Set(52, _sendingTime);
-            message.Set(49, "SENDER....");
-            message.Set(56, "RECEIVER.....");
-            message.Set(262, "c6424b19-af74-4c17-8266-9c52ca583ad2");
-            message.Set(268, 8);
+            _message.Set(279, 2);
+            _message.Set(55, "GBP/JPY");
+            _message.Set(269, 0);
+            _message.Set(278, "1211918436");
+            _message.Set(270, 144); //f 144.808000
+            _message.Set(271, 1000000); //f
+            _message.Set(110, 0); //f
+            _message.Set(15, "GBP");
+            _message.Set(282, 290);
 
-            message.Set(279, 2);
-            message.Set(55, "GBP/JPY");
-            message.Set(269, 0);
-            message.Set(278, "1211918436");
-            message.Set(270, 144); //f 144.808000
-            message.Set(271, 1000000); //f
-            message.Set(110, 0); //f
-            message.Set(15, "GBP");
-            message.Set(282, 290);
+            _message.Set(279, 2);
+            _message.Set(55, "GBP/JPY");
+            _message.Set(269, 0);
+            _message.Set(278, "1211918437");
+            _message.Set(270, 144); //f 144.802000
+            _message.Set(271, 2000000); //f
+            _message.Set(110, 0); //f
+            _message.Set(15, "GBP");
+            _message.Set(282, 290);
 
-            message.Set(279, 2);
-            message.Set(55, "GBP/JPY");
-            message.Set(269, 0);
-            message.Set(278, "1211918437");
-            message.Set(270, 144); //f 144.802000
-            message.Set(271, 2000000); //f
-            message.Set(110, 0); //f
-            message.Set(15, "GBP");
-            message.Set(282, 290);
+            _message.Set(279, 0);
+            _message.Set(55, "GBP/JPY");
+            _message.Set(269, 0);
+            _message.Set(278, "1211918501");
+            _message.Set(270, 144); //f 144.808000
+            _message.Set(271, 1000000); //f
+            _message.Set(110, 0); //f
+            _message.Set(15, "GBP");
+            _message.Set(282, 290);
+            _message.Set(735, 1);
+            _message.Set(695, 5);
 
-            message.Set(279, 0);
-            message.Set(55, "GBP/JPY");
-            message.Set(269, 0);
-            message.Set(278, "1211918501");
-            message.Set(270, 144); //f 144.808000
-            message.Set(271, 1000000); //f
-            message.Set(110, 0); //f
-            message.Set(15, "GBP");
-            message.Set(282, 290);
-            message.Set(735, 1);
-            message.Set(695, 5);
+            _message.Set(279, 0);
+            _message.Set(55, "GBP/JPY");
+            _message.Set(269, 0);
+            _message.Set(278, "1211918502");
+            _message.Set(270, 144); //f 144.808000
+            _message.Set(271, 1000000); //f
+            _message.Set(110, 0); //f
+            _message.Set(15, "GBP");
+            _message.Set(282, 290);
+            _message.Set(735, 1);
+            _message.Set(695, 5);
 
-            message.Set(279, 0);
-            message.Set(55, "GBP/JPY");
-            message.Set(269, 0);
-            message.Set(278, "1211918502");
-            message.Set(270, 144); //f 144.808000
-            message.Set(271, 1000000); //f
-            message.Set(110, 0); //f
-            message.Set(15, "GBP");
-            message.Set(282, 290);
-            message.Set(735, 1);
-            message.Set(695, 5);
+            _message.Set(279, 2);
+            _message.Set(55, "GBP/JPY");
+            _message.Set(269, 0);
+            _message.Set(278, "1211918436");
+            _message.Set(270, 144); //f 144.808000
+            _message.Set(271, 1000000); //f
+            _message.Set(110, 0); //f
+            _message.Set(15, "GBP");
+            _message.Set(282, 290);
 
-            message.Set(279, 2);
-            message.Set(55, "GBP/JPY");
-            message.Set(269, 0);
-            message.Set(278, "1211918436");
-            message.Set(270, 144); //f 144.808000
-            message.Set(271, 1000000); //f
-            message.Set(110, 0); //f
-            message.Set(15, "GBP");
-            message.Set(282, 290);
+            _message.Set(279, 2);
+            _message.Set(55, "GBP/JPY");
+            _message.Set(269, 0);
+            _message.Set(278, "1211918436");
+            _message.Set(270, 144); //f 144.808000
+            _message.Set(271, 1000000); //f
+            _message.Set(110, 0); //f
+            _message.Set(15, "GBP");
+            _message.Set(282, 290);
 
-            message.Set(279, 2);
-            message.Set(55, "GBP/JPY");
-            message.Set(269, 0);
-            message.Set(278, "1211918436");
-            message.Set(270, 144); //f 144.808000
-            message.Set(271, 1000000); //f
-            message.Set(110, 0); //f
-            message.Set(15, "GBP");
-            message.Set(282, 290);
+            _message.Set(279, 2);
+            _message.Set(55, "GBP/JPY");
+            _message.Set(269, 0);
+            _message.Set(278, "1211918436");
+            _message.Set(270, 144); //f 144.808000
+            _message.Set(271, 1000000); //f
+            _message.Set(110, 0); //f
+            _message.Set(15, "GBP");
+            _message.Set(282, 290);
+            _message.Set(735, 1);
+            _message.Set(695, 5);
 
-            message.Set(279, 2);
-            message.Set(55, "GBP/JPY");
-            message.Set(269, 0);
-            message.Set(278, "1211918436");
-            message.Set(270, 144); //f 144.808000
-            message.Set(271, 1000000); //f
-            message.Set(110, 0); //f
-            message.Set(15, "GBP");
-            message.Set(282, 290);
-            message.Set(735, 1);
-            message.Set(695, 5);
+            _message.Set(279, 2);
+            _message.Set(55, "GBP/JPY");
+            _message.Set(269, 0);
+            _message.Set(278, "1211918436");
+            _message.Set(270, 144); //f 144.808000
+            _message.Set(271, 1000000); //f
+            _message.Set(110, 0); //f
+            _message.Set(15, "GBP");
+            _message.Set(282, 290);
+            _message.Set(735, 1);
+            _message.Set(695, 5);
 
-            message.Set(279, 2);
-            message.Set(55, "GBP/JPY");
-            message.Set(269, 0);
-            message.Set(278, "1211918436");
-            message.Set(270, 144); //f 144.808000
-            message.Set(271, 1000000); //f
-            message.Set(110, 0); //f
-            message.Set(15, "GBP");
-            message.Set(282, 290);
-            message.Set(735, 1);
-            message.Set(695, 5);
-
-            message.Build();
+            _message.Build();
         }
     }
 }
