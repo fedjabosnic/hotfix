@@ -2,7 +2,7 @@
 <html lang='en'>
 <head>
 <meta charset='utf-8' />
-<title>Ints</title>
+<title>reading_ints</title>
 
 <style type="text/css">
 	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
@@ -15,7 +15,7 @@
 <pre><code>
 BenchmarkDotNet=v0.10.4, OS=Windows 10.0.10586
 Processor=Intel Core i7-3770 CPU 3.40GHz (Ivy Bridge), ProcessorCount=8
-Frequency=3312788 Hz, Resolution=301.8605 ns, Timer=TSC
+Frequency=3316018 Hz, Resolution=301.5665 ns, Timer=TSC
   [Host]     : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
   DefaultJob : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
 </code></pre>
@@ -24,8 +24,8 @@ Frequency=3312788 Hz, Resolution=301.8605 ns, Timer=TSC
 <table>
 <thead><tr><th>Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>StdErr</th><th>  Min</th><th>   Q1</th><th>Median</th><th>   Q3</th><th>  Max</th><th>  Op/s</th><th>Scaled</th><th>ScaledSD</th><th>Gen 0</th><th>Allocated</th>
 </tr>
-</thead><tbody><tr><td>Standard</td><td>129.8995 ns</td><td>1.4792 ns</td><td>1.3836 ns</td><td>0.3573 ns</td><td>128.6132 ns</td><td>128.9361 ns</td><td>129.4471 ns</td><td>130.7102 ns</td><td>132.8646 ns</td><td>7698259.74</td><td>1.00</td><td>0.00</td><td>0.0062</td><td>0.04 kB</td>
-</tr><tr><td>Hotfix</td><td>9.1639 ns</td><td>0.1100 ns</td><td>0.1029 ns</td><td>0.0266 ns</td><td>9.0762 ns</td><td>9.0867 ns</td><td>9.1243 ns</td><td>9.2364 ns</td><td>9.4178 ns</td><td>109124357.92</td><td>0.07</td><td>0.00</td><td>-</td><td>0 kB</td>
+</thead><tbody><tr><td>standard</td><td>130.2358 ns</td><td>1.1223 ns</td><td>0.9372 ns</td><td>0.2599 ns</td><td>128.9637 ns</td><td>129.1061 ns</td><td>130.5493 ns</td><td>130.8909 ns</td><td>131.9953 ns</td><td>7678381.06</td><td>1.00</td><td>0.00</td><td>0.0063</td><td>0.04 kB</td>
+</tr><tr><td>hotfix</td><td>9.1901 ns</td><td>0.0659 ns</td><td>0.0550 ns</td><td>0.0153 ns</td><td>9.0908 ns</td><td>9.1668 ns</td><td>9.1910 ns</td><td>9.2217 ns</td><td>9.2822 ns</td><td>108812548.87</td><td>0.07</td><td>0.00</td><td>-</td><td>0 kB</td>
 </tr></tbody></table>
 </body>
 </html>
