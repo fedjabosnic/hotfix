@@ -13,21 +13,21 @@ namespace HotFix.Benchmark.suites.reading
     [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 1000)]
     public class reading_datetimes
     {
-        public byte[] Raw { get; set; }
+        private byte[] _raw;
 
         [Setup]
         public void Setup()
         {
-            Raw = Encoding.ASCII.GetBytes("20170327-15:45:13.596");
+            _raw = Encoding.ASCII.GetBytes("20170327-15:45:13.596");
         }
 
         // NOTE: We return long here because returning datetime seems to cause allocation
         //       which is possibly an issue in the benchmarking library (investigate)
 
         [Benchmark(Baseline = true)]
-        public long standard() => DateTime.ParseExact(Encoding.ASCII.GetString(Raw), "yyyyMMdd-HH:mm:ss.fff", null).Ticks;
+        public long standard() => DateTime.ParseExact(Encoding.ASCII.GetString(_raw), "yyyyMMdd-HH:mm:ss.fff", null).Ticks;
 
         [Benchmark]
-        public long hotfix() => Raw.GetDateTime().Ticks;
+        public long hotfix() => _raw.GetDateTime().Ticks;
     }
 }

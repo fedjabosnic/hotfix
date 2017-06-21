@@ -13,9 +13,9 @@ namespace HotFix.Benchmark.suites
     [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 1000)]
     public class parsing_messages
     {
-        public byte[] Heartbeat { get; set; }
-        public byte[] ExecutionReport { get; set; }
-        public byte[] MarketDataIncrementalRefresh { get; set; }
+        private byte[] _heartbeat;
+        private byte[] _executionReport;
+        private byte[] _marketDataIncrementalRefresh;
 
         public Message Message { get; set; }
 
@@ -24,13 +24,13 @@ namespace HotFix.Benchmark.suites
         {
             Message = new Message();
 
-            Heartbeat =
+            _heartbeat =
                 Encoding.ASCII.GetBytes(
                     ("8=FIX.4.2|9=74|35=8|34=000008059|52=20170531-08:18:01.768|49=SENDER....|56=RECEIVER....." +
                     "|10=048|")
                 .Replace("|", "\u0001"));
 
-            ExecutionReport =
+            _executionReport =
                 Encoding.ASCII.GetBytes(
                     ("8=FIX.4.2|9=354|35=8|34=000008059|52=20170531-08:18:01.768|49=SENDER....|56=RECEIVER.....|20=0|39=2|150=2" +
                     "|17=U201:053117:00000079:B|40=2|55=EUR/CAD|54=1|38=000900000.00|151=000000000.00|14=000900000.00|32=000100000.00|31=00001.503850" +
@@ -38,7 +38,7 @@ namespace HotFix.Benchmark.suites
                     "|10=035|")
                 .Replace("|", "\u0001"));
 
-            MarketDataIncrementalRefresh = 
+            _marketDataIncrementalRefresh = 
                 Encoding.ASCII.GetBytes(
                     ("8=FIX.4.2|9=968|35=X|34=53677|52=20170525-00:55:16.153|49=SENDER..|56=RECEIVER..........|262=c6424b19-af74-4c17-8266-9c52ca583ad2" +
                     "|268=8" +
@@ -55,12 +55,12 @@ namespace HotFix.Benchmark.suites
         }
 
         [Benchmark]
-        public Message small() => Message.Parse(Heartbeat, 0, Heartbeat.Length);
+        public Message small() => Message.Parse(_heartbeat, 0, _heartbeat.Length);
 
         [Benchmark]
-        public Message medium() => Message.Parse(ExecutionReport, 0, ExecutionReport.Length);
+        public Message medium() => Message.Parse(_executionReport, 0, _executionReport.Length);
 
         [Benchmark]
-        public Message large() => Message.Parse(MarketDataIncrementalRefresh, 0, MarketDataIncrementalRefresh.Length);
+        public Message large() => Message.Parse(_marketDataIncrementalRefresh, 0, _marketDataIncrementalRefresh.Length);
     }
 }

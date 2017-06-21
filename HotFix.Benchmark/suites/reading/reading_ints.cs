@@ -13,18 +13,18 @@ namespace HotFix.Benchmark.suites.reading
     [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 1000)]
     public class reading_ints
     {
-        public byte[] Raw { get; set; }
+        private byte[] _raw;
 
         [Setup]
         public void Setup()
         {
-            Raw = Encoding.ASCII.GetBytes("12345");
+            _raw = Encoding.ASCII.GetBytes("12345");
         }
 
         [Benchmark(Baseline = true)]
-        public int standard() => int.Parse(Encoding.ASCII.GetString(Raw));
+        public int standard() => int.Parse(Encoding.ASCII.GetString(_raw));
 
         [Benchmark]
-        public int hotfix() => Raw.GetInt();
+        public int hotfix() => _raw.GetInt();
     }
 }

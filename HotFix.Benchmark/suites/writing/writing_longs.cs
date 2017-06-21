@@ -13,24 +13,24 @@ namespace HotFix.Benchmark.suites.writing
     [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 1000)]
     public class writing_longs
     {
-        public long Number { get; set; }
-        public byte[] Buffer { get; set; }
+        private long _number;
+        private byte[] _buffer;
 
         [Setup]
         public void Setup()
         {
-            Number = 1234567890987654321;
-            Buffer = new byte[19];
+            _number = 1234567890987654321;
+            _buffer = new byte[19];
         }
 
         [Benchmark(Baseline = true)]
         public int standard()
         {
-            var s = Number.ToString();
-            return Encoding.ASCII.GetBytes(s, 0, s.Length, Buffer, 0);
+            var s = _number.ToString();
+            return Encoding.ASCII.GetBytes(s, 0, s.Length, _buffer, 0);
         }
 
         [Benchmark]
-        public int hotfix() => Buffer.WriteLong(0, Number);
+        public int hotfix() => _buffer.WriteLong(0, _number);
     }
 }
