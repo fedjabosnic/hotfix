@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Text;
-using HotFix.Utilities;
+using HotFix.Encoding;
 
 namespace HotFix.Core
 {
@@ -115,6 +114,6 @@ namespace HotFix.Core
             return checksum % 256;
         }
 
-        public override string ToString() => Encoding.ASCII.GetString(_buffer, 0, _end);
+        public override string ToString() => System.Text.Encoding.ASCII.GetString(_buffer, 0, _end);
     }
 }

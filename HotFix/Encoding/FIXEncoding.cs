@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace HotFix.Utilities
+namespace HotFix.Encoding
 {
-    public static class Parser
+    public static class FIXEncoding
     {
         /// <summary>
         /// Parses an integer (Int32) from the provided string.

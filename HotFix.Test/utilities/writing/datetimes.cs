@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text;
 using FluentAssertions;
-using HotFix.Utilities;
+using HotFix.Encoding;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HotFix.Test.utilities.writing
@@ -22,7 +22,7 @@ namespace HotFix.Test.utilities.writing
         {
             var written = _buffer.WriteDateTime(1, DateTime.Parse("27/03/2017 15:45:13"));
 
-            Encoding.ASCII.GetString(_buffer).Should().Be("\0" + "20170327-15:45:13.000" + "\0");
+            System.Text.Encoding.ASCII.GetString(_buffer).Should().Be("\0" + "20170327-15:45:13.000" + "\0");
             written.Should().Be(21);
         }
 
@@ -31,7 +31,7 @@ namespace HotFix.Test.utilities.writing
         {
             var written = _buffer.WriteDateTime(1, DateTime.Parse("27/03/2017 15:45:13.123"));
 
-            Encoding.ASCII.GetString(_buffer).Should().Be("\0" + "20170327-15:45:13.123" + "\0");
+            System.Text.Encoding.ASCII.GetString(_buffer).Should().Be("\0" + "20170327-15:45:13.123" + "\0");
             written.Should().Be(21);
         }
 

@@ -25,13 +25,13 @@ namespace HotFix.Benchmark.suites
             Message = new Message();
 
             _heartbeat =
-                Encoding.ASCII.GetBytes(
+                System.Text.Encoding.ASCII.GetBytes(
                     ("8=FIX.4.2|9=74|35=8|34=000008059|52=20170531-08:18:01.768|49=SENDER....|56=RECEIVER....." +
                     "|10=048|")
                 .Replace("|", "\u0001"));
 
             _executionReport =
-                Encoding.ASCII.GetBytes(
+                System.Text.Encoding.ASCII.GetBytes(
                     ("8=FIX.4.2|9=354|35=8|34=000008059|52=20170531-08:18:01.768|49=SENDER....|56=RECEIVER.....|20=0|39=2|150=2" +
                     "|17=U201:053117:00000079:B|40=2|55=EUR/CAD|54=1|38=000900000.00|151=000000000.00|14=000900000.00|32=000100000.00|31=00001.503850" +
                     "|6=00001.503940|64=20170602|60=20170531-08:18:01.767|75=20170531|9200=S|9300=0647|9500=00000.000000|37=0804188884|15=EUR|44=00001.504200" +
@@ -39,7 +39,7 @@ namespace HotFix.Benchmark.suites
                 .Replace("|", "\u0001"));
 
             _marketDataIncrementalRefresh = 
-                Encoding.ASCII.GetBytes(
+                System.Text.Encoding.ASCII.GetBytes(
                     ("8=FIX.4.2|9=968|35=X|34=53677|52=20170525-00:55:16.153|49=SENDER..|56=RECEIVER..........|262=c6424b19-af74-4c17-8266-9c52ca583ad2" +
                     "|268=8" +
                     "|279=2|55=GBP/JPY|269=0|278=1211918436|270=144.808000|271=1000000.000000|110=0.000000|15=GBP|282=290" +

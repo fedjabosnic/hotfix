@@ -22,7 +22,7 @@ namespace HotFix.Test.core.message
         [TestMethod]
         public void returns_the_original_string()
         {
-            Message.Parse(Encoding.ASCII.GetBytes(Logon), 0, Logon.Length);
+            Message.Parse(System.Text.Encoding.ASCII.GetBytes(Logon), 0, Logon.Length);
 
             Message.ToString().Should().Be(Logon);
         }

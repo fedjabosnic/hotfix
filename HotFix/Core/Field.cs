@@ -1,5 +1,5 @@
 using System;
-using HotFix.Utilities;
+using HotFix.Encoding;
 
 namespace HotFix.Core
 {
