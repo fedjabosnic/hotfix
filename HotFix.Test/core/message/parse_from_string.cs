@@ -8,13 +8,13 @@ namespace HotFix.Test.core.message
     [TestClass]
     public class parse_from_string
     {
-        public Message Message { get; set; }
+        public FIXMessage Message { get; set; }
         public string Logon { get; set; }
 
         [TestInitialize]
         public void Setup()
         {
-            Message = new Message();
+            Message = new FIXMessage();
             Logon = "8=FIX.4.2|9=70|35=A|34=1|52=20170607-12:17:52.355|49=DAEV|56=TARGET|98=0|108=5|141=Y|10=231|".Replace("|", "\u0001");
         }
 

@@ -11,7 +11,7 @@ namespace HotFix.Test.core.messagewriter
         [TestMethod]
         public void should_work()
         {
-            var message = new MessageWriter(1000, "FIX.4.2");
+            var message = new FIXMessageWriter(1000, "FIX.4.2");
 
             message.Prepare("A");
             message.Set(49, "SERVER");
@@ -30,7 +30,7 @@ namespace HotFix.Test.core.messagewriter
         [TestMethod]
         public void allows_the_message_to_be_reused()
         {
-            var message = new MessageWriter(1000, "FIX.4.2");
+            var message = new FIXMessageWriter(1000, "FIX.4.2");
 
             // Prepare a message
             message.Prepare("A");

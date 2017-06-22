@@ -5,16 +5,16 @@ using HotFix.Transport;
 
 namespace HotFix.Core
 {
-    public class Session : IDisposable
+    public class FIXSession : IDisposable
     {
         public ITransport Transport { get; }
         public IConfiguration Configuration { get; }
 
-        public Message InboundMessage { get; } = new Message();
+        public FIXMessage InboundMessage { get; } = new FIXMessage();
 
-        public event Action<Message> Inbound;
+        public event Action<FIXMessage> Inbound;
 
-        public Session(ITransport transport, IConfiguration configuration)
+        public FIXSession(ITransport transport, IConfiguration configuration)
         {
             Transport = transport;
             Configuration = configuration;
@@ -86,7 +86,7 @@ namespace HotFix.Core
             }
         }
 
-        private void Process(Message message)
+        private void Process(FIXMessage message)
         {
             if (!message.Valid) return;
 

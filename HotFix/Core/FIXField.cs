@@ -3,7 +3,7 @@ using HotFix.Encoding;
 
 namespace HotFix.Core
 {
-    public struct Field
+    public struct FIXField
     {
         private readonly byte[] _message;
         private readonly Segment _value;
@@ -18,7 +18,7 @@ namespace HotFix.Core
         public string AsString => _message.ReadString(_value.Offset, _value.Length);
         public DateTime AsDateTime => _message.ReadDateTime(_value.Offset, _value.Length);
 
-        public Field(byte[] message, int tag, Segment value, int length, int checksum)
+        public FIXField(byte[] message, int tag, Segment value, int length, int checksum)
         {
             _message = message;
             _value = value;

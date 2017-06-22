@@ -3,7 +3,7 @@ using HotFix.Encoding;
 
 namespace HotFix.Core
 {
-    public class MessageWriter
+    public class FIXMessageWriter
     {
         private const byte SOH = (byte)'\u0001';
         private const byte EQL = (byte) '=';
@@ -16,7 +16,7 @@ namespace HotFix.Core
         private int _trailerEnd;
 
 
-        public MessageWriter(int maxLength, string beginString)
+        public FIXMessageWriter(int maxLength, string beginString)
         {
             _buffer = new byte[maxLength];
 

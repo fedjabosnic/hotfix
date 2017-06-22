@@ -17,7 +17,7 @@ namespace HotFix.Benchmark.suites
         public readonly DateTime TransactTime = DateTime.Parse("2017/05/31 08:18:01.767");
         public readonly DateTime TradeDate = DateTime.Parse("2017/05/31");
 
-        public readonly MessageWriter Message = new MessageWriter(1000, "FIX.4.2");
+        public readonly FIXMessageWriter Message = new FIXMessageWriter(1000, "FIX.4.2");
 
         [Benchmark]
         public void small()

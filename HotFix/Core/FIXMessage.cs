@@ -4,20 +4,20 @@ using System.Runtime.CompilerServices;
 
 namespace HotFix.Core
 {
-    public class Message
+    public class FIXMessage
     {
         internal byte[] Raw { get; private set; }
         internal int Length { get; private set; }
 
-        internal Field[] Fields { get; private set; }
+        internal FIXField[] Fields { get; private set; }
         public int Count { get; private set; }
 
         public bool Valid { get; private set; }
 
-        public Message()
+        public FIXMessage()
         {
             Raw = new byte[4096];
-            Fields = new Field[1000];
+            Fields = new FIXField[1000];
         }
 
         /// <summary>
@@ -29,7 +29,7 @@ namespace HotFix.Core
         /// <param name="offset"></param>
         /// <param name="count"></param>
         /// <returns>A reference to this instance, built from the parsed message.</returns>
-        public Message Parse(byte[] message, int offset, int count)
+        public FIXMessage Parse(byte[] message, int offset, int count)
         {
             try
             {
@@ -83,7 +83,7 @@ namespace HotFix.Core
         /// <param name="position">The position to parse from.</param>
         /// <returns>The parsed field.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Field ParseField(byte[] message, ref int position)
+        private FIXField ParseField(byte[] message, ref int position)
         {
             var length = 0;
             var checksum = 0;
@@ -93,7 +93,7 @@ namespace HotFix.Core
             var value = ParseValue(message, ref position, ref length, ref checksum);
 
             // Create the relevant field
-            return new Field(message, tag, value, length, checksum);
+            return new FIXField(message, tag, value, length, checksum);
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace HotFix.Core
         /// <param name="tag">The tag of the field to retrieve.</param>
         /// <param name="instance">The instance of the field (if there are multiple).</param>
         /// <returns>The field.</returns>
-        public Field this[int tag, int instance = 0]
+        public FIXField this[int tag, int instance = 0]
         {
             get
             {

@@ -22,7 +22,7 @@ namespace HotFix
             };
 
             var transport = new TcpTransport(configuration.Host, configuration.Port);
-            var session = new Session(transport, configuration);
+            var session = new FIXSession(transport, configuration);
 
             session.Run();
 

@@ -16,12 +16,12 @@ namespace HotFix.Benchmark.suites
         public byte[] ExecutionReport;
         public byte[] MarketDataIncrementalRefresh;
 
-        public Message Message;
+        public FIXMessage Message;
 
         [Setup]
         public void Setup()
         {
-            Message = new Message();
+            Message = new FIXMessage();
 
             Heartbeat =
                 System.Text.Encoding.ASCII.GetBytes(
@@ -54,12 +54,12 @@ namespace HotFix.Benchmark.suites
         }
 
         [Benchmark]
-        public Message small() => Message.Parse(Heartbeat, 0, Heartbeat.Length);
+        public FIXMessage small() => Message.Parse(Heartbeat, 0, Heartbeat.Length);
 
         [Benchmark]
-        public Message medium() => Message.Parse(ExecutionReport, 0, ExecutionReport.Length);
+        public FIXMessage medium() => Message.Parse(ExecutionReport, 0, ExecutionReport.Length);
 
         [Benchmark]
-        public Message large() => Message.Parse(MarketDataIncrementalRefresh, 0, MarketDataIncrementalRefresh.Length);
+        public FIXMessage large() => Message.Parse(MarketDataIncrementalRefresh, 0, MarketDataIncrementalRefresh.Length);
     }
 }
