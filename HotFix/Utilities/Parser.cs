@@ -394,11 +394,9 @@ namespace HotFix.Utilities
         }
 
         /// <summary>
-        /// Writes a double to the given byte array.
+        /// Writes a double to the given byte array. 
+        /// The number is rounded to 6 decimal places.
         /// </summary>
-        /// <remarks>
-        /// The number is printed to 6 decimal places.
-        /// </remarks>
         /// <param name="buffer">The buffer to write to.</param>
         /// <param name="position">The position to start writing.</param>
         /// <param name="value">The number to write.</param>
