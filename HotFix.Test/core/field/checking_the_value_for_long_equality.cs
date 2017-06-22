@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using FluentAssertions;
 using HotFix.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;

@@ -11,24 +11,24 @@ namespace HotFix.Benchmark.suites
     [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 10000)]
     public class basic
     {
-        private byte[] _bytes;
+        public byte[] Bytes;
 
         [Setup]
         public void Setup()
         {
-            _bytes = new byte[1024000];
+            Bytes = new byte[1024000];
         }
 
         [Benchmark]
         public string noop() => string.Empty;
 
         [Benchmark]
-        public byte indexing_first_item() => _bytes[0];
+        public byte indexing_first_item() => Bytes[0];
 
         [Benchmark]
-        public byte indexing_middle_item() => _bytes[512000];
+        public byte indexing_middle_item() => Bytes[512000];
 
         [Benchmark]
-        public byte indexing_last_item() => _bytes[1024000 - 1];
+        public byte indexing_last_item() => Bytes[1024000 - 1];
     }
 }

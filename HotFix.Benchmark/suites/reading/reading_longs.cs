@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Columns;
 using BenchmarkDotNet.Attributes.Jobs;
@@ -13,18 +12,18 @@ namespace HotFix.Benchmark.suites.reading
     [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 1000)]
     public class reading_longs
     {
-        private byte[] _raw;
+        public byte[] Raw;
 
         [Setup]
         public void Setup()
         {
-            _raw = System.Text.Encoding.ASCII.GetBytes("123456789");
+            Raw = System.Text.Encoding.ASCII.GetBytes("123456789");
         }
 
         [Benchmark(Baseline = true)]
-        public long standard() => long.Parse(System.Text.Encoding.ASCII.GetString(_raw));
+        public long standard() => long.Parse(System.Text.Encoding.ASCII.GetString(Raw));
 
         [Benchmark]
-        public long hotfix() => _raw.ReadLong();
+        public long hotfix() => Raw.ReadLong();
     }
 }

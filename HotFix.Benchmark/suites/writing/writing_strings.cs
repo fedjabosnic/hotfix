@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text;
 using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Columns;
 using BenchmarkDotNet.Attributes.Jobs;
@@ -13,23 +12,23 @@ namespace HotFix.Benchmark.suites.writing
     [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 1000)]
     public class writing_strings
     {
-        private string _string;
-        private byte[] _buffer;
+        public string String;
+        public byte[] Buffer;
 
         [Setup]
         public void Setup()
         {
-            _string = "random string";
-            _buffer = new byte[13];
+            String = "random string";
+            Buffer = new byte[13];
         }
 
         [Benchmark(Baseline = true)]
         public int standard()
         {
-            return System.Text.Encoding.ASCII.GetBytes(_string, 0, _string.Length, _buffer, 0);
+            return System.Text.Encoding.ASCII.GetBytes(String, 0, String.Length, Buffer, 0);
         }
 
         [Benchmark]
-        public int hotfix() => _buffer.WriteString(0, _string);
+        public int hotfix() => Buffer.WriteString(0, String);
     }
 }
