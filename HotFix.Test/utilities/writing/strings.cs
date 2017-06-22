@@ -31,8 +31,15 @@ namespace HotFix.Test.utilities.writing
         {
             var written = _buffer.WriteString(3, "string");
 
-            Encoding.ASCII.GetString(_buffer).Should().Be("\0\0\0string\0\0");
+            Encoding.ASCII.GetString(_buffer).Should().Be("\0\0\0" + "string" + "\0\0");
             written.Should().Be(6);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void out_of_bounds()
+        {
+            _buffer.WriteString(7, "string");
         }
     }
 }

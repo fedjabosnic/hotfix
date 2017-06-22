@@ -22,7 +22,7 @@ namespace HotFix.Test.utilities.writing
         {
             var written = _buffer.WriteInt(3, 0);
 
-            Encoding.ASCII.GetString(_buffer).Should().Be("\0\0\00\0\0\0\0\0\0\0");
+            Encoding.ASCII.GetString(_buffer).Should().Be("\0\0\0" + "0" + "\0\0\0\0\0\0\0");
             written.Should().Be(1);
         }
 
@@ -31,7 +31,7 @@ namespace HotFix.Test.utilities.writing
         {
             var written = _buffer.WriteInt(3, 12345);
 
-            Encoding.ASCII.GetString(_buffer).Should().Be("\0\0\012345\0\0\0");
+            Encoding.ASCII.GetString(_buffer).Should().Be("\0\0\0" + "12345" + "\0\0\0");
             written.Should().Be(5);
         }
 
@@ -40,8 +40,15 @@ namespace HotFix.Test.utilities.writing
         {
             var written = _buffer.WriteInt(3, -12345);
 
-            Encoding.ASCII.GetString(_buffer).Should().Be("\0\0\0-12345\0\0");
+            Encoding.ASCII.GetString(_buffer).Should().Be("\0\0\0" + "-12345" + "\0\0");
             written.Should().Be(6);
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(IndexOutOfRangeException))]
+        public void out_of_bounds()
+        {
+            _buffer.WriteInt(7, 12345);
         }
     }
 }
