@@ -6,6 +6,9 @@ namespace HotFix.Core
 {
     public class MessageWriter
     {
+        private const byte Soh = (byte)'\u0001';
+        private const byte Eql = (byte) '=';
+
         private readonly byte[] _buffer;
         private int _end;
 
@@ -20,11 +23,11 @@ namespace HotFix.Core
 
             _end += _buffer.WriteString(_end, "8=");
             _end += _buffer.WriteString(_end, beginString);
-            _buffer[_end++] = (byte)'\u0001';
+            _buffer[_end++] = Soh;
 
             _end += _buffer.WriteString(_end, "9=");
             _end += _buffer.WriteString(_end, "00000");
-            _buffer[_end] = (byte)'\u0001';
+            _buffer[_end] = Soh;
 
             _headerEnd = _end;
             _end++;
@@ -37,52 +40,52 @@ namespace HotFix.Core
             _end = _headerEnd + 4;
 
             _end += _buffer.WriteString(_end, messageType);
-            _buffer[_end++] = (byte)'\u0001';
+            _buffer[_end++] = Soh;
         }
 
         public void Set(int tag, string value)
         {
             _end += _buffer.WriteInt(_end, tag);
-            _buffer[_end++] = (byte) '=';
+            _buffer[_end++] = Eql;
 
             _end += _buffer.WriteString(_end, value);
-            _buffer[_end++] = (byte)'\u0001';
+            _buffer[_end++] = Soh;
         }
 
         public void Set(int tag, int value)
         {
             _end += _buffer.WriteInt(_end, tag);
-            _buffer[_end++] = (byte)'=';
+            _buffer[_end++] = Eql;
 
             _end += _buffer.WriteInt(_end, value);
-            _buffer[_end++] = (byte)'\u0001';
+            _buffer[_end++] = Soh;
         }
 
         public void Set(int tag, DateTime value)
         {
             _end += _buffer.WriteInt(_end, tag);
-            _buffer[_end++] = (byte)'=';
+            _buffer[_end++] = Eql;
 
             _end += _buffer.WriteDateTime(_end, value);
-            _buffer[_end++] = (byte)'\u0001';
+            _buffer[_end++] = Soh;
         }
 
         public void Set(int tag, long value)
         {
             _end += _buffer.WriteInt(_end, tag);
-            _buffer[_end++] = (byte)'=';
+            _buffer[_end++] = Eql;
 
             _end += _buffer.WriteLong(_end, value);
-            _buffer[_end++] = (byte)'\u0001';
+            _buffer[_end++] = Soh;
         }
 
         public void Set(int tag, double value)
         {
             _end += _buffer.WriteInt(_end, tag);
-            _buffer[_end++] = (byte)'=';
+            _buffer[_end++] = Eql;
 
             _end += _buffer.WriteFloat(_end, value);
-            _buffer[_end++] = (byte)'\u0001';
+            _buffer[_end++] = Soh;
         }
 
         public void Build()

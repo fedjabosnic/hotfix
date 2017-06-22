@@ -22,8 +22,8 @@ namespace HotFix.Test.utilities.writing
         {
             var written = _buffer.WriteDateTime(1, DateTime.Parse("27/03/2017 15:45:13"));
 
-            Encoding.ASCII.GetString(_buffer).Should().Be("\0" + "20170327-15:45:13" + "\0\0\0\0\0");
-            written.Should().Be(17);
+            Encoding.ASCII.GetString(_buffer).Should().Be("\0" + "20170327-15:45:13.000" + "\0");
+            written.Should().Be(21);
         }
 
         [TestMethod]

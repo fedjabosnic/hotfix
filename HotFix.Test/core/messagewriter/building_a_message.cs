@@ -24,7 +24,7 @@ namespace HotFix.Test.core.messagewriter
 
             var str = message.ToString();
 
-            str.Should().Be("8=FIX.4.2|9=00065|35=A|49=SERVER|56=CLIENT|34=177|52=20090107-18:15:16|98=0|108=30|10=206|".Replace("|", "\u0001"));
+            str.Should().Be("8=FIX.4.2|9=00069|35=A|49=SERVER|56=CLIENT|34=177|52=20090107-18:15:16.000|98=0|108=30|10=144|".Replace("|", "\u0001"));
         }
 
         [TestMethod]

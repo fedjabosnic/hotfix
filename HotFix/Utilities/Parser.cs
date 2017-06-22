@@ -267,6 +267,13 @@ namespace HotFix.Utilities
          * Option 2 seems to be faster than options 1a and 3 for longs
          */
 
+        /// <summary>
+        /// Writes an integer to the given byte array.
+        /// </summary>
+        /// <param name="buffer">The buffer to write to.</param>
+        /// <param name="position">The position to start writing.</param>
+        /// <param name="value">The number to write.</param>
+        /// <returns>The number of characters written.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int WriteInt(this byte[] buffer, int position, int value)
         {
@@ -304,6 +311,14 @@ namespace HotFix.Utilities
             return position - initial;
         }
 
+        /// <summary>
+        /// Writes an integer to the given byte array. 
+        /// The number is written before the given position, so that the last digit is at that position.
+        /// </summary>
+        /// <param name="buffer">The buffer to write to.</param>
+        /// <param name="position">The position that marks the end of the number.</param>
+        /// <param name="value">The number to write.</param>
+        /// <returns>The number of characters written</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int WriteIntBackwards(this byte[] buffer, int position, int value)
         {
@@ -334,6 +349,13 @@ namespace HotFix.Utilities
             return initial - position;
         }
 
+        /// <summary>
+        /// Writes a long to the given byte array.
+        /// </summary>
+        /// <param name="buffer">The buffer to write to.</param>
+        /// <param name="position">The position to start writing.</param>
+        /// <param name="value">The number to write.</param>
+        /// <returns>The number of characters written.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int WriteLong(this byte[] buffer, int position, long value)
         {
@@ -371,11 +393,21 @@ namespace HotFix.Utilities
             return position - initial;
         }
 
+        /// <summary>
+        /// Writes a double to the given byte array.
+        /// </summary>
+        /// <remarks>
+        /// The number is printed to 6 decimal places.
+        /// </remarks>
+        /// <param name="buffer">The buffer to write to.</param>
+        /// <param name="position">The position to start writing.</param>
+        /// <param name="value">The number to write.</param>
+        /// <returns>The number of characters written.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int WriteFloat(this byte[] buffer, int position, double value)
         {
             var start = position;
-            var integer = (long) value;
+            var integer = (long)value;
             var fraction = (long)Math.Round(Math.Abs(value) * 1000000L) % 1000000L;
 
             position += buffer.WriteLong(position, integer);
@@ -385,6 +417,13 @@ namespace HotFix.Utilities
             return position - start;
         }
 
+        /// <summary>
+        /// Writes a string to the given byte array.
+        /// </summary>
+        /// <param name="buffer">The buffer to write to.</param>
+        /// <param name="position">The position to start writing.</param>
+        /// <param name="value">The string to write.</param>
+        /// <returns>The number of characters written.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int WriteString(this byte[] buffer, int position, string value)
         {
@@ -396,6 +435,13 @@ namespace HotFix.Utilities
             return value.Length;
         }
 
+        /// <summary>
+        /// Writes a date and time to the given byte array.
+        /// </summary>
+        /// <param name="buffer">The buffer to write to.</param>
+        /// <param name="position">The position to start writing.</param>
+        /// <param name="value">The date and time to write.</param>
+        /// <returns>The number of characters written.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static int WriteDateTime(this byte[] buffer, int position, DateTime value)
         {
@@ -439,12 +485,9 @@ namespace HotFix.Utilities
             second %= 10;
             buffer[position + 16] = (byte)('0' + second);
 
-            var millis = value.Millisecond;
-
-            if (millis == 0) return 17;
-
             buffer[position + 17] = (byte)'.';
 
+            var millis = value.Millisecond;
             buffer[position + 18] = (byte)('0' + millis / 100);
             millis %= 100;
             buffer[position + 19] = (byte)('0' + millis / 10);
