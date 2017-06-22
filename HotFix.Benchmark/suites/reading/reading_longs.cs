@@ -25,6 +25,6 @@ namespace HotFix.Benchmark.suites.reading
         public long standard() => long.Parse(System.Text.Encoding.ASCII.GetString(_raw));
 
         [Benchmark]
-        public long hotfix() => _raw.GetLong();
+        public long hotfix() => _raw.ReadLong();
     }
 }

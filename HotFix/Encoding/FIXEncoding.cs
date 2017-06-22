@@ -14,9 +14,9 @@ namespace HotFix.Encoding
         /// <param name="source">The source string to parse.</param>
         /// <returns>The parsed integer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int GetInt(this byte[] source)
+        public static int ReadInt(this byte[] source)
         {
-            return source.GetInt(0, source.Length);
+            return source.ReadInt(0, source.Length);
         }
 
         /// <summary>
@@ -30,7 +30,7 @@ namespace HotFix.Encoding
         /// <param name="count">The number of characters to parse.</param>
         /// <returns>The parsed integer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int GetInt(this byte[] source, int offset, int count)
+        public static int ReadInt(this byte[] source, int offset, int count)
         {
             var value = 0;
             var sign = source[offset] == '-' ? -1 : +1;
@@ -59,9 +59,9 @@ namespace HotFix.Encoding
         /// <param name="source">The source string to parse.</param>
         /// <returns>The parsed integer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long GetLong(this byte[] source)
+        public static long ReadLong(this byte[] source)
         {
-            return source.GetLong(0, source.Length);
+            return source.ReadLong(0, source.Length);
         }
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace HotFix.Encoding
         /// <param name="count">The number of characters to parse.</param>
         /// <returns>The parsed integer.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static long GetLong(this byte[] source, int offset, int count)
+        public static long ReadLong(this byte[] source, int offset, int count)
         {
             var value = 0L;
             var sign = source[offset] == '-' ? -1 : +1;
@@ -104,9 +104,9 @@ namespace HotFix.Encoding
         /// <param name="source">The source string to parse.</param>
         /// <returns>The parsed double.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double GetFloat(this byte[] source)
+        public static double ReadFloat(this byte[] source)
         {
-            return source.GetFloat(0, source.Length);
+            return source.ReadFloat(0, source.Length);
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace HotFix.Encoding
         /// <param name="count">The number of characters to parse.</param>
         /// <returns>The parsed double.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static double GetFloat(this byte[] source, int offset, int count)
+        public static double ReadFloat(this byte[] source, int offset, int count)
         {
             var value = 0L;
             var exponent = 0d;
@@ -159,9 +159,9 @@ namespace HotFix.Encoding
         /// <param name="source">The source string to parse.</param>
         /// <returns>The parsed string.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string GetString(this byte[] source)
+        public static string ReadString(this byte[] source)
         {
-            return source.GetString(0, source.Length);
+            return source.ReadString(0, source.Length);
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace HotFix.Encoding
         /// <param name="count">The number of characters to parse.</param>
         /// <returns>The parsed string.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static unsafe string GetString(this byte[] source, int offset, int count)
+        public static unsafe string ReadString(this byte[] source, int offset, int count)
         {
             char* chars = stackalloc char[count + 1];
 
@@ -200,9 +200,9 @@ namespace HotFix.Encoding
         /// <param name="source">The source string to parse.</param>
         /// <returns>The parsed datetime.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DateTime GetDateTime(this byte[] source)
+        public static DateTime ReadDateTime(this byte[] source)
         {
-            return source.GetDateTime(0, source.Length);
+            return source.ReadDateTime(0, source.Length);
         }
 
         /// <summary>
@@ -216,7 +216,7 @@ namespace HotFix.Encoding
         /// <param name="count">The number of characters to parse.</param>
         /// <returns>The parsed datetime.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static DateTime GetDateTime(this byte[] source, int offset, int count)
+        public static DateTime ReadDateTime(this byte[] source, int offset, int count)
         {
             if (count != 17 && count != 21) throw new Exception("Not a valid datetime");
 
@@ -225,13 +225,13 @@ namespace HotFix.Encoding
             //if (source[14] != ':') throw new Exception("Not a valid datetime");
             //if (source[17] != '.') throw new Exception("Not a valid datetime");
 
-            var year = source.GetInt(offset + 00, 4);
-            var month = source.GetInt(offset + 04, 2);
-            var day = source.GetInt(offset + 06, 2);
-            var hour = source.GetInt(offset + 09, 2);
-            var minute = source.GetInt(offset + 12, 2);
-            var second = source.GetInt(offset + 15, 2);
-            var millis = count == 21 ? source.GetInt(offset + 18, 3) : 0;
+            var year = source.ReadInt(offset + 00, 4);
+            var month = source.ReadInt(offset + 04, 2);
+            var day = source.ReadInt(offset + 06, 2);
+            var hour = source.ReadInt(offset + 09, 2);
+            var minute = source.ReadInt(offset + 12, 2);
+            var second = source.ReadInt(offset + 15, 2);
+            var millis = count == 21 ? source.ReadInt(offset + 18, 3) : 0;
 
             return new DateTime(year, month, day, hour, minute, second, millis);
         }

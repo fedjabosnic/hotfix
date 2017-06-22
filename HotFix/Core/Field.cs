@@ -12,11 +12,11 @@ namespace HotFix.Core
         public int Length { get; }
         public int Checksum { get; }
 
-        public int AsInt => _message.GetInt(_value.Offset, _value.Length);
-        public long AsLong => _message.GetLong(_value.Offset, _value.Length);
-        public double AsFloat => _message.GetFloat(_value.Offset, _value.Length);
-        public string AsString => _message.GetString(_value.Offset, _value.Length);
-        public DateTime AsDateTime => _message.GetDateTime(_value.Offset, _value.Length);
+        public int AsInt => _message.ReadInt(_value.Offset, _value.Length);
+        public long AsLong => _message.ReadLong(_value.Offset, _value.Length);
+        public double AsFloat => _message.ReadFloat(_value.Offset, _value.Length);
+        public string AsString => _message.ReadString(_value.Offset, _value.Length);
+        public DateTime AsDateTime => _message.ReadDateTime(_value.Offset, _value.Length);
 
         public Field(byte[] message, int tag, Segment value, int length, int checksum)
         {

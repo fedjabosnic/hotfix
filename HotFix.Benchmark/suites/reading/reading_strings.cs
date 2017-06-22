@@ -25,6 +25,6 @@ namespace HotFix.Benchmark.suites.reading
         public string standard() => System.Text.Encoding.ASCII.GetString(_raw, 3, 3);
 
         [Benchmark]
-        public string hotfix() => _raw.GetString(3, 3);
+        public string hotfix() => _raw.ReadString(3, 3);
     }
 }

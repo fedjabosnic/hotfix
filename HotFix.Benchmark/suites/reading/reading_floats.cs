@@ -25,6 +25,6 @@ namespace HotFix.Benchmark.suites.reading
         public double standard() => double.Parse(System.Text.Encoding.ASCII.GetString(_raw));
 
         [Benchmark]
-        public double hotfix() => _raw.GetFloat();
+        public double hotfix() => _raw.ReadFloat();
     }
 }

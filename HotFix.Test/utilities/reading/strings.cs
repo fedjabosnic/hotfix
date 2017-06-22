@@ -12,19 +12,19 @@ namespace HotFix.Test.utilities.reading
         [TestMethod]
         public void empty()
         {
-            System.Text.Encoding.ASCII.GetBytes("").GetString().Should().Be("");
+            System.Text.Encoding.ASCII.GetBytes("").ReadString().Should().Be("");
         }
 
         [TestMethod]
         public void small()
         {
-            System.Text.Encoding.ASCII.GetBytes("XXX").GetString().Should().Be("XXX");
+            System.Text.Encoding.ASCII.GetBytes("XXX").ReadString().Should().Be("XXX");
         }
 
         [TestMethod]
         public void large()
         {
-            System.Text.Encoding.ASCII.GetBytes("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.;'#][/=-_+{}~@:?><").GetString().Should().Be("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.;'#][/=-_+{}~@:?><");
+            System.Text.Encoding.ASCII.GetBytes("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.;'#][/=-_+{}~@:?><").ReadString().Should().Be("ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,.;'#][/=-_+{}~@:?><");
         }
     }
 }

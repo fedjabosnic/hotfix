@@ -27,6 +27,6 @@ namespace HotFix.Benchmark.suites.reading
         public long standard() => DateTime.ParseExact(System.Text.Encoding.ASCII.GetString(_raw), "yyyyMMdd-HH:mm:ss.fff", null).Ticks;
 
         [Benchmark]
-        public long hotfix() => _raw.GetDateTime().Ticks;
+        public long hotfix() => _raw.ReadDateTime().Ticks;
     }
 }
