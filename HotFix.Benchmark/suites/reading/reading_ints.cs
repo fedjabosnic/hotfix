@@ -4,7 +4,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Columns;
 using BenchmarkDotNet.Attributes.Jobs;
 using BenchmarkDotNet.Engines;
-using HotFix.Utilities;
+using HotFix.Encoding;
 
 namespace HotFix.Benchmark.suites.reading
 {
@@ -18,13 +18,13 @@ namespace HotFix.Benchmark.suites.reading
         [Setup]
         public void Setup()
         {
-            _raw = Encoding.ASCII.GetBytes("12345");
+            _raw = System.Text.Encoding.ASCII.GetBytes("12345");
         }
 
         [Benchmark(Baseline = true)]
-        public int standard() => int.Parse(Encoding.ASCII.GetString(_raw));
+        public int standard() => int.Parse(System.Text.Encoding.ASCII.GetString(_raw));
 
         [Benchmark]
-        public int hotfix() => _raw.GetInt();
+        public int hotfix() => _raw.ReadInt();
     }
 }

@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Threading;
 using HotFix.Core;
 using HotFix.Transport;
-using HotFix.Utilities;
 
 namespace HotFix
 {

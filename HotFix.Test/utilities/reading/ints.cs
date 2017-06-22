@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 using FluentAssertions;
-using HotFix.Utilities;
+using HotFix.Encoding;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HotFix.Test.utilities.reading
@@ -12,31 +12,31 @@ namespace HotFix.Test.utilities.reading
         [TestMethod]
         public void zero()
         {
-            Encoding.ASCII.GetBytes("0").GetInt().Should().Be(0);
+            System.Text.Encoding.ASCII.GetBytes("0").ReadInt().Should().Be(0);
         }
 
         [TestMethod]
         public void positive()
         {
-            Encoding.ASCII.GetBytes("123").GetInt().Should().Be(123);
+            System.Text.Encoding.ASCII.GetBytes("123").ReadInt().Should().Be(123);
         }
 
         [TestMethod]
         public void positive_with_leading_zeros()
         {
-            Encoding.ASCII.GetBytes("000123").GetInt().Should().Be(123);
+            System.Text.Encoding.ASCII.GetBytes("000123").ReadInt().Should().Be(123);
         }
 
         [TestMethod]
         public void negative()
         {
-            Encoding.ASCII.GetBytes("-123").GetInt().Should().Be(-123);
+            System.Text.Encoding.ASCII.GetBytes("-123").ReadInt().Should().Be(-123);
         }
 
         [TestMethod]
         public void negative_with_leading_zeros()
         {
-            Encoding.ASCII.GetBytes("-000123").GetInt().Should().Be(-123);
+            System.Text.Encoding.ASCII.GetBytes("-000123").ReadInt().Should().Be(-123);
         }
     }
 }

@@ -137,7 +137,7 @@ namespace HotFix.Core
             var trailer = $"10={((header + body).ToCharArray().Select(x => (int)x).Sum() % 256):D3}|".Replace("|", "\u0001");
 
             var message = header + body + trailer;
-            var msg = Encoding.UTF8.GetBytes(message);
+            var msg = System.Text.Encoding.UTF8.GetBytes(message);
 
             // TODO: Do we want to decrement the sequence number if creating/sending the message fails?
 

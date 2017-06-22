@@ -4,7 +4,7 @@ using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Attributes.Columns;
 using BenchmarkDotNet.Attributes.Jobs;
 using BenchmarkDotNet.Engines;
-using HotFix.Utilities;
+using HotFix.Encoding;
 
 namespace HotFix.Benchmark.suites.writing
 {
@@ -27,7 +27,7 @@ namespace HotFix.Benchmark.suites.writing
         public int standard()
         {
             var s = _number.ToString();
-            return Encoding.ASCII.GetBytes(s, 0, s.Length, _buffer, 0);
+            return System.Text.Encoding.ASCII.GetBytes(s, 0, s.Length, _buffer, 0);
         }
 
         [Benchmark]

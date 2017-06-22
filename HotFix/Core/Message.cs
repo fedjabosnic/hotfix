@@ -216,7 +216,7 @@ namespace HotFix.Core
 
         public override string ToString()
         {
-            return Encoding.ASCII.GetString(Raw, 0, Length);
+            return System.Text.Encoding.ASCII.GetString(Raw, 0, Length);
         }
     }
 }
