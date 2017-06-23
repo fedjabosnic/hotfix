@@ -174,6 +174,8 @@ namespace HotFix.Core
             {
                 // NOTE: Optimized for retrieving expected header/trailer fields
 
+                if (!Valid) throw new Exception("Field not found");
+
                 switch (tag)
                 {
                     case 8: return Fields[0];
@@ -197,6 +199,8 @@ namespace HotFix.Core
         /// <param name="instance">The instance of the field (if there are multiple).</param>
         public bool Contains(int tag, int instance = 0)
         {
+            if (!Valid) return false;
+
             switch (tag)
             {
                 case 8:
@@ -211,6 +215,13 @@ namespace HotFix.Core
                             return true;
                     return false;
             }
+        }
+
+        public void Clear()
+        {
+            Count = 0;
+            Length = 0;
+            Valid = false;
         }
 
         public override string ToString()
