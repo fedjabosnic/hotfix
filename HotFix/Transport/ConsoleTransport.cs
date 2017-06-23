@@ -19,5 +19,15 @@ namespace HotFix.Transport
             Inbound = null;
             Outbound = null;
         }
+
+        public int Read(byte[] buffer, int offset, int count)
+        {
+            return Inbound.Read(buffer, offset, count);
+        }
+
+        public void Write(byte[] buffer, int offset, int count)
+        {
+            Outbound.Write(buffer, offset, count);
+        }
     }
 }
