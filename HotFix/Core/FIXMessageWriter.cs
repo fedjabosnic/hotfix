@@ -8,8 +8,8 @@ namespace HotFix.Core
         private const byte SOH = (byte)'\u0001';
         private const byte EQL = (byte) '=';
 
-        private readonly byte[] _buffer;
-        private int _end;
+        internal readonly byte[] _buffer;
+        internal int _end;
 
         private readonly int _headerEnd;
         private int _bodyEnd;
