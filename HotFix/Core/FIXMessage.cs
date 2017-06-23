@@ -58,8 +58,8 @@ namespace HotFix.Core
                 if (Fields[2].Tag != 35) throw new Exception("MsgType field not found at expected position");
                 if (Fields[Count - 1].Tag != 10) throw new Exception("CheckSum field not found at expected position");
 
-                if (this[9].AsInt != length - this[8].Length - this[9].Length - this[10].Length) throw new Exception("BodyLength of the message does not match");
-                if (this[10].AsInt != (checksum - this[10].Checksum) % 256) throw new Exception("CheckSum of the message does not match");
+                if (Fields[1].AsInt != length - Fields[0].Length - Fields[1].Length - Fields[Count - 1].Length) throw new Exception("BodyLength of the message does not match");
+                if (Fields[Count - 1].AsInt != (checksum - Fields[Count - 1].Checksum) % 256) throw new Exception("CheckSum of the message does not match");
 
                 Valid = true;
             }
