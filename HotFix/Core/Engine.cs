@@ -53,6 +53,7 @@ namespace HotFix.Core
 
                 if (inbound.Valid)
                 {
+                    Configuration.InboundSeqNum++;
                     Console.WriteLine("Processing: " + inbound[35].AsString);
                 }
 
@@ -107,6 +108,8 @@ namespace HotFix.Core
 
                 if (message.Valid)
                 {
+                    Configuration.InboundSeqNum++;
+
                     if (message[35].Is("A"))
                     {
                         // TODO: Validate logon
