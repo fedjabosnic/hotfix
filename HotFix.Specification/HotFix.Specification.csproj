@@ -61,11 +61,13 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Harness.cs" />
+    <Compile Include="test_request\an_inbound_test_request.cs" />
     <Compile Include="heartbeat\heartbeat.cs" />
     <Compile Include="logon\logon.cs" />
     <Compile Include="DelightfullySuccessfulException.cs" />
     <Compile Include="Specification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="test_request\an_outbound_test_request.cs" />
     <Compile Include="VirtualClock.cs" />
   </ItemGroup>
   <ItemGroup>

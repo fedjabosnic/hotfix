@@ -24,6 +24,9 @@ namespace HotFix.Core
             var inbound = new FIXMessage();
             var outbound = new FIXMessageWriter(1024, configuration.Version);
 
+            configuration.InboundTimestamp = Clock.Time;
+            configuration.OutboundTimestamp = Clock.Time;
+
             HandleLogon(configuration, channel, inbound, outbound);
 
             while (true)
@@ -41,6 +44,15 @@ namespace HotFix.Core
                         // Process message
                         Console.WriteLine("Processing: " + inbound[35].AsString);
 
+                        switch (inbound[35].AsString)
+                        {
+                            case "1":
+                                SendTestResponse(configuration, channel, inbound, outbound);
+                                break;
+                            default:
+                                break;
+                        }
+
                         configuration.InboundSeqNum++;
                         configuration.InboundTimestamp = Clock.Time;
                     }
@@ -51,16 +63,14 @@ namespace HotFix.Core
                     }
                 }
 
-                if (Clock.Time - configuration.OutboundTimestamp > TimeSpan.FromSeconds(5))
+                if (Clock.Time - configuration.OutboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval))
                 {
-                    outbound.Prepare("0");
-                    outbound.Set(34, configuration.OutboundSeqNum);
-                    outbound.Set(52, Clock.Time);
-                    outbound.Set(49, configuration.Sender);
-                    outbound.Set(56, configuration.Target);
-                    outbound.Build();
+                    SendHeartbeat(configuration, channel, outbound);
+                }
 
-                    Send(configuration, channel, outbound);
+                if (Clock.Time - configuration.InboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval * 1.2))
+                {
+                    SendTestRequest(configuration, channel, outbound);
                 }
 
                 inbound.Clear();
@@ -69,7 +79,49 @@ namespace HotFix.Core
             }
         }
 
-        private void SendResendRequest(IConfiguration configuration, Channel channel, FIXMessageWriter outbound)
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SendTestRequest(IConfiguration configuration, Channel channel, FIXMessageWriter outbound)
+        {
+            outbound.Prepare("1");
+            outbound.Set(34, configuration.OutboundSeqNum);
+            outbound.Set(52, Clock.Time);
+            outbound.Set(49, configuration.Sender);
+            outbound.Set(56, configuration.Target);
+            outbound.Set(112, Clock.Time.Ticks);
+            outbound.Build();
+
+            Send(configuration, channel, outbound);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SendHeartbeat(IConfiguration configuration, Channel channel, FIXMessageWriter outbound)
+        {
+            outbound.Prepare("0");
+            outbound.Set(34, configuration.OutboundSeqNum);
+            outbound.Set(52, Clock.Time);
+            outbound.Set(49, configuration.Sender);
+            outbound.Set(56, configuration.Target);
+            outbound.Build();
+
+            Send(configuration, channel, outbound);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SendTestResponse(IConfiguration configuration, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
+        {
+            outbound.Prepare("0");
+            outbound.Set(34, configuration.OutboundSeqNum);
+            outbound.Set(52, Clock.Time);
+            outbound.Set(49, configuration.Sender);
+            outbound.Set(56, configuration.Target);
+            outbound.Set(112, inbound[112].AsString);
+            outbound.Build();
+
+            Send(configuration, channel, outbound);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SendResendRequest(IConfiguration configuration, Channel channel, FIXMessageWriter outbound)
         {
             if (configuration.Synchronizing) return;
 
