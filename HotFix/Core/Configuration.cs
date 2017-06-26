@@ -19,5 +19,8 @@ namespace HotFix.Core
 
         public int InboundBufferSize { get; set; }
         public int OutboundBufferSize { get; set; }
+
+        public DateTime InboundTimestamp { get; set; }
+        public DateTime OutboundTimestamp { get; set; }
     }
 }

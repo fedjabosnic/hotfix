@@ -1,4 +1,6 @@
-﻿namespace HotFix.Core
+﻿using System;
+
+namespace HotFix.Core
 {
     public interface IConfiguration
     {
@@ -17,5 +19,8 @@
 
         int InboundBufferSize { get; set; }
         int OutboundBufferSize { get; set; }
+
+        DateTime InboundTimestamp { get; set; }
+        DateTime OutboundTimestamp { get; set; }
     }
 }

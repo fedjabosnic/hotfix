@@ -8,125 +8,113 @@ namespace HotFix.Core
     public class Engine
     {
         public static IClock Clock { get; set; }
-
-        public IConfiguration Configuration { get; }
         public Func<IConfiguration, ITransport> Transports { get; set; }
 
-        public Engine(IConfiguration configuration)
+        public Engine()
         {
             Clock = new RealTimeClock();
-            Transports = c => new TcpTransport(Configuration.Host, Configuration.Port);
-
-            Configuration = configuration;
+            Transports = c => new TcpTransport(c.Host, c.Port);
         }
 
-        public void Run()
+        public void Run(IConfiguration configuration)
         {
-            var transport = Transports(Configuration);
+            var transport = Transports(configuration);
             var channel = new Channel(transport);
 
             var inbound = new FIXMessage();
-            var outbound = new FIXMessageWriter(1024, Configuration.Version);
+            var outbound = new FIXMessageWriter(1024, configuration.Version);
 
-            var last = Engine.Clock.Time;
-
-
-            SendLogonRequest(channel, outbound);
-
-            if (!AwaitLogonResponse(channel, inbound))
-            {
-                transport.Dispose();
-
-                Console.WriteLine("Logon attempt failed, closing...");
-                Console.ReadLine();
-
-                return;
-            }
-
-            Console.WriteLine("Logged on...");
-
-            inbound.Clear();
+            HandleLogon(configuration, channel, inbound, outbound);
 
             while (true)
+            {
+                if (inbound.Valid)
+                {
+                    if (!inbound[8].Is(configuration.Version)) throw new EngineException("Unexpected begin string received");
+                    if (!inbound[49].Is(configuration.Target)) throw new EngineException("Unexpected comp id received");
+                    if (!inbound[56].Is(configuration.Sender)) throw new EngineException("Unexpected comp id received");
+
+                    if (inbound[34].AsLong < configuration.InboundSeqNum) throw new EngineException("Sequence number too low");
+                    if (inbound[34].AsLong > configuration.InboundSeqNum) throw new EngineException("Sequence number too high");
+
+                    // Process message
+                    Console.WriteLine("Processing: " + inbound[35].AsString);
+
+                    configuration.InboundSeqNum++;
+                    configuration.InboundTimestamp = Clock.Time;
+                }
+
+                if (Clock.Time - configuration.OutboundTimestamp > TimeSpan.FromSeconds(5))
+                {
+                    outbound.Prepare("0");
+                    outbound.Set(34, configuration.OutboundSeqNum);
+                    outbound.Set(52, Clock.Time);
+                    outbound.Set(49, configuration.Sender);
+                    outbound.Set(56, configuration.Target);
+                    outbound.Build();
+
+                    Send(configuration, channel, outbound);
+                }
+
+                inbound.Clear();
+
+                channel.Read(inbound);
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Send(IConfiguration configuration, Channel channel, FIXMessageWriter message)
+        {
+            channel.Write(message);
+
+            configuration.OutboundSeqNum++;
+            configuration.OutboundTimestamp = Clock.Time;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void HandleLogon(IConfiguration configuration, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
+        {
+            outbound.Prepare("A");
+            outbound.Set(34, 1);
+            outbound.Set(52, Clock.Time);
+            outbound.Set(49, configuration.Sender);
+            outbound.Set(56, configuration.Target);
+            outbound.Set(108, configuration.HeartbeatInterval);
+            outbound.Set(98, 0);
+            outbound.Set(141, "Y");
+            outbound.Build();
+
+            Send(configuration, channel, outbound);
+
+            while (Clock.Time - configuration.OutboundTimestamp < TimeSpan.FromSeconds(10))
             {
                 channel.Read(inbound);
 
                 if (inbound.Valid)
                 {
-                    Configuration.InboundSeqNum++;
-                    Console.WriteLine("Processing: " + inbound[35].AsString);
-                }
+                    if (!inbound[35].Is("A")) throw new EngineException("Unexpected first message received (expected a logon)");
+                    if (!inbound[108].Is(configuration.HeartbeatInterval)) throw new EngineException("Unexpected heartbeat interval received");
+                    if (!inbound[ 98].Is(0)) throw new EngineException("Unexpected encryption method received");
+                    if (!inbound[141].Is("Y")) throw new EngineException("Unexpected reset on logon received");
 
-                if (Engine.Clock.Time - last > TimeSpan.FromSeconds(5))
-                {
-                    outbound.Prepare("0");
-                    outbound.Set(34, Configuration.OutboundSeqNum);
-                    outbound.Set(52, Engine.Clock.Time);
-                    outbound.Set(49, Configuration.Sender);
-                    outbound.Set(56, Configuration.Target);
-                    outbound.Build();
-
-                    channel.Write(outbound);
-                    Configuration.OutboundSeqNum++;
-
-                    last = Engine.Clock.Time;
-                }
-
-                inbound.Clear();
-            }
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void Send(Channel channel, FIXMessageWriter message)
-        {
-            channel.Write(message);
-            Configuration.OutboundSeqNum++;
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SendLogonRequest(Channel channel, FIXMessageWriter message)
-        {
-            message.Prepare("A");
-            message.Set(34, 1);
-            message.Set(52, Engine.Clock.Time);
-            message.Set(49, Configuration.Sender);
-            message.Set(56, Configuration.Target);
-            message.Set(98, 0);
-            message.Set(108, Configuration.HeartbeatInterval);
-            message.Set(141, "Y");
-            message.Build();
-
-            Send(channel, message);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public bool AwaitLogonResponse(Channel channel, FIXMessage message)
-        {
-            for (var i = 0; i < 10; i++)
-            {
-                channel.Read(message);
-
-                if (message.Valid)
-                {
-                    Configuration.InboundSeqNum++;
-
-                    if (message[35].Is("A"))
-                    {
-                        // TODO: Validate logon
-
-                        // Validate version
-                        // Validate sender
-                        // Validate target
-                        // Validate 98, 108 and 142
-
-                        return true;
-                    }
-
-                    return false;
+                    return;
                 }
             }
 
-            return false;
+            throw new EngineException("Logon response not received on time");
+        }
+    }
+
+    public class EngineException : Exception
+    {
+        public EngineException()
+        {
+            
+        }
+
+        public EngineException(string message) : base(message)
+        {
+            
         }
     }
 }
