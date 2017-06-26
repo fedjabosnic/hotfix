@@ -22,5 +22,7 @@ namespace HotFix.Core
 
         public DateTime InboundTimestamp { get; set; }
         public DateTime OutboundTimestamp { get; set; }
+
+        public bool Synchronizing { get; set; }
     }
 }

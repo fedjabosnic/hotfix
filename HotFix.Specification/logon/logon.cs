@@ -10,37 +10,6 @@ namespace HotFix.Specification.logon
     public class logon
     {
         [TestMethod]
-        public void succeeds_when_a_valid_logon_response_is_received_promptly()
-        {
-            new Specification()
-                .Configure(new Configuration
-                {
-                    Version = "FIX.4.2",
-                    Sender = "Client",
-                    Target = "Server",
-                    HeartbeatInterval = 5,
-                    OutboundSeqNum = 1,
-                    InboundSeqNum = 1
-                })
-                .Steps(new List<string>
-                {
-                    "! 20170623-14:51:45.012",
-                    // The engine should sent a valid logon message first
-                    "> 8=FIX.4.29=0007235=A34=152=20170623-14:51:45.01249=Client56=Server108=598=0141=Y10=094",
-                    "! 20170623-14:51:45.051",
-                    // The engine should accept the target's logon response
-                    "< 8=FIX.4.29=7235=A34=149=Server52=20170623-14:51:45.05156=Client108=598=0141=Y10=209",
-                    "! 20170623-14:51:46.000"
-                })
-                .Verify((engine, configuration) =>
-                {
-                    configuration.InboundSeqNum.Should().Be(2);
-                    configuration.OutboundSeqNum.Should().Be(2);
-                })
-                .Run();
-        }
-
-        [TestMethod]
         public void fails_when_the_response_is_not_received_in_the_allotted_time()
         {
             new Specification()
@@ -285,7 +254,7 @@ namespace HotFix.Specification.logon
         }
 
         [TestMethod]
-        public void fails_when_the_response_contains_a_sequence_number_that_is_too_high()
+        public void succeeds_but_sends_a_resend_request_when_the_response_contains_a_sequence_number_that_is_too_high()
         {
             new Specification()
                 .Configure(new Configuration
@@ -303,11 +272,49 @@ namespace HotFix.Specification.logon
                     // The engine should sent a valid logon message first
                     "> 8=FIX.4.29=0007235=A34=152=20170623-14:51:45.01249=Client56=Server108=598=0141=Y10=094",
                     "! 20170623-14:51:45.051",
-                    // The engine should fail because the response contains a sequence number (34) that is too low
+                    // The engine receives a response which contains a sequence number (34) that is too high
                     "< 8=FIX.4.29=7235=A34=749=Server52=20170623-14:51:45.05156=Client108=598=0141=Y10=215",
+                    // The engine should send a resend request
+                    "> 8=FIX.4.29=0006435=234=252=20170623-14:51:45.05149=Client56=Server7=516=010=187",
                     "! 20170623-14:51:46.000"
                 })
-                .Expect<EngineException>("Sequence number too high")
+                .Verify((engine, configuration) =>
+                {
+                    configuration.InboundSeqNum.Should().Be(5);
+                    configuration.OutboundSeqNum.Should().Be(3);
+                    configuration.Synchronizing.Should().Be(true);
+                })
+                .Run();
+        }
+
+        [TestMethod]
+        public void succeeds_when_a_valid_logon_response_is_received_promptly_with_the_expected_sequence_numbers()
+        {
+            new Specification()
+                .Configure(new Configuration
+                {
+                    Version = "FIX.4.2",
+                    Sender = "Client",
+                    Target = "Server",
+                    HeartbeatInterval = 5,
+                    OutboundSeqNum = 1,
+                    InboundSeqNum = 1
+                })
+                .Steps(new List<string>
+                {
+                    "! 20170623-14:51:45.012",
+                    // The engine should sent a valid logon message first
+                    "> 8=FIX.4.29=0007235=A34=152=20170623-14:51:45.01249=Client56=Server108=598=0141=Y10=094",
+                    "! 20170623-14:51:45.051",
+                    // The engine should accept the target's logon response
+                    "< 8=FIX.4.29=7235=A34=149=Server52=20170623-14:51:45.05156=Client108=598=0141=Y10=209",
+                    "! 20170623-14:51:46.000"
+                })
+                .Verify((engine, configuration) =>
+                {
+                    configuration.InboundSeqNum.Should().Be(2);
+                    configuration.OutboundSeqNum.Should().Be(2);
+                })
                 .Run();
         }
     }

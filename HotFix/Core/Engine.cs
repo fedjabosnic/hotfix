@@ -34,14 +34,21 @@ namespace HotFix.Core
                     if (!inbound[49].Is(configuration.Target)) throw new EngineException("Unexpected comp id received");
                     if (!inbound[56].Is(configuration.Sender)) throw new EngineException("Unexpected comp id received");
 
-                    if (inbound[34].AsLong < configuration.InboundSeqNum) throw new EngineException("Sequence number too low");
-                    if (inbound[34].AsLong > configuration.InboundSeqNum) throw new EngineException("Sequence number too high");
+                    if (inbound[34].Is(configuration.InboundSeqNum))
+                    {
+                        configuration.Synchronizing = false;
 
-                    // Process message
-                    Console.WriteLine("Processing: " + inbound[35].AsString);
+                        // Process message
+                        Console.WriteLine("Processing: " + inbound[35].AsString);
 
-                    configuration.InboundSeqNum++;
-                    configuration.InboundTimestamp = Clock.Time;
+                        configuration.InboundSeqNum++;
+                        configuration.InboundTimestamp = Clock.Time;
+                    }
+                    else
+                    {
+                        if (inbound[34].AsLong < configuration.InboundSeqNum) throw new EngineException("Sequence number too low");
+                        if (inbound[34].AsLong > configuration.InboundSeqNum) SendResendRequest(configuration, channel, outbound);
+                    }
                 }
 
                 if (Clock.Time - configuration.OutboundTimestamp > TimeSpan.FromSeconds(5))
@@ -60,6 +67,24 @@ namespace HotFix.Core
 
                 channel.Read(inbound);
             }
+        }
+
+        private void SendResendRequest(IConfiguration configuration, Channel channel, FIXMessageWriter outbound)
+        {
+            if (configuration.Synchronizing) return;
+
+            outbound.Prepare("2");
+            outbound.Set(34, configuration.OutboundSeqNum);
+            outbound.Set(52, Clock.Time);
+            outbound.Set(49, configuration.Sender);
+            outbound.Set(56, configuration.Target);
+            outbound.Set(7, configuration.InboundSeqNum);
+            outbound.Set(16, 0);
+            outbound.Build();
+
+            Send(configuration, channel, outbound);
+
+            configuration.Synchronizing = true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
