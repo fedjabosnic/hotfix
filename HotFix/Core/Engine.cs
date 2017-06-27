@@ -52,6 +52,9 @@ namespace HotFix.Core
                             case "2":
                                 HandleResendRequest(configuration, channel, inbound, outbound);
                                 break;
+                            case "4":
+                                HandleSequenceReset(configuration, channel, inbound, outbound);
+                                break;
                             default:
                                 break;
                         }
@@ -163,6 +166,17 @@ namespace HotFix.Core
 
             // HACK
             configuration.OutboundSeqNum--;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void HandleSequenceReset(IConfiguration configuration, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
+        {
+            // Validate request
+            if (!inbound.Contains(123) || !inbound[123].Is("Y")) throw new Exception("Unsupported sequence reset received (hard reset)");
+            if (inbound[36].AsLong <= configuration.InboundSeqNum) throw new Exception("Invalid sequence reset received (bad new seq num)");
+
+            // Accept the new sequence number
+            configuration.InboundSeqNum = inbound[36].AsLong;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
