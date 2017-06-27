@@ -49,6 +49,9 @@ namespace HotFix.Core
                             case "1":
                                 SendTestResponse(configuration, channel, inbound, outbound);
                                 break;
+                            case "2":
+                                SendGapFill(configuration, channel, inbound, outbound);
+                                break;
                             default:
                                 break;
                         }
@@ -80,6 +83,19 @@ namespace HotFix.Core
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SendHeartbeat(IConfiguration configuration, Channel channel, FIXMessageWriter outbound)
+        {
+            outbound.Prepare("0");
+            outbound.Set(34, configuration.OutboundSeqNum);
+            outbound.Set(52, Clock.Time);
+            outbound.Set(49, configuration.Sender);
+            outbound.Set(56, configuration.Target);
+            outbound.Build();
+
+            Send(configuration, channel, outbound);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SendTestRequest(IConfiguration configuration, Channel channel, FIXMessageWriter outbound)
         {
             outbound.Prepare("1");
@@ -88,19 +104,6 @@ namespace HotFix.Core
             outbound.Set(49, configuration.Sender);
             outbound.Set(56, configuration.Target);
             outbound.Set(112, Clock.Time.Ticks);
-            outbound.Build();
-
-            Send(configuration, channel, outbound);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SendHeartbeat(IConfiguration configuration, Channel channel, FIXMessageWriter outbound)
-        {
-            outbound.Prepare("0");
-            outbound.Set(34, configuration.OutboundSeqNum);
-            outbound.Set(52, Clock.Time);
-            outbound.Set(49, configuration.Sender);
-            outbound.Set(56, configuration.Target);
             outbound.Build();
 
             Send(configuration, channel, outbound);
@@ -140,6 +143,26 @@ namespace HotFix.Core
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SendGapFill(IConfiguration configuration, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
+        {
+            if (!inbound[16].Is(0L)) throw new EngineException("Unsupported resend request received (partial gap fills are not supported)");
+
+            outbound.Prepare("4");
+            outbound.Set(34, inbound[7].AsLong);
+            outbound.Set(52, Clock.Time);
+            outbound.Set(49, configuration.Sender);
+            outbound.Set(56, configuration.Target);
+            outbound.Set(123, "Y");
+            outbound.Set(36, configuration.OutboundSeqNum);
+            outbound.Build();
+
+            Send(configuration, channel, outbound);
+
+            // HACK
+            configuration.OutboundSeqNum--;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Send(IConfiguration configuration, Channel channel, FIXMessageWriter message)
         {
             channel.Write(message);
@@ -152,7 +175,7 @@ namespace HotFix.Core
         public void HandleLogon(IConfiguration configuration, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
         {
             outbound.Prepare("A");
-            outbound.Set(34, 1);
+            outbound.Set(34, configuration.OutboundSeqNum);
             outbound.Set(52, Clock.Time);
             outbound.Set(49, configuration.Sender);
             outbound.Set(56, configuration.Target);
