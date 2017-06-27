@@ -92,6 +92,7 @@ namespace HotFix.Core
             _bodyEnd = _end - 1;
 
             var length = _bodyEnd - _headerEnd;
+            _buffer.WriteString(_headerEnd - 5, "00000");
             _buffer.WriteIntBackwards(_headerEnd - 1, length);
 
             var checksum = CalculateChecksum();
