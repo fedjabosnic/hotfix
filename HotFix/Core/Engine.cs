@@ -47,10 +47,10 @@ namespace HotFix.Core
                         switch (inbound[35].AsString)
                         {
                             case "1":
-                                SendTestResponse(configuration, channel, inbound, outbound);
+                                HandleTestRequest(configuration, channel, inbound, outbound);
                                 break;
                             case "2":
-                                SendGapFill(configuration, channel, inbound, outbound);
+                                HandleResendRequest(configuration, channel, inbound, outbound);
                                 break;
                             default:
                                 break;
@@ -110,20 +110,6 @@ namespace HotFix.Core
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SendTestResponse(IConfiguration configuration, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
-        {
-            outbound.Prepare("0");
-            outbound.Set(34, configuration.OutboundSeqNum);
-            outbound.Set(52, Clock.Time);
-            outbound.Set(49, configuration.Sender);
-            outbound.Set(56, configuration.Target);
-            outbound.Set(112, inbound[112].AsString);
-            outbound.Build();
-
-            Send(configuration, channel, outbound);
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SendResendRequest(IConfiguration configuration, Channel channel, FIXMessageWriter outbound)
         {
             if (configuration.Synchronizing) return;
@@ -143,10 +129,27 @@ namespace HotFix.Core
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SendGapFill(IConfiguration configuration, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
+        public void HandleTestRequest(IConfiguration configuration, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
         {
+            // Prepare and send a heartbeat (with the test request id)
+            outbound.Prepare("0");
+            outbound.Set(34, configuration.OutboundSeqNum);
+            outbound.Set(52, Clock.Time);
+            outbound.Set(49, configuration.Sender);
+            outbound.Set(56, configuration.Target);
+            outbound.Set(112, inbound[112].AsString);
+            outbound.Build();
+
+            Send(configuration, channel, outbound);
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void HandleResendRequest(IConfiguration configuration, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
+        {
+            // Validate request
             if (!inbound[16].Is(0L)) throw new EngineException("Unsupported resend request received (partial gap fills are not supported)");
 
+            // Prepare and send a gap fill message
             outbound.Prepare("4");
             outbound.Set(34, inbound[7].AsLong);
             outbound.Set(52, Clock.Time);
