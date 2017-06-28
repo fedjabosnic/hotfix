@@ -45,7 +45,7 @@ namespace HotFix.Core
 
                 try
                 {
-                    head += Transport.Inbound.Read(buffer, head, buffer.Length - head);
+                    head += Transport.Read(buffer, head, buffer.Length - head);
 
                     for (; tail < head; tail++)
                     {
@@ -143,7 +143,7 @@ namespace HotFix.Core
             Debug.WriteLine($"> {timestamp:yyyyMMdd HH:mm:ss.fff}: Sending '{type}'");
             Debug.WriteLine($"  {message}");
 
-            Transport.Outbound.Write(msg, 0, msg.Length);
+            Transport.Write(msg, 0, msg.Length);
         }
 
         public void Dispose()

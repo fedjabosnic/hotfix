@@ -8,8 +8,8 @@ namespace HotFix.Core
         private const byte SOH = (byte)'\u0001';
         private const byte EQL = (byte) '=';
 
-        private readonly byte[] _buffer;
-        private int _end;
+        internal readonly byte[] _buffer;
+        internal int _end;
 
         private readonly int _headerEnd;
         private int _bodyEnd;
@@ -92,6 +92,7 @@ namespace HotFix.Core
             _bodyEnd = _end - 1;
 
             var length = _bodyEnd - _headerEnd;
+            _buffer.WriteString(_headerEnd - 5, "00000");
             _buffer.WriteIntBackwards(_headerEnd - 1, length);
 
             var checksum = CalculateChecksum();

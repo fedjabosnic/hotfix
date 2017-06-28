@@ -58,8 +58,8 @@ namespace HotFix.Core
                 if (Fields[2].Tag != 35) throw new Exception("MsgType field not found at expected position");
                 if (Fields[Count - 1].Tag != 10) throw new Exception("CheckSum field not found at expected position");
 
-                if (this[9].AsInt != length - this[8].Length - this[9].Length - this[10].Length) throw new Exception("BodyLength of the message does not match");
-                if (this[10].AsInt != (checksum - this[10].Checksum) % 256) throw new Exception("CheckSum of the message does not match");
+                if (Fields[1].AsInt != length - Fields[0].Length - Fields[1].Length - Fields[Count - 1].Length) throw new Exception("BodyLength of the message does not match");
+                if (Fields[Count - 1].AsInt != (checksum - Fields[Count - 1].Checksum) % 256) throw new Exception("CheckSum of the message does not match");
 
                 Valid = true;
             }
@@ -174,6 +174,8 @@ namespace HotFix.Core
             {
                 // NOTE: Optimized for retrieving expected header/trailer fields
 
+                if (!Valid) throw new Exception("Field not found");
+
                 switch (tag)
                 {
                     case 8: return Fields[0];
@@ -197,6 +199,8 @@ namespace HotFix.Core
         /// <param name="instance">The instance of the field (if there are multiple).</param>
         public bool Contains(int tag, int instance = 0)
         {
+            if (!Valid) return false;
+
             switch (tag)
             {
                 case 8:
@@ -211,6 +215,13 @@ namespace HotFix.Core
                             return true;
                     return false;
             }
+        }
+
+        public void Clear()
+        {
+            Count = 0;
+            Length = 0;
+            Valid = false;
         }
 
         public override string ToString()

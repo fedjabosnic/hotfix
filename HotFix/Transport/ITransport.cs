@@ -5,7 +5,7 @@ namespace HotFix.Transport
 {
     public interface ITransport : IDisposable
     {
-        Stream Inbound { get; } // Listen
-        Stream Outbound { get; } // Send
+        int Read(byte[] buffer, int offset, int count);
+        void Write(byte[] buffer, int offset, int count);
     }
 }

@@ -21,10 +21,14 @@ namespace HotFix
                 OutboundBufferSize = 65536
             };
 
-            var transport = new TcpTransport(configuration.Host, configuration.Port);
-            var session = new FIXSession(transport, configuration);
+            var engine = new Engine();
 
-            session.Run();
+            engine.Run(configuration);
+
+            //var transport = new TcpTransport(configuration.Host, configuration.Port);
+            //var session = new FIXSession(transport, configuration);
+
+            //session.Run();
 
             Console.WriteLine("Session has ended, press any key to exit");
             Console.ReadKey();

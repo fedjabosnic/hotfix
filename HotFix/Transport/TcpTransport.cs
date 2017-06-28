@@ -1,16 +1,13 @@
-﻿using System.IO;
+﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using System.Threading;
+using HotFix.Core;
 
 namespace HotFix.Transport
 {
     public class TcpTransport : ITransport
     {
-        private readonly Stream _stream;
-
-        public Stream Inbound => _stream;
-        public Stream Outbound => _stream;
+        private readonly NetworkStream _stream;
 
         public TcpTransport(string address, int port)
         {
@@ -23,11 +20,23 @@ namespace HotFix.Transport
             socket.Connect(endpoint);
 
             _stream = new NetworkStream(socket, true);
+        }
 
-            Thread.Sleep(1000);
+        public int Read(byte[] buffer, int offset, int count)
+        {
+            var start = Engine.Clock.Time;
 
-            System.Console.WriteLine(socket.Connected);
-            System.Console.WriteLine();
+            while (!_stream.DataAvailable)
+            {
+                if (Engine.Clock.Time - start > TimeSpan.FromSeconds(1)) return 0;
+            }
+
+            return _stream.Read(buffer, offset, count);
+        }
+
+        public void Write(byte[] buffer, int offset, int count)
+        {
+            _stream.Write(buffer, offset, count);
         }
 
         public void Dispose()
