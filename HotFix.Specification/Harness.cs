@@ -18,7 +18,7 @@ namespace HotFix.Specification
             Instructions = instructions;
             Engine.Clock = Clock = new VirtualClock();
 
-            var instruction = Instructions[Step++];
+            var instruction = NextInstruction();
 
             if (instruction[0] != '!') throw new Exception("The first step should always be a time-set (!) instruction");
 
@@ -30,7 +30,7 @@ namespace HotFix.Specification
             // If there are no more instructions, we have completed the scenario
             if (Instructions.Count == Step) throw new DelightfullySuccessfulException();
 
-            var instruction = Instructions[Step++];
+            var instruction = NextInstruction();
 
             try
             {
@@ -56,7 +56,7 @@ namespace HotFix.Specification
 
         public void Write(byte[] buffer, int offset, int count)
         {
-            var instruction = Instructions[Step++];
+            var instruction = NextInstruction();
 
             try
             {
@@ -73,6 +73,8 @@ namespace HotFix.Specification
                 throw new Exception($"Error on step {Step} '{instruction}'", e);
             }
         }
+
+        private string NextInstruction() => Instructions[Step++].Replace('|', '\u0001');
 
         public void Dispose()
         {
