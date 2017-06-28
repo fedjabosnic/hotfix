@@ -60,10 +60,10 @@ namespace HotFix.Specification
                 if (Exception != null)
                 {
                     if (exception.GetType() == typeof(DelightfullySuccessfulException))
-                        throw new AssertFailedException("The expected exception type was not thrwon. All instructions successfully executed instead");
+                        throw new AssertFailedException($"The test expected an exception of type {Exception.FullName} but no exception was thrown");
 
                     if (Exception != exception.GetType())
-                        throw new AssertFailedException($"The expected exception type was not thrown. The type '{exception.GetType()}' was thrown instead");
+                        throw new AssertFailedException($"The test expected an exception of type {Exception.FullName} but an exception of type {exception.GetType().FullName} was thrown instead");
 
                     if (Message != null && Message != exception.Message)
                         throw new AssertFailedException("The thrown exception did not have the correct message");
