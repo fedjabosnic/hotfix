@@ -24,5 +24,6 @@ namespace HotFix.Core
         public DateTime OutboundTimestamp { get; set; }
 
         public bool Synchronizing { get; set; }
+        public bool TestRequestPending { get; set; }
     }
 }

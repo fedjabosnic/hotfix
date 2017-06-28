@@ -40,6 +40,7 @@ namespace HotFix.Core
                     if (inbound[34].Is(configuration.InboundSeqNum))
                     {
                         configuration.Synchronizing = false;
+                        configuration.TestRequestPending = false;
 
                         // Process message
                         Console.WriteLine("Processing: " + inbound[35].AsString);
@@ -76,7 +77,16 @@ namespace HotFix.Core
 
                 if (Clock.Time - configuration.InboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval * 1.2))
                 {
-                    SendTestRequest(configuration, channel, outbound);
+                    if (Clock.Time - configuration.InboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval * 2))
+                    {
+                        throw new EngineException("Did not receive any messages for too long");
+                    }
+
+                    if (!configuration.TestRequestPending)
+                    {
+                        SendTestRequest(configuration, channel, outbound);
+                        configuration.TestRequestPending = true;
+                    }
                 }
 
                 inbound.Clear();
