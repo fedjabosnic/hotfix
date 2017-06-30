@@ -42,8 +42,8 @@ namespace HotFix.Specification.test_request
                 })
                 .Verify((engine, configuration) =>
                 {
-                    configuration.InboundSeqNum.Should().Be(2);
-                    configuration.OutboundSeqNum.Should().Be(4);
+                    engine.State.InboundSeqNum.Should().Be(2);
+                    engine.State.OutboundSeqNum.Should().Be(4);
                 })
                 .Run();
         }
@@ -136,8 +136,8 @@ namespace HotFix.Specification.test_request
                 })
                 .Verify((engine, configuration) =>
                 {
-                    configuration.InboundSeqNum.Should().Be(5);
-                    configuration.OutboundSeqNum.Should().Be(6);
+                    engine.State.InboundSeqNum.Should().Be(5);
+                    engine.State.OutboundSeqNum.Should().Be(6);
                 })
                 .Run();
         }
