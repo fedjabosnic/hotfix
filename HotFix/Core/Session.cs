@@ -65,9 +65,6 @@ namespace HotFix.Core
                         state.Synchronizing = false;
                         state.TestRequestPending = false;
 
-                        // Process message
-                        Console.WriteLine("Processing: " + inbound[35].AsString);
-
                         switch (inbound[35].AsString)
                         {
                             case "1":

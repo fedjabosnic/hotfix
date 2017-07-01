@@ -164,6 +164,7 @@
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="suites\session\session_receive.cs" />
     <Compile Include="suites\writing_messages.cs" />
     <Compile Include="suites\basic.cs" />
     <Compile Include="suites\parsing_messages.cs" />

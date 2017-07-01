@@ -40,8 +40,6 @@ namespace HotFix.Core
 
                 message.Parse(_buffer, _tail, _current - _tail + 1);
 
-                Console.WriteLine("Received: " + message);
-
                 _tail = _current + 1;
 
                 if (_tail == _head)
@@ -57,8 +55,6 @@ namespace HotFix.Core
 
         public void Write(FIXMessageWriter message)
         {
-            Console.WriteLine("Sending: " + message);
-
             Transport.Write(message._buffer, 0, message._end);
         }
     }
