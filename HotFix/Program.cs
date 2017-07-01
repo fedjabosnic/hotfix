@@ -21,7 +21,7 @@ namespace HotFix
                 OutboundBufferSize = 65536
             };
 
-            var engine = new Engine();
+            var engine = new Session();
 
             engine.Run(configuration);
 

@@ -16,7 +16,7 @@ namespace HotFix.Specification
         public Harness(List<string> instructions)
         {
             Instructions = instructions;
-            Engine.Clock = Clock = new VirtualClock();
+            Session.Clock = Clock = new VirtualClock();
 
             var instruction = NextInstruction();
 

@@ -5,13 +5,13 @@ using HotFix.Utilities;
 
 namespace HotFix.Core
 {
-    public class Engine
+    public class Session
     {
         public static IClock Clock { get; set; }
         public Func<IConfiguration, ITransport> Transports { get; set; }
         public State State { get; private set; }
 
-        public Engine()
+        public Session()
         {
             Clock = new RealTimeClock();
             Transports = c => new TcpTransport(c.Host, c.Port);
