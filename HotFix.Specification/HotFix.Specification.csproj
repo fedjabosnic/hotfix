@@ -60,7 +60,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Harness.cs" />
+    <Compile Include="VirtualTransport.cs" />
     <Compile Include="resend_request\an_inbound_resend_request.cs" />
     <Compile Include="test_request\an_inbound_test_request.cs" />
     <Compile Include="heartbeat\heartbeat.cs" />

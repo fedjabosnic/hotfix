@@ -7,28 +7,31 @@ namespace HotFix.Core
 {
     public class Session
     {
-        public static IClock Clock { get; set; }
-        public Func<IConfiguration, ITransport> Transports { get; set; }
-        public State State { get; private set; }
+        public IClock Clock { get; }
+        public IConfiguration Configuration { get; }
+        public Channel Channel { get; }
+        public State State { get; }
 
-        public Session()
+        public Session(IConfiguration configuration, IClock clock, ITransport transport)
         {
-            Clock = new RealTimeClock();
-            Transports = c => new TcpTransport(c.Host, c.Port);
-        }
+            Clock = clock;
+            Configuration = configuration;
 
-        public void Run(IConfiguration configuration)
-        {
-            var state = State = new State
+            Channel = new Channel(transport);
+            State = new State
             {
                 InboundSeqNum = configuration.InboundSeqNum,
                 OutboundSeqNum = configuration.OutboundSeqNum,
-                InboundTimestamp = Clock.Time,
-                OutboundTimestamp = Clock.Time
+                InboundTimestamp = clock.Time,
+                OutboundTimestamp = clock.Time
             };
+        }
 
-            var transport = Transports(configuration);
-            var channel = new Channel(transport);
+        public void Run()
+        {
+            var state = State;
+            var channel = Channel;
+            var configuration = Configuration;
 
             var inbound = new FIXMessage();
             var outbound = new FIXMessageWriter(1024, configuration.Version);
@@ -227,7 +230,7 @@ namespace HotFix.Core
                 {
                     if (!inbound[35].Is("A")) throw new EngineException("Unexpected first message received (expected a logon)");
                     if (!inbound[108].Is(configuration.HeartbeatInterval)) throw new EngineException("Unexpected heartbeat interval received");
-                    if (!inbound[ 98].Is(0)) throw new EngineException("Unexpected encryption method received");
+                    if (!inbound[98].Is(0)) throw new EngineException("Unexpected encryption method received");
                     if (!inbound[141].Is("Y")) throw new EngineException("Unexpected reset on logon received");
 
                     return;
@@ -242,12 +245,12 @@ namespace HotFix.Core
     {
         public EngineException()
         {
-            
+
         }
 
         public EngineException(string message) : base(message)
         {
-            
+
         }
     }
 }

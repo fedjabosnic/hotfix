@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Core\Channel.cs" />
+    <Compile Include="Core\Engine.cs" />
     <Compile Include="Core\Session.cs" />
     <Compile Include="Core\FIXMessageWriter.cs" />
     <Compile Include="Core\Configuration.cs" />
