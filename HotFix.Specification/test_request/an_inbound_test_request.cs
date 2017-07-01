@@ -38,8 +38,8 @@ namespace HotFix.Specification.test_request
                 })
                 .Verify((engine, configuration) =>
                 {
-                    configuration.InboundSeqNum.Should().Be(3);
-                    configuration.OutboundSeqNum.Should().Be(3);
+                    engine.State.InboundSeqNum.Should().Be(3);
+                    engine.State.OutboundSeqNum.Should().Be(3);
                 })
                 .Run();
         }

@@ -280,9 +280,9 @@ namespace HotFix.Specification.logon
                 })
                 .Verify((engine, configuration) =>
                 {
-                    configuration.InboundSeqNum.Should().Be(5);
-                    configuration.OutboundSeqNum.Should().Be(3);
-                    configuration.Synchronizing.Should().Be(true);
+                    engine.State.InboundSeqNum.Should().Be(5);
+                    engine.State.OutboundSeqNum.Should().Be(3);
+                    engine.State.Synchronizing.Should().Be(true);
                 })
                 .Run();
         }
@@ -312,8 +312,8 @@ namespace HotFix.Specification.logon
                 })
                 .Verify((engine, configuration) =>
                 {
-                    configuration.InboundSeqNum.Should().Be(2);
-                    configuration.OutboundSeqNum.Should().Be(2);
+                    engine.State.InboundSeqNum.Should().Be(2);
+                    engine.State.OutboundSeqNum.Should().Be(2);
                 })
                 .Run();
         }

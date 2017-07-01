@@ -64,8 +64,8 @@ namespace HotFix.Specification.resend_request
                 })
                 .Verify((engine, configuration) =>
                 {
-                    configuration.InboundSeqNum.Should().Be(12L);
-                    configuration.OutboundSeqNum.Should().Be(11L);
+                    engine.State.InboundSeqNum.Should().Be(12L);
+                    engine.State.OutboundSeqNum.Should().Be(11L);
                 })
                 .Run();
         }

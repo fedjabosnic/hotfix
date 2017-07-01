@@ -19,11 +19,5 @@ namespace HotFix.Core
 
         int InboundBufferSize { get; set; }
         int OutboundBufferSize { get; set; }
-
-        DateTime InboundTimestamp { get; set; }
-        DateTime OutboundTimestamp { get; set; }
-
-        bool Synchronizing { get; set; }
-        bool TestRequestPending { get; set; }
     }
 }
