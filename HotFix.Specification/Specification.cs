@@ -56,7 +56,12 @@ namespace HotFix.Specification
             {
                 session = engine.Initiate(Configuration);
 
-                session.Run();
+                session.Logon();
+
+                while (true)
+                {
+                    session.Receive();
+                }
 
                 if (Exception != null) throw new AssertFailedException("The expected exception was not thrown");
             }

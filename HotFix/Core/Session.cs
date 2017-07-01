@@ -12,6 +12,9 @@ namespace HotFix.Core
         public Channel Channel { get; }
         public State State { get; }
 
+        public FIXMessage Inbound;
+        public FIXMessageWriter Outbound;
+
         public Session(IConfiguration configuration, IClock clock, ITransport transport)
         {
             Clock = clock;
@@ -25,18 +28,29 @@ namespace HotFix.Core
                 InboundTimestamp = clock.Time,
                 OutboundTimestamp = clock.Time
             };
+
+            Inbound = new FIXMessage();
+            Outbound = new FIXMessageWriter(1024, configuration.Version);
         }
 
-        public void Run()
+        public void Logon()
         {
+            HandleLogon(Configuration, State, Channel, Inbound, Outbound);
+        }
+
+        public bool Receive()
+        {
+            var clock = Clock;
             var state = State;
             var channel = Channel;
             var configuration = Configuration;
 
-            var inbound = new FIXMessage();
-            var outbound = new FIXMessageWriter(1024, configuration.Version);
+            var inbound = Inbound;
+            var outbound = Outbound;
 
-            HandleLogon(configuration, state, channel, inbound, outbound);
+            inbound.Clear();
+
+            channel.Read(inbound);
 
             while (true)
             {
@@ -70,7 +84,7 @@ namespace HotFix.Core
                         }
 
                         state.InboundSeqNum++;
-                        state.InboundTimestamp = Clock.Time;
+                        state.InboundTimestamp = clock.Time;
                     }
                     else
                     {
@@ -79,14 +93,14 @@ namespace HotFix.Core
                     }
                 }
 
-                if (Clock.Time - state.OutboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval))
+                if (clock.Time - state.OutboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval))
                 {
                     SendHeartbeat(configuration, state, channel, outbound);
                 }
 
-                if (Clock.Time - state.InboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval * 1.2))
+                if (clock.Time - state.InboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval * 1.2))
                 {
-                    if (Clock.Time - state.InboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval * 2))
+                    if (clock.Time - state.InboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval * 2))
                     {
                         throw new EngineException("Did not receive any messages for too long");
                     }
@@ -98,9 +112,7 @@ namespace HotFix.Core
                     }
                 }
 
-                inbound.Clear();
-
-                channel.Read(inbound);
+                return inbound.Valid;
             }
         }
 
@@ -228,10 +240,27 @@ namespace HotFix.Core
 
                 if (inbound.Valid)
                 {
+                    if (!Inbound[8].Is(configuration.Version)) throw new EngineException("Unexpected begin string received");
+                    if (!Inbound[49].Is(configuration.Target)) throw new EngineException("Unexpected comp id received");
+                    if (!Inbound[56].Is(configuration.Sender)) throw new EngineException("Unexpected comp id received");
+
                     if (!inbound[35].Is("A")) throw new EngineException("Unexpected first message received (expected a logon)");
                     if (!inbound[108].Is(configuration.HeartbeatInterval)) throw new EngineException("Unexpected heartbeat interval received");
                     if (!inbound[98].Is(0)) throw new EngineException("Unexpected encryption method received");
                     if (!inbound[141].Is("Y")) throw new EngineException("Unexpected reset on logon received");
+
+                    if (!Inbound[34].Is(state.InboundSeqNum))
+                    {
+                        if (Inbound[34].AsLong < state.InboundSeqNum) throw new EngineException("Sequence number too low");
+                        if (Inbound[34].AsLong > state.InboundSeqNum)
+                        {
+                            SendResendRequest(configuration, state, channel, outbound);
+                            return;
+                        }
+                    }
+
+                    state.InboundSeqNum++;
+                    state.InboundTimestamp = Clock.Time;
 
                     return;
                 }
