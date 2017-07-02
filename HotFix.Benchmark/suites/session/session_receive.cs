@@ -65,7 +65,7 @@ namespace HotFix.Benchmark.suites.session
             };
 
             Transport = new Canned();
-            Session = new Session(Configuration, new RealTimeClock(), Transport);
+            Session = new Session(Configuration, new RealTimeClock(), Transport, 65536, 4096, 1024);
         }
 
         public Configuration Configuration;
