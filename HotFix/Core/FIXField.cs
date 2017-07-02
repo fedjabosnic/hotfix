@@ -39,6 +39,8 @@ namespace HotFix.Core
         /// <returns>The result of the comparison.</returns>
         public bool Is(int value)
         {
+            // TODO: Implement without using exceptions
+
             try
             {
                 return this.AsInt == value;
@@ -60,6 +62,8 @@ namespace HotFix.Core
         /// <returns>The result of the comparison.</returns>
         public bool Is(long value)
         {
+            // TODO: Implement without using exceptions
+
             try
             {
                 return this.AsLong == value;
@@ -81,6 +85,8 @@ namespace HotFix.Core
         /// <returns>The result of the comparison.</returns>
         public bool Is(double value)
         {
+            // TODO: Implement without using exceptions
+
             try
             {
                 return this.AsFloat == value;
@@ -123,6 +129,8 @@ namespace HotFix.Core
         /// <returns>The result of the comparison.</returns>
         public bool Is(DateTime value)
         {
+            // TODO: Implement without using exceptions
+
             try
             {
                 return this.AsDateTime == value;

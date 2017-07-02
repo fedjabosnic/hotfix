@@ -33,7 +33,6 @@ namespace HotFix.Core
         {
             try
             {
-                // TODO: Verify performance impact...
                 Buffer.BlockCopy(message, offset, Raw, 0, count);
 
                 Length = count;
