@@ -60,11 +60,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="logon\as_acceptor.cs" />
     <Compile Include="VirtualTransport.cs" />
     <Compile Include="resend_request\an_inbound_resend_request.cs" />
     <Compile Include="test_request\an_inbound_test_request.cs" />
     <Compile Include="heartbeat\heartbeat.cs" />
-    <Compile Include="logon\logon.cs" />
+    <Compile Include="logon\as_initiator.cs" />
     <Compile Include="DelightfullySuccessfulException.cs" />
     <Compile Include="Specification.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

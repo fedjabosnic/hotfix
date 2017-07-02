@@ -5,7 +5,7 @@ using HotFix.Utilities;
 
 namespace HotFix.Core
 {
-    public class Session
+    public class Session : IDisposable
     {
         public IClock Clock { get; }
         public IConfiguration Configuration { get; }
@@ -35,7 +35,17 @@ namespace HotFix.Core
 
         public void Logon()
         {
-            HandleLogon(Configuration, State, Channel, Inbound, Outbound);
+            switch (Configuration.Role)
+            {
+                case Role.Acceptor:
+                    AcceptLogon(Configuration, State, Channel, Inbound, Outbound);
+                    break;
+                case Role.Initiator:
+                    InitiateLogon(Configuration, State, Channel, Inbound, Outbound);
+                    break;
+                default:
+                    throw new Exception("Unrecognised session role");
+            }
         }
 
         public bool Receive()
@@ -217,7 +227,55 @@ namespace HotFix.Core
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void HandleLogon(IConfiguration configuration, State state, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
+        public void AcceptLogon(IConfiguration configuration, State state, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
+        {
+            while (Clock.Time - state.OutboundTimestamp < TimeSpan.FromSeconds(10))
+            {
+                channel.Read(inbound);
+
+                if (inbound.Valid)
+                {
+                    if (!Inbound[8].Is(configuration.Version)) throw new EngineException("Unexpected begin string received");
+                    if (!Inbound[49].Is(configuration.Target)) throw new EngineException("Unexpected comp id received");
+                    if (!Inbound[56].Is(configuration.Sender)) throw new EngineException("Unexpected comp id received");
+
+                    if (!Inbound[35].Is("A")) throw new EngineException("Unexpected first message received (expected a logon)");
+                    if (!Inbound[108].Is(Configuration.HeartbeatInterval)) throw new EngineException("Unexpected heartbeat interval received");
+                    if (!Inbound[98].Is(0)) throw new EngineException("Unexpected encryption method received");
+                    if (!Inbound[141].Is("Y")) throw new EngineException("Unexpected reset on logon received");
+
+                    if (Inbound[34].AsLong < state.InboundSeqNum) throw new EngineException("Sequence number too low");
+
+                    Outbound.Prepare("A");
+                    Outbound.Set(34, state.OutboundSeqNum);
+                    Outbound.Set(52, Clock.Time);
+                    Outbound.Set(49, configuration.Sender);
+                    Outbound.Set(56, configuration.Target);
+                    Outbound.Set(108, Configuration.HeartbeatInterval);
+                    Outbound.Set(98, 0);
+                    Outbound.Set(141, "Y");
+                    Outbound.Build();
+
+                    Send(state, channel, outbound);
+
+                    state.InboundSeqNum++;
+                    state.InboundTimestamp = Clock.Time;
+
+                    if (Inbound[34].AsLong > state.InboundSeqNum)
+                    {
+                        state.InboundSeqNum--; // HACK
+                        SendResendRequest(configuration, state, channel, outbound);
+                    }
+
+                    return;
+                }
+            }
+
+            throw new EngineException("Logon request not received on time");
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void InitiateLogon(IConfiguration configuration, State state, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
         {
             outbound.Prepare("A");
             outbound.Set(34, state.OutboundSeqNum);
@@ -264,6 +322,11 @@ namespace HotFix.Core
             }
 
             throw new EngineException("Logon response not received on time");
+        }
+
+        public void Dispose()
+        {
+            
         }
     }
 
