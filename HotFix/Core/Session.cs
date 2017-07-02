@@ -48,6 +48,11 @@ namespace HotFix.Core
             }
         }
 
+        public void Logoff()
+        {
+            // TODO
+        }
+
         public bool Receive()
         {
             var clock = Clock;
@@ -62,65 +67,51 @@ namespace HotFix.Core
 
             channel.Read(inbound);
 
-            while (true)
+            if (inbound.Valid)
             {
-                if (inbound.Valid)
+                if (!inbound[8].Is(configuration.Version)) throw new EngineException("Unexpected begin string received");
+                if (!inbound[49].Is(configuration.Target)) throw new EngineException("Unexpected comp id received");
+                if (!inbound[56].Is(configuration.Sender)) throw new EngineException("Unexpected comp id received");
+
+                if (inbound[34].Is(state.InboundSeqNum))
                 {
-                    if (!inbound[8].Is(configuration.Version)) throw new EngineException("Unexpected begin string received");
-                    if (!inbound[49].Is(configuration.Target)) throw new EngineException("Unexpected comp id received");
-                    if (!inbound[56].Is(configuration.Sender)) throw new EngineException("Unexpected comp id received");
+                    state.Synchronizing = false;
+                    state.TestRequestPending = false;
 
-                    if (inbound[34].Is(state.InboundSeqNum))
-                    {
-                        state.Synchronizing = false;
-                        state.TestRequestPending = false;
+                    if (inbound[35].Is("1")) HandleTestRequest(configuration, state, channel, inbound, outbound);
+                    if (inbound[35].Is("2")) HandleResendRequest(configuration, state, channel, inbound, outbound);
+                    if (inbound[35].Is("4")) HandleSequenceReset(configuration, state, channel, inbound, outbound);
 
-                        switch (inbound[35].AsString)
-                        {
-                            case "1":
-                                HandleTestRequest(configuration, state, channel, inbound, outbound);
-                                break;
-                            case "2":
-                                HandleResendRequest(configuration, state, channel, inbound, outbound);
-                                break;
-                            case "4":
-                                HandleSequenceReset(configuration, state, channel, inbound, outbound);
-                                break;
-                            default:
-                                break;
-                        }
-
-                        state.InboundSeqNum++;
-                        state.InboundTimestamp = clock.Time;
-                    }
-                    else
-                    {
-                        if (inbound[34].AsLong < state.InboundSeqNum) throw new EngineException("Sequence number too low");
-                        if (inbound[34].AsLong > state.InboundSeqNum) SendResendRequest(configuration, state, channel, outbound);
-                    }
+                    state.InboundSeqNum++;
+                    state.InboundTimestamp = clock.Time;
                 }
-
-                if (clock.Time - state.OutboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval))
+                else
                 {
-                    SendHeartbeat(configuration, state, channel, outbound);
+                    if (inbound[34].AsLong < state.InboundSeqNum) throw new EngineException("Sequence number too low");
+                    if (inbound[34].AsLong > state.InboundSeqNum) SendResendRequest(configuration, state, channel, outbound);
                 }
-
-                if (clock.Time - state.InboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval * 1.2))
-                {
-                    if (clock.Time - state.InboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval * 2))
-                    {
-                        throw new EngineException("Did not receive any messages for too long");
-                    }
-
-                    if (!state.TestRequestPending)
-                    {
-                        SendTestRequest(configuration, state, channel, outbound);
-                        state.TestRequestPending = true;
-                    }
-                }
-
-                return inbound.Valid;
             }
+
+            if (clock.Time - state.OutboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval))
+            {
+                SendHeartbeat(configuration, state, channel, outbound);
+            }
+
+            if (clock.Time - state.InboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval * 1.2))
+            {
+                if (clock.Time - state.InboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval * 2))
+                {
+                    throw new EngineException("Did not receive any messages for too long");
+                }
+
+                if (!state.TestRequestPending)
+                {
+                    SendTestRequest(configuration, state, channel, outbound);
+                    state.TestRequestPending = true;
+                }
+            }
+
+            return inbound.Valid;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -326,7 +317,7 @@ namespace HotFix.Core
 
         public void Dispose()
         {
-            
+            Logoff();
         }
     }
 
