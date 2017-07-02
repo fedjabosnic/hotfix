@@ -4,6 +4,8 @@ namespace HotFix.Core
 {
     public class Configuration : IConfiguration
     {
+        public Role Role { get; set; }
+
         public int HeartbeatInterval { get; set; }
 
         public string Version { get; set; } = "FIX.4.2";
