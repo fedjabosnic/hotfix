@@ -61,6 +61,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="logon\as_acceptor.cs" />
+    <Compile Include="logout\a_logout.cs" />
     <Compile Include="VirtualTransport.cs" />
     <Compile Include="resend_request\an_inbound_resend_request.cs" />
     <Compile Include="test_request\an_inbound_test_request.cs" />

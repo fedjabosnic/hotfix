@@ -9,13 +9,16 @@ namespace HotFix.Specification
     {
         public VirtualClock Clock { get; }
         public List<string> Instructions { get; }
+        public Action RequestLogout { get; }
 
         public int Step { get; private set; }
+        public bool Disposed { get; private set; }
 
-        public VirtualTransport(VirtualClock clock, List<string> instructions)
+        public VirtualTransport(VirtualClock clock, List<string> instructions, Action requestLogout)
         {
             Clock = clock;
             Instructions = instructions;
+            RequestLogout = requestLogout;
 
             var instruction = NextInstruction();
 
@@ -43,6 +46,9 @@ namespace HotFix.Specification
                         return instruction.Length - 2;
                     case '>':
                         throw new Exception($"Outbound message expected but not received: {instruction}");
+                    case 'X':
+                        RequestLogout();
+                        return 0;
                     default:
                         throw new Exception($"Unrecognised instruction found in scenario: {instruction}");
                 }
@@ -77,7 +83,7 @@ namespace HotFix.Specification
 
         public void Dispose()
         {
-
+            Disposed = true;
         }
     }
 }

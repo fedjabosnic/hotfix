@@ -11,6 +11,7 @@ namespace HotFix.Core
         public IConfiguration Configuration { get; }
         public Channel Channel { get; }
         public State State { get; }
+        public bool Active { get; private set; }
 
         public FIXMessage Inbound;
         public FIXMessageWriter Outbound;
@@ -28,6 +29,7 @@ namespace HotFix.Core
                 InboundTimestamp = clock.Time,
                 OutboundTimestamp = clock.Time
             };
+            Active = true;
 
             Inbound = new FIXMessage(maxMessageLength, maxMessageFields);
             Outbound = new FIXMessageWriter(maxMessageLength, configuration.Version);
@@ -50,7 +52,17 @@ namespace HotFix.Core
 
         public void Logout()
         {
-            // TODO
+            // Prepare and send a logout message
+            Outbound.Prepare("5");
+            Outbound.Set(34, State.OutboundSeqNum);
+            Outbound.Set(52, Clock.Time);
+            Outbound.Set(49, Configuration.Sender);
+            Outbound.Set(56, Configuration.Target);
+            Outbound.Build();
+
+            Send(State, Channel, Outbound);
+
+            Active = false;
         }
 
         public bool Receive()
@@ -81,6 +93,7 @@ namespace HotFix.Core
                     if (inbound[35].Is("1")) HandleTestRequest(configuration, state, channel, inbound, outbound);
                     if (inbound[35].Is("2")) HandleResendRequest(configuration, state, channel, inbound, outbound);
                     if (inbound[35].Is("4")) HandleSequenceReset(configuration, state, channel, inbound, outbound);
+                    if (inbound[35].Is("5")) Active = false;
                     if (inbound[35].Is("A")) throw new EngineException("Logon message received while already logged on");
 
                     state.InboundSeqNum++;
@@ -318,7 +331,7 @@ namespace HotFix.Core
 
         public void Dispose()
         {
-            Logout();
+            Channel.Transport.Dispose();
         }
     }
 

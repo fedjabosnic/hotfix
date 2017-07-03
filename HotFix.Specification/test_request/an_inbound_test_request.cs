@@ -37,10 +37,10 @@ namespace HotFix.Specification.test_request
                     "> 8=FIX.4.2|9=00065|35=0|34=2|52=20170623-14:51:47.000|49=Client|56=Server|112=XXXXX|10=193|",
                     "! 20170623-14:51:48.000"
                 })
-                .Verify((engine, configuration) =>
+                .Verify((session, configuration, _) =>
                 {
-                    engine.State.InboundSeqNum.Should().Be(3);
-                    engine.State.OutboundSeqNum.Should().Be(3);
+                    session.State.InboundSeqNum.Should().Be(3);
+                    session.State.OutboundSeqNum.Should().Be(3);
                 })
                 .Run();
         }

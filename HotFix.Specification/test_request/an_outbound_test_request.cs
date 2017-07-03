@@ -41,10 +41,10 @@ namespace HotFix.Specification.test_request
                     // The engine should send a test request since no inbound messages have been received
                     "> 8=FIX.4.2|9=00078|35=1|34=3|52=20170623-14:51:52.000|49=Client|56=Server|112=636338263120000000|10=150|"
                 })
-                .Verify((engine, configuration) =>
+                .Verify((session, configuration, _) =>
                 {
-                    engine.State.InboundSeqNum.Should().Be(2);
-                    engine.State.OutboundSeqNum.Should().Be(4);
+                    session.State.InboundSeqNum.Should().Be(2);
+                    session.State.OutboundSeqNum.Should().Be(4);
                 })
                 .Run();
         }
@@ -137,10 +137,10 @@ namespace HotFix.Specification.test_request
                     "! 20170623-14:52:05.000",
                     "! 20170623-14:52:06.000"
                 })
-                .Verify((engine, configuration) =>
+                .Verify((session, configuration, _) =>
                 {
-                    engine.State.InboundSeqNum.Should().Be(5);
-                    engine.State.OutboundSeqNum.Should().Be(6);
+                    session.State.InboundSeqNum.Should().Be(5);
+                    session.State.OutboundSeqNum.Should().Be(6);
                 })
                 .Run();
         }

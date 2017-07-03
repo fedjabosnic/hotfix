@@ -281,11 +281,11 @@ namespace HotFix.Specification.logon
                     // The engine sends a resend request for any missed messages (sequence number 1 onwards)
                     "> 8=FIX.4.2|9=00064|35=2|34=2|52=20170623-14:51:40.000|49=Server|56=Client|7=1|16=0|10=172|"
                 })
-                .Verify((engine, configuration) =>
+                .Verify((session, configuration, _) =>
                 {
-                    engine.State.InboundSeqNum.Should().Be(1);
-                    engine.State.OutboundSeqNum.Should().Be(3);
-                    engine.State.Synchronizing.Should().Be(true);
+                    session.State.InboundSeqNum.Should().Be(1);
+                    session.State.OutboundSeqNum.Should().Be(3);
+                    session.State.Synchronizing.Should().Be(true);
                 })
                 .Run();
         }
@@ -313,10 +313,10 @@ namespace HotFix.Specification.logon
                     "> 8=FIX.4.2|9=00072|35=A|34=1|52=20170623-14:51:40.000|49=Server|56=Client|108=5|98=0|141=Y|10=086|",
                     "! 20170623-14:51:42.000"
                 })
-                .Verify((engine, configuration) =>
+                .Verify((session, configuration, _) =>
                 {
-                    engine.State.InboundSeqNum.Should().Be(2);
-                    engine.State.OutboundSeqNum.Should().Be(2);
+                    session.State.InboundSeqNum.Should().Be(2);
+                    session.State.OutboundSeqNum.Should().Be(2);
                 })
                 .Run();
         }
