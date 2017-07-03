@@ -15,6 +15,7 @@ namespace HotFix.Specification.heartbeat
             new Specification()
                 .Configure(new Configuration
                 {
+                    Role = Role.Initiator,
                     Version = "FIX.4.2",
                     Sender = "Client",
                     Target = "Server",

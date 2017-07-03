@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
-using HotFix.Core;
 using HotFix.Transport;
-using HotFix.Utilities;
 
 namespace HotFix.Specification
 {

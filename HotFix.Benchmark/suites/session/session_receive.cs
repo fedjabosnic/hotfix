@@ -11,7 +11,7 @@ namespace HotFix.Benchmark.suites.session
 {
     [MemoryDiagnoser]
     [AllStatisticsColumn]
-    //[SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 1000)]
+    [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 1000)]
     public class session_receive
     {
         public byte[] Heartbeat;

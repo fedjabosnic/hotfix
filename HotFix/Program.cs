@@ -189,37 +189,32 @@ namespace HotFix
         {
             var sorted = sequence.OrderBy(x => x).ToList();
 
-            var N = sorted.Count();
+            var N = sorted.Count;
             var n = (N - 1) * excelPercentile + 1;
             // Another method: double n = (N + 1) * excelPercentile; 
+
             if (n == 1d) return sorted[0];
-            else if (n == N) return sorted[N - 1];
-            else
-            {
-                var k = (int)n;
-                var d = n - k;
-                return (long)(sorted[k - 1] + d * (sorted[k] - sorted[k - 1]));
-            }
+            if (n == N) return sorted[N - 1];
+
+            var k = (int)n;
+            var d = n - k;
+            return (long)(sorted[k - 1] + d * (sorted[k] - sorted[k - 1]));
         }
 
         public static double StdDev(List<long> values)
         {
-            var ret = (double)0;
-            var count = values.Count();
+            var count = values.Count;
 
-            if (count > 1)
-            {
-                // Compute the Average 
-                var avg = values.Average();
+            if (count <= 1) return 0;
 
-                // Perform the Sum of (value-avg)^2 
-                var sum = values.Sum(d => (d - avg) * (d - avg));
+            // Compute the Average 
+            var avg = values.Average();
 
-                // Put it all together 
-                ret = Math.Sqrt(sum / count);
-            }
+            // Perform the Sum of (value-avg)^2 
+            var sum = values.Sum(d => (d - avg) * (d - avg));
 
-            return ret;
+            // Put it all together 
+            return Math.Sqrt(sum / count);
         }
     }
 }
