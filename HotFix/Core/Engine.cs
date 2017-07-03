@@ -12,10 +12,10 @@ namespace HotFix.Core
         public Engine()
         {
             Clocks = c => new RealTimeClock();
-            Transports = c => new TcpTransport(c.Host, c.Port);
+            Transports = c => TcpTransport.Create(c.Role == Role.Acceptor, c.Host, c.Port);
         }
 
-        public Session Initiate(IConfiguration configuration)
+        public Session Open(IConfiguration configuration)
         {
             var clock = Clocks(configuration);
             var transport = Transports(configuration);

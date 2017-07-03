@@ -4,6 +4,8 @@ namespace HotFix.Core
 {
     public interface IConfiguration
     {
+        Role Role { get; set; }
+
         int HeartbeatInterval { get; set; }
 
         string Version { get; set; }

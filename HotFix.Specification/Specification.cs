@@ -54,7 +54,7 @@ namespace HotFix.Specification
 
             try
             {
-                session = engine.Initiate(Configuration);
+                session = engine.Open(Configuration);
 
                 session.Logon();
 
@@ -70,13 +70,13 @@ namespace HotFix.Specification
                 if (Exception != null)
                 {
                     if (exception.GetType() == typeof(DelightfullySuccessfulException))
-                        throw new AssertFailedException($"The test expected an exception of type {Exception.FullName} but no exception was thrown");
+                        throw new AssertFailedException($"The test expected an exception of type '{Exception.FullName}' but no exception was thrown");
 
                     if (Exception != exception.GetType())
-                        throw new AssertFailedException($"The test expected an exception of type {Exception.FullName} but an exception of type {exception.GetType().FullName} was thrown instead");
+                        throw new AssertFailedException($"The test expected an exception of type '{Exception.FullName}' but an exception of type '{exception.GetType().FullName}' was thrown instead", exception);
 
                     if (Message != null && Message != exception.Message)
-                        throw new AssertFailedException("The thrown exception did not have the correct message");
+                        throw new AssertFailedException("The thrown exception did not have the correct message", exception);
                 }
                 else
                 {

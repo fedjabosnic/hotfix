@@ -7,7 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace HotFix.Specification.logon
 {
     [TestClass]
-    public class logon
+    public class as_initiator
     {
         [TestMethod]
         public void fails_when_the_response_is_not_received_in_the_allotted_time()

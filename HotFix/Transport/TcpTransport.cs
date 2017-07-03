@@ -1,25 +1,56 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
-using HotFix.Core;
 
 namespace HotFix.Transport
 {
     public class TcpTransport : ITransport
     {
+        const int SIO_LOOPBACK_FAST_PATH = -1744830448;
+
         private readonly NetworkStream _stream;
 
-        public TcpTransport(string address, int port)
+        public static TcpTransport Create(bool server, string address, int port)
+        {
+            return server ? Accept(address, port) : Initiate(address, port);
+        }
+
+        public static TcpTransport Initiate(string address, int port)
         {
             var endpoint = new DnsEndPoint(address, port);
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
             {
-                ReceiveTimeout = 1000
+                ReceiveTimeout = 1000,
+                NoDelay = true
             };
+
+            socket.IOControl(SIO_LOOPBACK_FAST_PATH, BitConverter.GetBytes(1), null);
 
             socket.Connect(endpoint);
 
-            _stream = new NetworkStream(socket, true);
+            return new TcpTransport(new NetworkStream(socket, true));
+        }
+
+        public static TcpTransport Accept(string address, int port)
+        {
+            var listener = new TcpListener(IPAddress.Parse(address), port);
+
+            listener.Start();
+
+            listener.Server.IOControl(SIO_LOOPBACK_FAST_PATH, BitConverter.GetBytes(1), null);
+
+            var socket = listener.AcceptSocket();
+
+            socket.NoDelay = true;
+
+            listener.Stop();
+
+            return new TcpTransport(new NetworkStream(socket, true));
+        }
+
+        public TcpTransport(NetworkStream stream)
+        {
+            _stream = stream;
         }
 
         public int Read(byte[] buffer, int offset, int count)
