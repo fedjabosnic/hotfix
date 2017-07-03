@@ -6,7 +6,7 @@ namespace HotFix.Encoding
     public static class FIXEncoding
     {
         /// <summary>
-        /// Parses an integer (Int32) from the provided string.
+        /// Parses an integer (Int32) from the provided byte array.
         /// </summary>
         /// <remarks>
         /// High performance, garbage free implementation (5x faster than bcl).
@@ -20,7 +20,7 @@ namespace HotFix.Encoding
         }
 
         /// <summary>
-        /// Parses an integer (Int32) from the provided string.
+        /// Parses an integer (Int32) from the provided byte array.
         /// </summary>
         /// <remarks>
         /// High performance, garbage free implementation (5x faster than bcl).
@@ -51,7 +51,7 @@ namespace HotFix.Encoding
         }
 
         /// <summary>
-        /// Parses a long (Int64) from the provided string.
+        /// Parses a long (Int64) from the provided byte array.
         /// </summary>
         /// <remarks>
         /// High performance, garbage free implementation (5x faster than bcl).
@@ -65,7 +65,7 @@ namespace HotFix.Encoding
         }
 
         /// <summary>
-        /// Parses a long (Int64) from the provided string.
+        /// Parses a long (Int64) from the provided byte array.
         /// </summary>
         /// <remarks>
         /// High performance, garbage free implementation (5x faster than bcl).
@@ -96,7 +96,7 @@ namespace HotFix.Encoding
         }
 
         /// <summary>
-        /// Parses an float (double) from the provided string.
+        /// Parses an float (double) from the provided byte array.
         /// </summary>
         /// <remarks>
         /// High performance, garbage free implementation (3x faster than bcl).
@@ -110,7 +110,7 @@ namespace HotFix.Encoding
         }
 
         /// <summary>
-        /// Parses an float (double) from the provided string.
+        /// Parses an float (double) from the provided byte array.
         /// </summary>
         /// <remarks>
         /// High performance, garbage free implementation (3x faster than bcl).
@@ -151,7 +151,7 @@ namespace HotFix.Encoding
         }
 
         /// <summary>
-        /// Parses a datetime from the provided string.
+        /// Parses a datetime from the provided byte array.
         /// </summary>
         /// <remarks>
         /// High performance implementation (allocates a new string).
@@ -165,7 +165,7 @@ namespace HotFix.Encoding
         }
 
         /// <summary>
-        /// Parses a string from the provided string.
+        /// Parses a string from the provided byte array.
         /// </summary>
         /// <remarks>
         /// High performance implementation (allocates a new string).
@@ -192,7 +192,7 @@ namespace HotFix.Encoding
         }
 
         /// <summary>
-        /// Parses a datetime from the provided string.
+        /// Parses a datetime from the provided byte array.
         /// </summary>
         /// <remarks>
         /// High performance, garbage free implementation (10x faster than bcl).
@@ -206,7 +206,7 @@ namespace HotFix.Encoding
         }
 
         /// <summary>
-        /// Parses a datetime from the provided string.
+        /// Parses a datetime from the provided byte array.
         /// </summary>
         /// <remarks>
         /// High performance, garbage free implementation (10x faster than bcl).

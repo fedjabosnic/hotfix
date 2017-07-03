@@ -33,7 +33,6 @@ namespace HotFix.Core
         {
             try
             {
-                // TODO: Verify performance impact...
                 Buffer.BlockCopy(message, offset, Raw, 0, count);
 
                 Length = count;
@@ -58,8 +57,11 @@ namespace HotFix.Core
                 if (Fields[2].Tag != 35) throw new Exception("MsgType field not found at expected position");
                 if (Fields[Count - 1].Tag != 10) throw new Exception("CheckSum field not found at expected position");
 
-                if (Fields[1].AsInt != length - Fields[0].Length - Fields[1].Length - Fields[Count - 1].Length) throw new Exception("BodyLength of the message does not match");
-                if (Fields[Count - 1].AsInt != (checksum - Fields[Count - 1].Checksum) % 256) throw new Exception("CheckSum of the message does not match");
+                length = length - Fields[0].Length - Fields[1].Length - Fields[Count - 1].Length;
+                checksum = (checksum - Fields[Count - 1].Checksum) % 256;
+
+                if (Fields[1].AsInt != length) throw new Exception($"BodyLength of the message does not match (expected {length})");
+                if (Fields[Count - 1].AsInt != checksum) throw new Exception($"CheckSum of the message does not match (expected {checksum})");
 
                 Valid = true;
             }
