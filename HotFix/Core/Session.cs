@@ -15,12 +15,12 @@ namespace HotFix.Core
         public FIXMessage Inbound;
         public FIXMessageWriter Outbound;
 
-        public Session(IConfiguration configuration, IClock clock, ITransport transport)
+        public Session(IConfiguration configuration, IClock clock, ITransport transport, int bufferSize, int maxMessageLength, int maxMessageFields)
         {
             Clock = clock;
             Configuration = configuration;
 
-            Channel = new Channel(transport);
+            Channel = new Channel(transport, bufferSize);
             State = new State
             {
                 InboundSeqNum = configuration.InboundSeqNum,
@@ -29,8 +29,8 @@ namespace HotFix.Core
                 OutboundTimestamp = clock.Time
             };
 
-            Inbound = new FIXMessage();
-            Outbound = new FIXMessageWriter(1024, configuration.Version);
+            Inbound = new FIXMessage(maxMessageLength, maxMessageFields);
+            Outbound = new FIXMessageWriter(maxMessageLength, configuration.Version);
         }
 
         public void Logon()

@@ -14,10 +14,10 @@ namespace HotFix.Core
 
         public bool Valid { get; private set; }
 
-        public FIXMessage()
+        public FIXMessage(int length = 4096, int fields = 1024)
         {
-            Raw = new byte[4096];
-            Fields = new FIXField[1000];
+            Raw = new byte[length];
+            Fields = new FIXField[fields];
         }
 
         /// <summary>

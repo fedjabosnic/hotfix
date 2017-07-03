@@ -14,11 +14,11 @@ namespace HotFix.Core
 
         public ITransport Transport { get; }
 
-        public Channel(ITransport transport)
+        public Channel(ITransport transport, int buffer)
         {
             Transport = transport;
 
-            _buffer = new byte[65536];
+            _buffer = new byte[buffer];
         }
 
         public bool Read(FIXMessage message)
