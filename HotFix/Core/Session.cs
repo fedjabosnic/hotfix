@@ -81,6 +81,7 @@ namespace HotFix.Core
                     if (inbound[35].Is("1")) HandleTestRequest(configuration, state, channel, inbound, outbound);
                     if (inbound[35].Is("2")) HandleResendRequest(configuration, state, channel, inbound, outbound);
                     if (inbound[35].Is("4")) HandleSequenceReset(configuration, state, channel, inbound, outbound);
+                    if (inbound[35].Is("A")) throw new EngineException("Logon message received while already logged on");
 
                     state.InboundSeqNum++;
                     state.InboundTimestamp = clock.Time;
