@@ -15,6 +15,7 @@ namespace HotFix.Specification.resend_request
             new Specification()
                 .Configure(new Configuration
                 {
+                    Role = Role.Initiator,
                     Version = "FIX.4.2",
                     Sender = "Client",
                     Target = "Server",
@@ -42,6 +43,7 @@ namespace HotFix.Specification.resend_request
             new Specification()
                 .Configure(new Configuration
                 {
+                    Role = Role.Initiator,
                     Version = "FIX.4.2",
                     Sender = "Client",
                     Target = "Server",

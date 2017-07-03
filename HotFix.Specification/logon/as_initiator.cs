@@ -15,6 +15,7 @@ namespace HotFix.Specification.logon
             new Specification()
                 .Configure(new Configuration
                 {
+                    Role = Role.Initiator,
                     Version = "FIX.4.2",
                     Sender = "Client",
                     Target = "Server",
@@ -43,6 +44,7 @@ namespace HotFix.Specification.logon
             new Specification()
                 .Configure(new Configuration
                 {
+                    Role = Role.Initiator,
                     Version = "FIX.4.2",
                     Sender = "Client",
                     Target = "Server",
@@ -69,6 +71,7 @@ namespace HotFix.Specification.logon
             new Specification()
                 .Configure(new Configuration
                 {
+                    Role = Role.Initiator,
                     Version = "FIX.4.2",
                     Sender = "Client",
                     Target = "Server",
@@ -95,6 +98,7 @@ namespace HotFix.Specification.logon
             new Specification()
                 .Configure(new Configuration
                 {
+                    Role = Role.Initiator,
                     Version = "FIX.4.2",
                     Sender = "Client",
                     Target = "Server",
@@ -121,6 +125,7 @@ namespace HotFix.Specification.logon
             new Specification()
                 .Configure(new Configuration
                 {
+                    Role = Role.Initiator,
                     Version = "FIX.4.2",
                     Sender = "Client",
                     Target = "Server",
@@ -147,6 +152,7 @@ namespace HotFix.Specification.logon
             new Specification()
                 .Configure(new Configuration
                 {
+                    Role = Role.Initiator,
                     Version = "FIX.4.2",
                     Sender = "Client",
                     Target = "Server",
@@ -173,6 +179,7 @@ namespace HotFix.Specification.logon
             new Specification()
                 .Configure(new Configuration
                 {
+                    Role = Role.Initiator,
                     Version = "FIX.4.2",
                     Sender = "Client",
                     Target = "Server",
@@ -199,6 +206,7 @@ namespace HotFix.Specification.logon
             new Specification()
                 .Configure(new Configuration
                 {
+                    Role = Role.Initiator,
                     Version = "FIX.4.2",
                     Sender = "Client",
                     Target = "Server",
@@ -225,6 +233,7 @@ namespace HotFix.Specification.logon
             new Specification()
                 .Configure(new Configuration
                 {
+                    Role = Role.Initiator,
                     Version = "FIX.4.2",
                     Sender = "Client",
                     Target = "Server",
@@ -251,6 +260,7 @@ namespace HotFix.Specification.logon
             new Specification()
                 .Configure(new Configuration
                 {
+                    Role = Role.Initiator,
                     Version = "FIX.4.2",
                     Sender = "Client",
                     Target = "Server",
@@ -285,6 +295,7 @@ namespace HotFix.Specification.logon
             new Specification()
                 .Configure(new Configuration
                 {
+                    Role = Role.Initiator,
                     Version = "FIX.4.2",
                     Sender = "Client",
                     Target = "Server",
