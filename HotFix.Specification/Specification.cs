@@ -62,8 +62,6 @@ namespace HotFix.Specification
                 {
                     session.Receive();
                 }
-
-                if (Exception != null) throw new AssertFailedException("The expected exception was not thrown");
             }
             catch (Exception exception)
             {
