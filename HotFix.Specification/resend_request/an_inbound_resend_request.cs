@@ -30,8 +30,7 @@ namespace HotFix.Specification.resend_request
                     "< 8=FIX.4.2|9=73|35=A|34=10|49=Server|52=20170623-14:51:45.051|56=Client|108=5|98=0|141=Y|10=002|",
                     "! 20170623-14:51:46.000",
                     "! 20170623-14:51:47.000",
-                    "< 8=FIX.4.2|9=65|35=2|34=11|49=Server|52=20170623-14:51:47.000|56=Client|7=5|16=8|10=096|",
-                    "! 20170623-14:51:51.000"
+                    "< 8=FIX.4.2|9=65|35=2|34=11|49=Server|52=20170623-14:51:47.000|56=Client|7=5|16=8|10=096|"
                 })
                 .Expect<EngineException>("Unsupported resend request received (partial gap fills are not supported)")
                 .Run();

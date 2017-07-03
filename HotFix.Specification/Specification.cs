@@ -79,9 +79,9 @@ namespace HotFix.Specification
             {
                 Console.WriteLine();
 
-                for (var i = 1; i <= Instructions.Count; i++)
+                for (var i = 0; i < Instructions.Count; i++)
                 {
-                    Console.WriteLine($"{i}: {Instructions[i - 1]}");
+                    Console.WriteLine($"{i+1}: {Instructions[i]}");
 
                     if (i < harness.Step)
                         Console.WriteLine("   - SUCCEEDED");
