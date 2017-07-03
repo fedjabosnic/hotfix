@@ -48,7 +48,7 @@ namespace HotFix.Core
             }
         }
 
-        public void Logoff()
+        public void Logout()
         {
             // TODO
         }
@@ -317,7 +317,7 @@ namespace HotFix.Core
 
         public void Dispose()
         {
-            Logoff();
+            Logout();
         }
     }
 
