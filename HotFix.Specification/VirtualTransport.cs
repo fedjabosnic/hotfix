@@ -3,20 +3,21 @@ using System.Collections.Generic;
 using FluentAssertions;
 using HotFix.Core;
 using HotFix.Transport;
+using HotFix.Utilities;
 
 namespace HotFix.Specification
 {
-    public class Harness : ITransport
+    public class VirtualTransport : ITransport
     {
         public VirtualClock Clock { get; }
         public List<string> Instructions { get; }
 
         public int Step { get; private set; }
 
-        public Harness(List<string> instructions)
+        public VirtualTransport(VirtualClock clock, List<string> instructions)
         {
+            Clock = clock;
             Instructions = instructions;
-            Engine.Clock = Clock = new VirtualClock();
 
             var instruction = NextInstruction();
 

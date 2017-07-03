@@ -24,11 +24,11 @@ namespace HotFix.Transport
 
         public int Read(byte[] buffer, int offset, int count)
         {
-            var start = Engine.Clock.Time;
+            var start = DateTime.UtcNow;
 
             while (!_stream.DataAvailable)
             {
-                if (Engine.Clock.Time - start > TimeSpan.FromSeconds(1)) return 0;
+                if (DateTime.UtcNow - start > TimeSpan.FromSeconds(1)) return 0;
             }
 
             return _stream.Read(buffer, offset, count);

@@ -23,7 +23,7 @@ namespace HotFix
 
             var engine = new Engine();
 
-            engine.Run(configuration);
+            engine.Initiate(configuration).Run();
 
             //var transport = new TcpTransport(configuration.Host, configuration.Port);
             //var session = new FIXSession(transport, configuration);

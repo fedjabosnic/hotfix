@@ -10,7 +10,7 @@ namespace HotFix.Specification
         public IConfiguration Configuration { get; set; }
         public List<string> Instructions { get; set; }
 
-        public Action<Engine, IConfiguration> Verification { get; set; }
+        public Action<Session, IConfiguration> Verification { get; set; }
 
         public Type Exception { get; set; }
         public string Message { get; set; }
@@ -29,7 +29,7 @@ namespace HotFix.Specification
             return this;
         }
 
-        public Specification Verify(Action<Engine, IConfiguration> verification)
+        public Specification Verify(Action<Session, IConfiguration> verification)
         {
             Verification = verification;
 
@@ -46,12 +46,17 @@ namespace HotFix.Specification
 
         public Specification Run()
         {
-            var harness = (Harness)null;
-            var engine = new Engine { Transports = c => harness = new Harness(Instructions) };
+            var clock = new VirtualClock();
+            var transport = new VirtualTransport(clock, Instructions);
+            var engine = new Engine { Clocks = c => clock, Transports = c => transport };
+
+            var session = (Session) null;
 
             try
             {
-                engine.Run(Configuration);
+                session = engine.Initiate(Configuration);
+
+                session.Run();
 
                 if (Exception != null) throw new AssertFailedException("The expected exception was not thrown");
             }
@@ -72,7 +77,7 @@ namespace HotFix.Specification
                 {
                     if (exception.GetType() != typeof(DelightfullySuccessfulException)) throw;
 
-                    Verification.Invoke(engine, Configuration);
+                    Verification.Invoke(session, Configuration);
                 }
             }
             finally
@@ -83,11 +88,11 @@ namespace HotFix.Specification
                 {
                     Console.WriteLine($"{i+1}: {Instructions[i]}");
 
-                    if (i < harness.Step)
+                    if (i < transport.Step)
                         Console.WriteLine("   - SUCCEEDED");
-                    if (i == harness.Step)
+                    if (i == transport.Step)
                         Console.WriteLine("   - FAILED");
-                    if (i > harness.Step)
+                    if (i > transport.Step)
                         Console.WriteLine("   - SKIPPED");
                 }
             }
