@@ -19,7 +19,7 @@ namespace HotFix.Test.utilities.writing
         [TestMethod]
         public void timestamp()
         {
-            var written = _buffer.WriteDateTime(1, DateTime.Parse("27/03/2017 15:45:13"));
+            var written = _buffer.WriteDateTime(1, DateTime.ParseExact("27/03/2017 15:45:13", "dd/MM/yyyy HH:mm:ss", null));
 
             System.Text.Encoding.ASCII.GetString(_buffer).Should().Be("\0" + "20170327-15:45:13.000" + "\0");
             written.Should().Be(21);
@@ -28,7 +28,7 @@ namespace HotFix.Test.utilities.writing
         [TestMethod]
         public void timestamp_with_milliseconds()
         {
-            var written = _buffer.WriteDateTime(1, DateTime.Parse("27/03/2017 15:45:13.123"));
+            var written = _buffer.WriteDateTime(1, DateTime.ParseExact("27/03/2017 15:45:13.123", "dd/MM/yyyy HH:mm:ss.fff", null));
 
             System.Text.Encoding.ASCII.GetString(_buffer).Should().Be("\0" + "20170327-15:45:13.123" + "\0");
             written.Should().Be(21);
@@ -38,7 +38,7 @@ namespace HotFix.Test.utilities.writing
         [ExpectedException(typeof(IndexOutOfRangeException))]
         public void out_of_bounds()
         {
-            _buffer.WriteDateTime(7, DateTime.Parse("27/03/2017 15:45:13.123"));
+            _buffer.WriteDateTime(7, DateTime.ParseExact("27/03/2017 15:45:13.123", "dd/MM/yyyy HH:mm:ss.fff", null));
         }
     }
 }

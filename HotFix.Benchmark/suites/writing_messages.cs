@@ -12,10 +12,10 @@ namespace HotFix.Benchmark.suites
     [SimpleJob(RunStrategy.Throughput, launchCount: 1, warmupCount: 5, targetCount: 10, invocationCount: 1000)]
     public class writing_messages
     {
-        public readonly DateTime SendingTime = DateTime.Parse("2017/05/31 08:18:01.768");
-        public readonly DateTime FutSettleDate = DateTime.Parse("2017/06/02");
-        public readonly DateTime TransactTime = DateTime.Parse("2017/05/31 08:18:01.767");
-        public readonly DateTime TradeDate = DateTime.Parse("2017/05/31");
+        public readonly DateTime SendingTime = DateTime.ParseExact("2017/05/31 08:18:01.768", "yyyy/MM/dd HH:mm:ss.fff", null);
+        public readonly DateTime FutSettleDate = DateTime.ParseExact("2017/06/02", "yyyy/MM/dd", null);
+        public readonly DateTime TransactTime = DateTime.ParseExact("2017/05/31 08:18:01.767", "yyyy/MM/dd", null);
+        public readonly DateTime TradeDate = DateTime.ParseExact("2017/05/31", "yyyy/MM/dd", null);
 
         public readonly FIXMessageWriter Message = new FIXMessageWriter(1000, "FIX.4.2");
 
