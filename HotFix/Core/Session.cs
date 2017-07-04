@@ -29,7 +29,6 @@ namespace HotFix.Core
                 InboundTimestamp = clock.Time,
                 OutboundTimestamp = clock.Time
             };
-            Active = true;
 
             Inbound = new FIXMessage(maxMessageLength, maxMessageFields);
             Outbound = new FIXMessageWriter(maxMessageLength, configuration.Version);
@@ -48,6 +47,8 @@ namespace HotFix.Core
                 default:
                     throw new Exception("Unrecognised session role");
             }
+
+            Active = true;
         }
 
         public void Logout()
@@ -93,8 +94,8 @@ namespace HotFix.Core
                     if (inbound[35].Is("1")) HandleTestRequest(configuration, state, channel, inbound, outbound);
                     if (inbound[35].Is("2")) HandleResendRequest(configuration, state, channel, inbound, outbound);
                     if (inbound[35].Is("4")) HandleSequenceReset(configuration, state, channel, inbound, outbound);
-                    if (inbound[35].Is("5")) Active = false;
-                    if (inbound[35].Is("A")) throw new EngineException("Logon message received while already logged on");
+                    if (inbound[35].Is("5")) HandleLogout(configuration, state, channel, inbound, outbound);
+                    if (inbound[35].Is("A")) HandleLogon(configuration, state, channel, inbound, outbound);
 
                     state.InboundSeqNum++;
                     state.InboundTimestamp = clock.Time;
@@ -127,6 +128,8 @@ namespace HotFix.Core
 
             return inbound.Valid;
         }
+
+        
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SendHeartbeat(IConfiguration configuration, State state, Channel channel, FIXMessageWriter outbound)
@@ -220,6 +223,16 @@ namespace HotFix.Core
 
             // Accept the new sequence number
             state.InboundSeqNum = inbound[36].AsLong;
+        }
+
+        public void HandleLogout(IConfiguration configuration, State state, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
+        {
+            Active = false;
+        }
+
+        public void HandleLogon(IConfiguration configuration, State state, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
+        {
+            throw new EngineException("Logon message received while already logged on");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
