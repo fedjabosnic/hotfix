@@ -17,7 +17,7 @@ namespace HotFix.Test.core.messagewriter
             message.Set(49, "SERVER");
             message.Set(56, "CLIENT");
             message.Set(34, 177);
-            message.Set(52, DateTime.Parse("2009/01/07 18:15:16"));
+            message.Set(52, DateTime.ParseExact("2009/01/07 18:15:16", "yyyy/MM/dd HH:mm:ss", null));
             message.Set(98, 0);
             message.Set(108, 30);
             message.Build();
@@ -35,7 +35,7 @@ namespace HotFix.Test.core.messagewriter
             // Prepare and build a small message
             message.Prepare("0");
             message.Set(34, 8059);
-            message.Set(52, DateTime.Parse("2017/05/31 08:18:01.767"));
+            message.Set(52, DateTime.ParseExact("2017/05/31 08:18:01.767", "yyyy/MM/dd HH:mm:ss.fff", null));
             message.Set(49, "SENDER....");
             message.Set(56, "RECEIVER.....");
             message.Build();
@@ -47,7 +47,7 @@ namespace HotFix.Test.core.messagewriter
             message.Set(49, "SERVER");
             message.Set(56, "CLIENT");
             message.Set(34, 177);
-            message.Set(52, DateTime.Parse("2009/01/07 18:15:16"));
+            message.Set(52, DateTime.ParseExact("2009/01/07 18:15:16", "yyyy/MM/dd HH:mm:ss", null));
             message.Set(98, 0);
             message.Set(108, 30);
             message.Set(12345, "Some really long text to make the message really large sdkfjfkjs gfsabf sabf sahfvb ksdjflsahfpieghpEIGHXKJVB KLSGBS BHJUXVCJDV V JV jsdh fkasdgsadoas oghoash go iasg fcblxc nsleiso bnlzxcvn skjbg");
@@ -70,7 +70,7 @@ namespace HotFix.Test.core.messagewriter
             message.Set(49, "SERVER");
             message.Set(56, "CLIENT");
             message.Set(34, 177);
-            message.Set(52, DateTime.Parse("2009/01/07 18:15:16"));
+            message.Set(52, DateTime.ParseExact("2009/01/07 18:15:16", "yyyy/MM/dd HH:mm:ss", null));
             message.Set(98, 0);
             message.Set(108, 30);
             message.Set(12345, "Some really long text to make the message really large sdkfjfkjs gfsabf sabf sahfvb ksdjflsahfpieghpEIGHXKJVB KLSGBS BHJUXVCJDV V JV jsdh fkasdgsadoas oghoash go iasg fcblxc nsleiso bnlzxcvn skjbg");
@@ -81,7 +81,7 @@ namespace HotFix.Test.core.messagewriter
             // Prepare and build a smaller message
             message.Prepare("0");
             message.Set(34, 8059);
-            message.Set(52, DateTime.Parse("2017/05/31 08:18:01.767"));
+            message.Set(52, DateTime.ParseExact("2017/05/31 08:18:01.767", "yyyy/MM/dd HH:mm:ss.fff", null));
             message.Set(49, "SENDER....");
             message.Set(56, "RECEIVER.....");
             message.Build();
