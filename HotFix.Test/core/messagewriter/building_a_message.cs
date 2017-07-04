@@ -13,14 +13,15 @@ namespace HotFix.Test.core.messagewriter
         {
             var message = new FIXMessageWriter(1000, "FIX.4.2");
 
-            message.Prepare("A");
-            message.Set(49, "SERVER");
-            message.Set(56, "CLIENT");
-            message.Set(34, 177);
-            message.Set(52, DateTime.ParseExact("2009/01/07 18:15:16", "yyyy/MM/dd HH:mm:ss", null));
-            message.Set(98, 0);
-            message.Set(108, 30);
-            message.Build();
+            message
+                .Prepare("A")
+                .Set(49, "SERVER")
+                .Set(56, "CLIENT")
+                .Set(34, 177)
+                .Set(52, DateTime.ParseExact("2009/01/07 18:15:16", "yyyy/MM/dd HH:mm:ss", null))
+                .Set(98, 0)
+                .Set(108, 30)
+                .Build();
 
             var str = message.ToString();
 
@@ -33,25 +34,27 @@ namespace HotFix.Test.core.messagewriter
             var message = new FIXMessageWriter(1000, "FIX.4.2");
 
             // Prepare and build a small message
-            message.Prepare("0");
-            message.Set(34, 8059);
-            message.Set(52, DateTime.ParseExact("2017/05/31 08:18:01.767", "yyyy/MM/dd HH:mm:ss.fff", null));
-            message.Set(49, "SENDER....");
-            message.Set(56, "RECEIVER.....");
-            message.Build();
+            message
+                .Prepare("0")
+                .Set(34, 8059)
+                .Set(52, DateTime.ParseExact("2017/05/31 08:18:01.767", "yyyy/MM/dd HH:mm:ss.fff", null))
+                .Set(49, "SENDER....")
+                .Set(56, "RECEIVER.....")
+                .Build();
 
             var message1 = message.ToString();
 
             // Prepare and build a larger message
-            message.Prepare("A");
-            message.Set(49, "SERVER");
-            message.Set(56, "CLIENT");
-            message.Set(34, 177);
-            message.Set(52, DateTime.ParseExact("2009/01/07 18:15:16", "yyyy/MM/dd HH:mm:ss", null));
-            message.Set(98, 0);
-            message.Set(108, 30);
-            message.Set(12345, "Some really long text to make the message really large sdkfjfkjs gfsabf sabf sahfvb ksdjflsahfpieghpEIGHXKJVB KLSGBS BHJUXVCJDV V JV jsdh fkasdgsadoas oghoash go iasg fcblxc nsleiso bnlzxcvn skjbg");
-            message.Build();
+            message
+                .Prepare("A")
+                .Set(49, "SERVER")
+                .Set(56, "CLIENT")
+                .Set(34, 177)
+                .Set(52, DateTime.ParseExact("2009/01/07 18:15:16", "yyyy/MM/dd HH:mm:ss", null))
+                .Set(98, 0)
+                .Set(108, 30)
+                .Set(12345, "Some really long text to make the message really large sdkfjfkjs gfsabf sabf sahfvb ksdjflsahfpieghpEIGHXKJVB KLSGBS BHJUXVCJDV V JV jsdh fkasdgsadoas oghoash go iasg fcblxc nsleiso bnlzxcvn skjbg")
+                .Build();
 
             var message2 = message.ToString();
 
@@ -66,25 +69,27 @@ namespace HotFix.Test.core.messagewriter
             var message = new FIXMessageWriter(1000, "FIX.4.2");
 
             // Prepare and build a large message
-            message.Prepare("A");
-            message.Set(49, "SERVER");
-            message.Set(56, "CLIENT");
-            message.Set(34, 177);
-            message.Set(52, DateTime.ParseExact("2009/01/07 18:15:16", "yyyy/MM/dd HH:mm:ss", null));
-            message.Set(98, 0);
-            message.Set(108, 30);
-            message.Set(12345, "Some really long text to make the message really large sdkfjfkjs gfsabf sabf sahfvb ksdjflsahfpieghpEIGHXKJVB KLSGBS BHJUXVCJDV V JV jsdh fkasdgsadoas oghoash go iasg fcblxc nsleiso bnlzxcvn skjbg");
-            message.Build();
+            message
+                .Prepare("A")
+                .Set(49, "SERVER")
+                .Set(56, "CLIENT")
+                .Set(34, 177)
+                .Set(52, DateTime.ParseExact("2009/01/07 18:15:16", "yyyy/MM/dd HH:mm:ss", null))
+                .Set(98, 0)
+                .Set(108, 30)
+                .Set(12345, "Some really long text to make the message really large sdkfjfkjs gfsabf sabf sahfvb ksdjflsahfpieghpEIGHXKJVB KLSGBS BHJUXVCJDV V JV jsdh fkasdgsadoas oghoash go iasg fcblxc nsleiso bnlzxcvn skjbg")
+                .Build();
 
             var message1 = message.ToString();
 
             // Prepare and build a smaller message
-            message.Prepare("0");
-            message.Set(34, 8059);
-            message.Set(52, DateTime.ParseExact("2017/05/31 08:18:01.767", "yyyy/MM/dd HH:mm:ss.fff", null));
-            message.Set(49, "SENDER....");
-            message.Set(56, "RECEIVER.....");
-            message.Build();
+            message
+                .Prepare("0")
+                .Set(34, 8059)
+                .Set(52, DateTime.ParseExact("2017/05/31 08:18:01.767", "yyyy/MM/dd HH:mm:ss.fff", null))
+                .Set(49, "SENDER....")
+                .Set(56, "RECEIVER.....")
+                .Build();
 
             var message2 = message.ToString();
 

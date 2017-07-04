@@ -86,12 +86,13 @@ namespace HotFix.Core
             if (!Active) return;
 
             // Prepare and send a logout message
-            Outbound.Prepare("5");
-            Outbound.Set(34, State.OutboundSeqNum);
-            Outbound.Set(52, Clock.Time);
-            Outbound.Set(49, Configuration.Sender);
-            Outbound.Set(56, Configuration.Target);
-            Outbound.Build();
+            Outbound
+                .Prepare("5")
+                .Set(34, State.OutboundSeqNum)
+                .Set(52, Clock.Time)
+                .Set(49, Configuration.Sender)
+                .Set(56, Configuration.Target)
+                .Build();
 
             Send(State, Channel, Outbound);
 
@@ -170,12 +171,13 @@ namespace HotFix.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SendHeartbeat(IConfiguration configuration, State state, Channel channel, FIXMessageWriter outbound)
         {
-            outbound.Prepare("0");
-            outbound.Set(34, state.OutboundSeqNum);
-            outbound.Set(52, Clock.Time);
-            outbound.Set(49, configuration.Sender);
-            outbound.Set(56, configuration.Target);
-            outbound.Build();
+            outbound
+                .Prepare("0")
+                .Set(34, state.OutboundSeqNum)
+                .Set(52, Clock.Time)
+                .Set(49, configuration.Sender)
+                .Set(56, configuration.Target)
+                .Build();
 
             Send(state, channel, outbound);
         }
@@ -183,13 +185,14 @@ namespace HotFix.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SendTestRequest(IConfiguration configuration, State state, Channel channel, FIXMessageWriter outbound)
         {
-            outbound.Prepare("1");
-            outbound.Set(34, state.OutboundSeqNum);
-            outbound.Set(52, Clock.Time);
-            outbound.Set(49, configuration.Sender);
-            outbound.Set(56, configuration.Target);
-            outbound.Set(112, Clock.Time.Ticks);
-            outbound.Build();
+            outbound
+                .Prepare("1")
+                .Set(34, state.OutboundSeqNum)
+                .Set(52, Clock.Time)
+                .Set(49, configuration.Sender)
+                .Set(56, configuration.Target)
+                .Set(112, Clock.Time.Ticks)
+                .Build();
 
             Send(state, channel, outbound);
         }
@@ -199,14 +202,15 @@ namespace HotFix.Core
         {
             if (state.Synchronizing) return;
 
-            outbound.Prepare("2");
-            outbound.Set(34, state.OutboundSeqNum);
-            outbound.Set(52, Clock.Time);
-            outbound.Set(49, configuration.Sender);
-            outbound.Set(56, configuration.Target);
-            outbound.Set(7, state.InboundSeqNum);
-            outbound.Set(16, 0);
-            outbound.Build();
+            outbound
+                .Prepare("2")
+                .Set(34, state.OutboundSeqNum)
+                .Set(52, Clock.Time)
+                .Set(49, configuration.Sender)
+                .Set(56, configuration.Target)
+                .Set(7, state.InboundSeqNum)
+                .Set(16, 0)
+                .Build();
 
             Send(state, channel, outbound);
 
@@ -217,13 +221,14 @@ namespace HotFix.Core
         public void HandleTestRequest(IConfiguration configuration, State state, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
         {
             // Prepare and send a heartbeat (with the test request id)
-            outbound.Prepare("0");
-            outbound.Set(34, state.OutboundSeqNum);
-            outbound.Set(52, Clock.Time);
-            outbound.Set(49, configuration.Sender);
-            outbound.Set(56, configuration.Target);
-            outbound.Set(112, inbound[112].AsString);
-            outbound.Build();
+            outbound
+                .Prepare("0")
+                .Set(34, state.OutboundSeqNum)
+                .Set(52, Clock.Time)
+                .Set(49, configuration.Sender)
+                .Set(56, configuration.Target)
+                .Set(112, inbound[112].AsString)
+                .Build();
 
             Send(state, channel, outbound);
         }
@@ -235,14 +240,15 @@ namespace HotFix.Core
             if (!inbound[16].Is(0L)) throw new EngineException("Unsupported resend request received (partial gap fills are not supported)");
 
             // Prepare and send a gap fill message
-            outbound.Prepare("4");
-            outbound.Set(34, inbound[7].AsLong);
-            outbound.Set(52, Clock.Time);
-            outbound.Set(49, configuration.Sender);
-            outbound.Set(56, configuration.Target);
-            outbound.Set(123, "Y");
-            outbound.Set(36, state.OutboundSeqNum);
-            outbound.Build();
+            outbound
+                .Prepare("4")
+                .Set(34, inbound[7].AsLong)
+                .Set(52, Clock.Time)
+                .Set(49, configuration.Sender)
+                .Set(56, configuration.Target)
+                .Set(123, "Y")
+                .Set(36, state.OutboundSeqNum)
+                .Build();
 
             Send(state, channel, outbound);
 
@@ -300,15 +306,16 @@ namespace HotFix.Core
 
                     if (Inbound[34].AsLong < state.InboundSeqNum) throw new EngineException("Sequence number too low");
 
-                    Outbound.Prepare("A");
-                    Outbound.Set(34, state.OutboundSeqNum);
-                    Outbound.Set(52, Clock.Time);
-                    Outbound.Set(49, configuration.Sender);
-                    Outbound.Set(56, configuration.Target);
-                    Outbound.Set(108, Configuration.HeartbeatInterval);
-                    Outbound.Set(98, 0);
-                    Outbound.Set(141, "Y");
-                    Outbound.Build();
+                    outbound
+                        .Prepare("A")
+                        .Set(34, state.OutboundSeqNum)
+                        .Set(52, Clock.Time)
+                        .Set(49, configuration.Sender)
+                        .Set(56, configuration.Target)
+                        .Set(108, Configuration.HeartbeatInterval)
+                        .Set(98, 0)
+                        .Set(141, "Y")
+                        .Build();
 
                     Send(state, channel, outbound);
 
@@ -331,15 +338,16 @@ namespace HotFix.Core
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void InitiateLogon(IConfiguration configuration, State state, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
         {
-            outbound.Prepare("A");
-            outbound.Set(34, state.OutboundSeqNum);
-            outbound.Set(52, Clock.Time);
-            outbound.Set(49, configuration.Sender);
-            outbound.Set(56, configuration.Target);
-            outbound.Set(108, configuration.HeartbeatInterval);
-            outbound.Set(98, 0);
-            outbound.Set(141, "Y");
-            outbound.Build();
+            outbound
+                .Prepare("A")
+                .Set(34, state.OutboundSeqNum)
+                .Set(52, Clock.Time)
+                .Set(49, configuration.Sender)
+                .Set(56, configuration.Target)
+                .Set(108, Configuration.HeartbeatInterval)
+                .Set(98, 0)
+                .Set(141, "Y")
+                .Build();
 
             Send(state, channel, outbound);
 
