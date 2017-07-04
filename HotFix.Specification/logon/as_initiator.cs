@@ -255,6 +255,35 @@ namespace HotFix.Specification.logon
         }
 
         [TestMethod]
+        public void fails_when_a_logon_request_is_received_while_already_successfully_logged_on()
+        {
+            new Specification()
+                .Configure(new Configuration
+                {
+                    Role = Role.Initiator,
+                    Version = "FIX.4.2",
+                    Sender = "Client",
+                    Target = "Server",
+                    HeartbeatInterval = 5,
+                    OutboundSeqNum = 1,
+                    InboundSeqNum = 1
+                })
+                .Steps(new List<string>
+                {
+                    "! 20170623-14:51:45.012",
+                    // The engine should sent a valid logon message first
+                    "> 8=FIX.4.2|9=00072|35=A|34=1|52=20170623-14:51:45.012|49=Client|56=Server|108=5|98=0|141=Y|10=094|",
+                    "! 20170623-14:51:45.051",
+                    // The engine should accept the target's logon response
+                    "< 8=FIX.4.2|9=72|35=A|34=1|49=Server|52=20170623-14:51:45.051|56=Client|108=5|98=0|141=Y|10=209|",
+                    // The engine should fail since we got a logon message while already successfully logged on
+                    "< 8=FIX.4.2|9=72|35=A|34=2|49=Server|52=20170623-14:51:45.051|56=Client|108=5|98=0|141=Y|10=210|"
+                })
+                .Expect<EngineException>("Logon message received while already logged on")
+                .Run();
+        }
+
+        [TestMethod]
         public void succeeds_but_sends_a_resend_request_when_the_response_contains_a_sequence_number_that_is_too_high()
         {
             new Specification()
@@ -280,11 +309,11 @@ namespace HotFix.Specification.logon
                     "> 8=FIX.4.2|9=00064|35=2|34=2|52=20170623-14:51:45.051|49=Client|56=Server|7=5|16=0|10=187|",
                     "! 20170623-14:51:46.000"
                 })
-                .Verify((engine, configuration) =>
+                .Verify((session, configuration, _) =>
                 {
-                    engine.State.InboundSeqNum.Should().Be(5);
-                    engine.State.OutboundSeqNum.Should().Be(3);
-                    engine.State.Synchronizing.Should().Be(true);
+                    session.State.InboundSeqNum.Should().Be(5);
+                    session.State.OutboundSeqNum.Should().Be(3);
+                    session.State.Synchronizing.Should().Be(true);
                 })
                 .Run();
         }
@@ -313,10 +342,10 @@ namespace HotFix.Specification.logon
                     "< 8=FIX.4.2|9=72|35=A|34=1|49=Server|52=20170623-14:51:45.051|56=Client|108=5|98=0|141=Y|10=209|",
                     "! 20170623-14:51:46.000"
                 })
-                .Verify((engine, configuration) =>
+                .Verify((session, configuration, _) =>
                 {
-                    engine.State.InboundSeqNum.Should().Be(2);
-                    engine.State.OutboundSeqNum.Should().Be(2);
+                    session.State.InboundSeqNum.Should().Be(2);
+                    session.State.OutboundSeqNum.Should().Be(2);
                 })
                 .Run();
         }

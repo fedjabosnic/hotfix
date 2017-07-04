@@ -11,6 +11,7 @@ namespace HotFix.Core
         public IConfiguration Configuration { get; }
         public Channel Channel { get; }
         public State State { get; }
+        public bool Active { get; private set; }
 
         public FIXMessage Inbound;
         public FIXMessageWriter Outbound;
@@ -46,11 +47,25 @@ namespace HotFix.Core
                 default:
                     throw new Exception("Unrecognised session role");
             }
+
+            Active = true;
         }
 
         public void Logout()
         {
-            // TODO
+            if (!Active) return;
+
+            // Prepare and send a logout message
+            Outbound.Prepare("5");
+            Outbound.Set(34, State.OutboundSeqNum);
+            Outbound.Set(52, Clock.Time);
+            Outbound.Set(49, Configuration.Sender);
+            Outbound.Set(56, Configuration.Target);
+            Outbound.Build();
+
+            Send(State, Channel, Outbound);
+
+            Active = false;
         }
 
         public bool Receive()
@@ -81,6 +96,8 @@ namespace HotFix.Core
                     if (inbound[35].Is("1")) HandleTestRequest(configuration, state, channel, inbound, outbound);
                     if (inbound[35].Is("2")) HandleResendRequest(configuration, state, channel, inbound, outbound);
                     if (inbound[35].Is("4")) HandleSequenceReset(configuration, state, channel, inbound, outbound);
+                    if (inbound[35].Is("5")) HandleLogout(configuration, state, channel, inbound, outbound);
+                    if (inbound[35].Is("A")) HandleLogon(configuration, state, channel, inbound, outbound);
 
                     state.InboundSeqNum++;
                     state.InboundTimestamp = clock.Time;
@@ -208,6 +225,16 @@ namespace HotFix.Core
             state.InboundSeqNum = inbound[36].AsLong;
         }
 
+        public void HandleLogout(IConfiguration configuration, State state, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
+        {
+            Logout();
+        }
+
+        public void HandleLogon(IConfiguration configuration, State state, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
+        {
+            throw new EngineException("Logon message received while already logged on");
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Send(State state, Channel channel, FIXMessageWriter message)
         {
@@ -317,7 +344,7 @@ namespace HotFix.Core
 
         public void Dispose()
         {
-            Logout();
+            Channel.Transport.Dispose();
         }
     }
 

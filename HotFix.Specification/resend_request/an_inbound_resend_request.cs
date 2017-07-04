@@ -63,10 +63,10 @@ namespace HotFix.Specification.resend_request
                     "> 8=FIX.4.2|9=00067|35=4|34=5|52=20170623-14:51:47.000|49=Client|56=Server|123=Y|36=11|10=118|",
                     "! 20170623-14:51:51.000"
                 })
-                .Verify((engine, configuration) =>
+                .Verify((session, configuration, _) =>
                 {
-                    engine.State.InboundSeqNum.Should().Be(12L);
-                    engine.State.OutboundSeqNum.Should().Be(11L);
+                    session.State.InboundSeqNum.Should().Be(12L);
+                    session.State.OutboundSeqNum.Should().Be(11L);
                 })
                 .Run();
         }

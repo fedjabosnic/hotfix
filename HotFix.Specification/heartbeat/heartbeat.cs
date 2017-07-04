@@ -43,10 +43,10 @@ namespace HotFix.Specification.heartbeat
                     "< 8=FIX.4.2|9=55|35=0|34=2|49=Server|52=20170623-14:51:50.056|56=Client|10=171|",
                     "! 20170623-14:51:51.000"
                 })
-                .Verify((engine, configuration) =>
+                .Verify((session, configuration, _) =>
                 {
-                    engine.State.InboundSeqNum.Should().Be(3);
-                    engine.State.OutboundSeqNum.Should().Be(3);
+                    session.State.InboundSeqNum.Should().Be(3);
+                    session.State.OutboundSeqNum.Should().Be(3);
                 })
                 .Run();
         }

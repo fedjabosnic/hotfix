@@ -10,7 +10,7 @@ namespace HotFix.Specification
         public IConfiguration Configuration { get; set; }
         public List<string> Instructions { get; set; }
 
-        public Action<Session, IConfiguration> Verification { get; set; }
+        public Action<Session, IConfiguration, VirtualTransport> Verification { get; set; }
 
         public Type Exception { get; set; }
         public string Message { get; set; }
@@ -29,7 +29,7 @@ namespace HotFix.Specification
             return this;
         }
 
-        public Specification Verify(Action<Session, IConfiguration> verification)
+        public Specification Verify(Action<Session, IConfiguration, VirtualTransport> verification)
         {
             Verification = verification;
 
@@ -54,14 +54,23 @@ namespace HotFix.Specification
 
             try
             {
-                session = engine.Open(Configuration);
-
-                session.Logon();
-
-                while (true)
+                using (session = engine.Open(Configuration))
                 {
-                    session.Receive();
+                    transport.Session = session;
+                    session.Logon();
+
+                    while (session.Active)
+                    {
+                        session.Receive();
+                    }
+
+                    session.Logout();
                 }
+
+                throw 
+                    transport.Step == transport.Instructions.Count ? 
+                    new DelightfullySuccessfulException() : 
+                    new Exception("Session ended prematurely");
             }
             catch (Exception exception)
             {
@@ -80,7 +89,7 @@ namespace HotFix.Specification
                 {
                     if (exception.GetType() != typeof(DelightfullySuccessfulException)) throw;
 
-                    Verification.Invoke(session, Configuration);
+                    Verification.Invoke(session, Configuration, transport);
                 }
             }
             finally
@@ -102,5 +111,6 @@ namespace HotFix.Specification
 
             return this;
         }
+
     }
 }

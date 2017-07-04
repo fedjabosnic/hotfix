@@ -4,13 +4,13 @@ using FluentAssertions;
 using HotFix.Core;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace HotFix.Specification.test_request
+namespace HotFix.Specification.logout
 {
     [TestClass]
-    public class an_inbound_test_request
+    public class an_uninitiated_logout
     {
         [TestMethod]
-        public void is_responded_to_with_a_heartbeat_containing_the_test_request_id()
+        public void sends_a_logout_response_and_disconnects()
         {
             new Specification()
                 .Configure(new Configuration
@@ -30,17 +30,17 @@ namespace HotFix.Specification.test_request
                     "! 20170623-14:51:45.051",
                     "< 8=FIX.4.2|9=72|35=A|34=1|49=Server|52=20170623-14:51:45.051|56=Client|108=5|98=0|141=Y|10=209|",
                     "! 20170623-14:51:46.000",
-                    "! 20170623-14:51:47.000",
-                    // The engine receives a test request
-                    "< 8=FIX.4.2|9=65|35=1|34=2|49=Server|52=20170623-14:51:47.000|56=Client|112=XXXXX|10=050|",
-                    // The engine should respond with a heartbeat containing the test request id (112)
-                    "> 8=FIX.4.2|9=00065|35=0|34=2|52=20170623-14:51:47.000|49=Client|56=Server|112=XXXXX|10=193|",
-                    "! 20170623-14:51:48.000"
+                    // The engine receives a logout message
+                    "< 8=FIX.4.2|9=55|35=5|34=2|49=Server|52=20170623-14:51:46.000|56=Client|10=170|",
+                    // The engine responds back with a logout message
+                    "> 8=FIX.4.2|9=00055|35=5|34=2|52=20170623-14:51:46.000|49=Client|56=Server|10=058|"
                 })
-                .Verify((session, configuration, _) =>
+                .Verify((session, configuration, transport) =>
                 {
                     session.State.InboundSeqNum.Should().Be(3);
                     session.State.OutboundSeqNum.Should().Be(3);
+                    session.Active.Should().Be(false);
+                    transport.Disposed.Should().Be(true);
                 })
                 .Run();
         }
