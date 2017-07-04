@@ -53,6 +53,8 @@ namespace HotFix.Core
 
         public void Logout()
         {
+            if (!Active) return;
+
             // Prepare and send a logout message
             Outbound.Prepare("5");
             Outbound.Set(34, State.OutboundSeqNum);
@@ -128,8 +130,6 @@ namespace HotFix.Core
 
             return inbound.Valid;
         }
-
-        
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SendHeartbeat(IConfiguration configuration, State state, Channel channel, FIXMessageWriter outbound)
@@ -227,7 +227,7 @@ namespace HotFix.Core
 
         public void HandleLogout(IConfiguration configuration, State state, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)
         {
-            Active = false;
+            Logout();
         }
 
         public void HandleLogon(IConfiguration configuration, State state, Channel channel, FIXMessage inbound, FIXMessageWriter outbound)

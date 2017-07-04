@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using HotFix.Core;
 using HotFix.Transport;
 
 namespace HotFix.Specification
@@ -9,16 +10,15 @@ namespace HotFix.Specification
     {
         public VirtualClock Clock { get; }
         public List<string> Instructions { get; }
-        public Action RequestLogout { get; }
+        public Session Session { get; set; }
 
         public int Step { get; private set; }
         public bool Disposed { get; private set; }
 
-        public VirtualTransport(VirtualClock clock, List<string> instructions, Action requestLogout)
+        public VirtualTransport(VirtualClock clock, List<string> instructions)
         {
             Clock = clock;
             Instructions = instructions;
-            RequestLogout = requestLogout;
 
             var instruction = NextInstruction();
 
@@ -47,7 +47,7 @@ namespace HotFix.Specification
                     case '>':
                         throw new Exception($"Outbound message expected but not received: {instruction}");
                     case 'X':
-                        RequestLogout();
+                        Session.Logout();
                         return 0;
                     default:
                         throw new Exception($"Unrecognised instruction found in scenario: {instruction}");

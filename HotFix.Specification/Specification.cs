@@ -9,7 +9,6 @@ namespace HotFix.Specification
     {
         public IConfiguration Configuration { get; set; }
         public List<string> Instructions { get; set; }
-        public bool LogoutRequested { get; set; }
 
         public Action<Session, IConfiguration, VirtualTransport> Verification { get; set; }
 
@@ -48,7 +47,7 @@ namespace HotFix.Specification
         public Specification Run()
         {
             var clock = new VirtualClock();
-            var transport = new VirtualTransport(clock, Instructions, () => LogoutRequested = true);
+            var transport = new VirtualTransport(clock, Instructions);
             var engine = new Engine { Clocks = c => clock, Transports = c => transport };
 
             var session = (Session) null;
@@ -57,9 +56,10 @@ namespace HotFix.Specification
             {
                 using (session = engine.Open(Configuration))
                 {
+                    transport.Session = session;
                     session.Logon();
 
-                    while (session.Active && !LogoutRequested)
+                    while (session.Active)
                     {
                         session.Receive();
                     }
