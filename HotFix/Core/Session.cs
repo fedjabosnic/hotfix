@@ -27,10 +27,10 @@ namespace HotFix.Core
         /// Creates a new session.
         /// </summary>
         /// <param name="configuration">The session configuration</param>
-        /// <param name="clock">The session clock.</param>
+        /// <param name="clock">The session clock</param>
         /// <param name="transport">The session transport</param>
         /// <param name="bufferSize">The buffersize to use for buffering</param>
-        /// <param name="maxMessageLength">The maximum supported length fo a fix message</param>
+        /// <param name="maxMessageLength">The maximum supported length of a fix message</param>
         /// <param name="maxMessageFields">The maximum supported number of fields in a fix message</param>
         public Session(IConfiguration configuration, IClock clock, ITransport transport, int bufferSize, int maxMessageLength, int maxMessageFields)
         {
@@ -52,9 +52,14 @@ namespace HotFix.Core
 
         /// <summary>
         /// Executes the session's logon process.
+        /// <remarks>
+        /// This action is idempotent, calling this multiple times has no ill effect.
+        /// </remarks>
         /// </summary>
         public void Logon()
         {
+            if (Active) return;
+
             switch (Configuration.Role)
             {
                 case Role.Acceptor:
@@ -71,7 +76,10 @@ namespace HotFix.Core
         }
 
         /// <summary>
-        /// Executes the session's logon process.
+        /// Executes the session's logout process.
+        /// <remarks>
+        /// This action is idempotent, calling this multiple times has no ill effect.
+        /// </remarks>
         /// </summary>
         public void Logout()
         {
@@ -91,9 +99,9 @@ namespace HotFix.Core
         }
 
         /// <summary>
-        /// Attempts to receive one message over the session
+        /// Attempts to receive one message over the session.
         /// <remarks>
-        /// You should call this continuously as often as possible to process incoming messages and keep the session alive
+        /// You should call this continuously as often as possible to process incoming messages and keep the session alive.
         /// </remarks>
         /// </summary>
         public bool Receive()
