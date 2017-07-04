@@ -34,60 +34,72 @@ namespace HotFix.Core
             _end += _buffer.WriteString(_end, "35=");
         }
 
-        public void Prepare(string messageType)
+        public FIXMessageWriter Prepare(string messageType)
         {
             _end = _headerEnd + 4;
 
             _end += _buffer.WriteString(_end, messageType);
             _buffer[_end++] = SOH;
+
+            return this;
         }
 
-        public void Set(int tag, string value)
+        public FIXMessageWriter Set(int tag, string value)
         {
             _end += _buffer.WriteInt(_end, tag);
             _buffer[_end++] = EQL;
 
             _end += _buffer.WriteString(_end, value);
             _buffer[_end++] = SOH;
+
+            return this;
         }
 
-        public void Set(int tag, int value)
+        public FIXMessageWriter Set(int tag, int value)
         {
             _end += _buffer.WriteInt(_end, tag);
             _buffer[_end++] = EQL;
 
             _end += _buffer.WriteInt(_end, value);
             _buffer[_end++] = SOH;
+
+            return this;
         }
 
-        public void Set(int tag, DateTime value)
+        public FIXMessageWriter Set(int tag, DateTime value)
         {
             _end += _buffer.WriteInt(_end, tag);
             _buffer[_end++] = EQL;
 
             _end += _buffer.WriteDateTime(_end, value);
             _buffer[_end++] = SOH;
+
+            return this;
         }
 
-        public void Set(int tag, long value)
+        public FIXMessageWriter Set(int tag, long value)
         {
             _end += _buffer.WriteInt(_end, tag);
             _buffer[_end++] = EQL;
 
             _end += _buffer.WriteLong(_end, value);
             _buffer[_end++] = SOH;
+
+            return this;
         }
 
-        public void Set(int tag, double value)
+        public FIXMessageWriter Set(int tag, double value)
         {
             _end += _buffer.WriteInt(_end, tag);
             _buffer[_end++] = EQL;
 
             _end += _buffer.WriteFloat(_end, value);
             _buffer[_end++] = SOH;
+
+            return this;
         }
 
-        public void Set(int tag, FIXField field)
+        public FIXMessageWriter Set(int tag, FIXField field)
         {
             _end += _buffer.WriteInt(_end, field.Tag);
             _buffer[_end++] = EQL;
@@ -95,9 +107,11 @@ namespace HotFix.Core
             Buffer.BlockCopy(field._message, field._value.Offset, _buffer, _end, field._value.Length);
             _end += field._value.Length;
             _buffer[_end++] = SOH;
+
+            return this;
         }
 
-        public void Build()
+        public FIXMessageWriter Build()
         {
             _bodyEnd = _end - 1;
 
@@ -111,6 +125,8 @@ namespace HotFix.Core
             _trailerEnd = _end;
 
             _buffer.WriteIntBackwards(_trailerEnd - 2, checksum);
+
+            return this;
         }
 
         private int CalculateChecksum()
