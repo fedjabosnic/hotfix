@@ -7,15 +7,31 @@ namespace HotFix.Core
 {
     public class Session : IDisposable
     {
+        /// <summary> The session clock </summary>
         public IClock Clock { get; }
+
+        /// <summary> The session configuration </summary>
         public IConfiguration Configuration { get; }
+        /// <summary> The session configuration </summary>
         public Channel Channel { get; }
+        /// <summary> The session configuration </summary>
         public State State { get; }
         public bool Active { get; private set; }
 
+        /// <summary> The inbound fix message </summary>
         public FIXMessage Inbound;
+        /// <summary> The outbound fix message </summary>
         public FIXMessageWriter Outbound;
 
+        /// <summary>
+        /// Creates a new session.
+        /// </summary>
+        /// <param name="configuration">The session configuration</param>
+        /// <param name="clock">The session clock.</param>
+        /// <param name="transport">The session transport</param>
+        /// <param name="bufferSize">The buffersize to use for buffering</param>
+        /// <param name="maxMessageLength">The maximum supported length fo a fix message</param>
+        /// <param name="maxMessageFields">The maximum supported number of fields in a fix message</param>
         public Session(IConfiguration configuration, IClock clock, ITransport transport, int bufferSize, int maxMessageLength, int maxMessageFields)
         {
             Clock = clock;
@@ -34,6 +50,9 @@ namespace HotFix.Core
             Outbound = new FIXMessageWriter(maxMessageLength, configuration.Version);
         }
 
+        /// <summary>
+        /// Executes the session's logon process.
+        /// </summary>
         public void Logon()
         {
             switch (Configuration.Role)
@@ -51,6 +70,9 @@ namespace HotFix.Core
             Active = true;
         }
 
+        /// <summary>
+        /// Executes the session's logon process.
+        /// </summary>
         public void Logout()
         {
             if (!Active) return;
@@ -68,6 +90,12 @@ namespace HotFix.Core
             Active = false;
         }
 
+        /// <summary>
+        /// Attempts to receive one message over the session
+        /// <remarks>
+        /// You should call this continuously as often as possible to process incoming messages and keep the session alive
+        /// </remarks>
+        /// </summary>
         public bool Receive()
         {
             var clock = Clock;
@@ -342,6 +370,9 @@ namespace HotFix.Core
             throw new EngineException("Logon response not received on time");
         }
 
+        /// <summary>
+        /// Disconnects the underlying transport.
+        /// </summary>
         public void Dispose()
         {
             Channel.Transport.Dispose();

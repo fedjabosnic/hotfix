@@ -1,4 +1,6 @@
-﻿namespace HotFix.Core
+﻿using System;
+
+namespace HotFix.Core
 {
     public struct Segment
     {
