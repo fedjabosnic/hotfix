@@ -1,0 +1,36 @@
+- 
+  version: '{build}'
+  branches:
+    except:
+    - master
+  skip_tags: true
+  image: Visual Studio 2015
+  nuget:
+    account_feed: true
+  before_build:
+  - cmd: nuget restore
+  build:
+    verbosity: normal
+- 
+  version: 0.0.0.{build}
+  branches:
+    only:
+    - master
+  skip_tags: true
+  configuration: Release
+  image: Visual Studio 2015
+  assembly_info:
+    patch: true
+    file: '**\VersionInfo.*'
+    assembly_version: '{version}'
+    assembly_file_version: '{version}'
+    assembly_informational_version: '{version}'
+  before_build:
+  - cmd: nuget restore
+  build:
+    publish_nuget: true
+    publish_nuget_symbols: true
+    verbosity: minimal
+  artifacts:
+  - path: '**\*.nupkg'
+    name: Nuget packages

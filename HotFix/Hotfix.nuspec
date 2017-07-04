@@ -1,0 +1,16 @@
+﻿<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>Fedja Bosnic</authors>
+    <owners>Fedja Bosnic</owners>
+    <summary>Hotfix is a FIX engine written in pure .net geared towards low latency and high throughput.</summary>
+    <description>$description$</description>
+    <projectUrl>https://github.com/fedjabosnic/hotfix</projectUrl>
+    <copyright>Copyright © Fedja Bosnic 2017</copyright>
+    <releaseNotes></releaseNotes>
+    <tags>hotfix fix engine finance</tags>
+  </metadata>
+</package>
