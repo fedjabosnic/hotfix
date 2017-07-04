@@ -5,8 +5,6 @@
     - master
   skip_tags: true
   image: Visual Studio 2015
-  nuget:
-    account_feed: true
   before_build:
   - cmd: nuget restore
   build:
