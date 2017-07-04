@@ -7,7 +7,7 @@
     <authors>Fedja Bosnic</authors>
     <owners>Fedja Bosnic</owners>
     <summary>Hotfix is a FIX engine written in pure .net geared towards low latency and high throughput.</summary>
-    <description>$description$</description>
+    <description>A FIX engine written in pure .net geared towards low latency and high throughput.</description>
     <projectUrl>https://github.com/fedjabosnic/hotfix</projectUrl>
     <copyright>Copyright © Fedja Bosnic 2017</copyright>
     <releaseNotes></releaseNotes>
