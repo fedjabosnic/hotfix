@@ -17,15 +17,10 @@ namespace HotFix.Transport
 
         public static TcpTransport Initiate(string address, int port)
         {
-            var endpoint = new DnsEndPoint(address, port);
-            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)
-            {
-                ReceiveTimeout = 1000,
-                NoDelay = true
-            };
+            var endpoint = new IPEndPoint(IPAddress.Parse(address), port);
+            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { ReceiveTimeout = 1000, NoDelay = true };
 
             socket.IOControl(SIO_LOOPBACK_FAST_PATH, BitConverter.GetBytes(1), null);
-
             socket.Connect(endpoint);
 
             return new TcpTransport(new NetworkStream(socket, true));
@@ -33,19 +28,14 @@ namespace HotFix.Transport
 
         public static TcpTransport Accept(string address, int port)
         {
-            var listener = new TcpListener(IPAddress.Parse(address), port);
+            var endpoint = new IPEndPoint(IPAddress.Parse(address), port);
+            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { ReceiveTimeout = 1000, NoDelay = true };
 
-            listener.Start();
+            socket.IOControl(SIO_LOOPBACK_FAST_PATH, BitConverter.GetBytes(1), null);
+            socket.Bind(endpoint);
+            socket.Listen(500);
 
-            listener.Server.IOControl(SIO_LOOPBACK_FAST_PATH, BitConverter.GetBytes(1), null);
-
-            var socket = listener.AcceptSocket();
-
-            socket.NoDelay = true;
-
-            listener.Stop();
-
-            return new TcpTransport(new NetworkStream(socket, true));
+            return new TcpTransport(new NetworkStream(socket.Accept(), true));
         }
 
         public TcpTransport(NetworkStream stream)
