@@ -35,8 +35,6 @@ namespace HotFix.Demo.Initiator
             {
                 var clock = session.Clock;
                 var state = session.State;
-                var sender = session.Configuration.Sender;
-                var target = session.Configuration.Target;
 
                 var inbound = session.Inbound;
                 var outbound = session.Outbound;
@@ -47,25 +45,17 @@ namespace HotFix.Demo.Initiator
                 {
                     var sent = clock.Time;
 
-                    outbound.Prepare("D");
+                    outbound
+                        .Clear()
+                        .Set(60, clock.Time)         // TransactTime 
+                        .Set(11, ++_orders)          // ClOrdId 
+                        .Set(55, "EUR/USD")          // Symbol 
+                        .Set(54, 1)                  // Side (buy) 
+                        .Set(38, 1000.00)            // OrderQty 
+                        .Set(44, 1.13200)            // Price 
+                        .Set(40, 2);                  // OrdType (limit) 
 
-                    outbound.Set(34, state.OutboundSeqNum);
-                    outbound.Set(52, clock.Time);
-                    outbound.Set(49, sender);
-                    outbound.Set(56, target);
-
-                    outbound.Set(60, clock.Time);         // TransactTime 
-                    outbound.Set(11, ++_orders);          // ClOrdId 
-                    outbound.Set(55, "EUR/USD");          // Symbol 
-                    outbound.Set(54, 1);                  // Side (buy) 
-                    outbound.Set(38, 1000.00);            // OrderQty 
-                    outbound.Set(44, 1.13200);            // Price 
-                    outbound.Set(40, 2);                  // OrdType (limit) 
-
-                    outbound.Build();
-
-                    session.Send(state, session.Channel, outbound);
-
+                    session.Send("D", state, session.Channel, outbound);
 
                     while (!session.Receive()) { }
 

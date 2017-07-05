@@ -17,29 +17,21 @@ namespace HotFix.Benchmark.suites
         public readonly DateTime TransactTime = DateTime.ParseExact("2017/05/31 08:18:01.767", "yyyy/MM/dd", null);
         public readonly DateTime TradeDate = DateTime.ParseExact("2017/05/31", "yyyy/MM/dd", null);
 
-        public readonly FIXMessageWriter Message = new FIXMessageWriter(1000, "FIX.4.2");
+        public readonly FIXMessageWriter Message = new FIXMessageWriter(1000);
 
         [Benchmark]
         public void small()
         {
             Message
-                .Prepare("0")
-                .Set(34, 8059)
-                .Set(52, SendingTime)
-                .Set(49, "SENDER....")
-                .Set(56, "RECEIVER.....")
-                .Build();
+                .Clear()
+                .Prepare("FIX.4.2", "0", 8059, SendingTime, "SENDER....", "RECEIVER.....");
         }
 
         [Benchmark]
         public void medium()
         {
             Message
-                .Prepare("8")
-                .Set(34, 8059)
-                .Set(52, SendingTime)
-                .Set(49, "SENDER....")
-                .Set(56, "RECEIVER.....")
+                .Clear()
                 .Set(20, 0)
                 .Set(39, 2)
                 .Set(150, 2)
@@ -62,18 +54,14 @@ namespace HotFix.Benchmark.suites
                 .Set(37, "0804188884")
                 .Set(15, "EUR")
                 .Set(44, 1.504200d)
-                .Build();
+                .Prepare("FIX.4.2", "8", 8059, SendingTime, "SENDER....", "RECEIVER.....");
         }
 
         [Benchmark]
         public void large()
         {
             Message
-                .Prepare("0")
-                .Set(34, 8059)
-                .Set(52, SendingTime)
-                .Set(49, "SENDER....")
-                .Set(56, "RECEIVER.....")
+                .Clear()
                 .Set(262, "c6424b19-af74-4c17-8266-9c52ca583ad2")
                 .Set(268, 8);
 
@@ -168,7 +156,7 @@ namespace HotFix.Benchmark.suites
                 .Set(735, 1)
                 .Set(695, 5);
 
-            Message.Build();
+            Message.Prepare("FIX.4.2", "X", 8059, SendingTime, "SENDER....", "RECEIVER.....");
         }
     }
 }

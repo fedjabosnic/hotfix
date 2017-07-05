@@ -29,10 +29,7 @@ namespace HotFix.Demo.Acceptor
 
             using (var session = engine.Open(configuration))
             {
-                var clock = session.Clock;
                 var state = session.State;
-                var sender = session.Configuration.Sender;
-                var target = session.Configuration.Target;
 
                 var inbound = session.Inbound;
                 var outbound = session.Outbound;
@@ -45,31 +42,23 @@ namespace HotFix.Demo.Acceptor
 
                     if (!inbound.Valid || !inbound[35].Is("D")) continue;
 
-                    outbound.Prepare("8");
+                    outbound
+                        .Clear()
+                        .Set(37, ++_orders)     // OrderId 
+                        .Set(11, ++_executions) // ExecId 
+                        .Set(20, 0)             // ExecTransType (New) 
+                        .Set(150, 2)            // ExecType (Fill) 
+                        .Set(39, 2)             // OrdStatus (Filled) 
+                        .Set(11, inbound[11])   // ClOrdId 
+                        .Set(55, inbound[55])   // Symbol 
+                        .Set(54, inbound[54])   // Side 
+                        .Set(38, inbound[38])   // OrderQty 
+                        .Set(44, inbound[44])   // Price 
+                        .Set(6,  inbound[44])   // AvgPrice 
+                        .Set(14, inbound[38])   // CumQty 
+                        .Set(151, 0);            // LeavesQty 
 
-                    outbound.Set(34, state.OutboundSeqNum);
-                    outbound.Set(52, clock.Time);
-                    outbound.Set(49, sender);
-                    outbound.Set(56, target);
-
-                    outbound.Set(37, ++_orders);     // OrderId 
-                    outbound.Set(11, ++_executions); // ExecId 
-                    outbound.Set(20, 0);             // ExecTransType (New) 
-                    outbound.Set(150, 2);            // ExecType (Fill) 
-                    outbound.Set(39, 2);             // OrdStatus (Filled) 
-
-                    outbound.Set(11, inbound[11]);   // ClOrdId 
-                    outbound.Set(55, inbound[55]);   // Symbol 
-                    outbound.Set(54, inbound[54]);   // Side 
-                    outbound.Set(38, inbound[38]);   // OrderQty 
-                    outbound.Set(44, inbound[44]);   // Price 
-                    outbound.Set(6,  inbound[44]);   // AvgPrice 
-                    outbound.Set(14, inbound[38]);   // CumQty 
-                    outbound.Set(151, 0);            // LeavesQty 
-
-                    outbound.Build();
-
-                    session.Send(state, session.Channel, outbound);
+                    session.Send("8", state, session.Channel, outbound);
                 }
 
                 session.Logout();
