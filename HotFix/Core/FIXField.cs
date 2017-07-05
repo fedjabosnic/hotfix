@@ -5,8 +5,8 @@ namespace HotFix.Core
 {
     public struct FIXField
     {
-        private readonly byte[] _message;
-        private readonly Segment _value;
+        internal readonly byte[] _message;
+        internal readonly Segment _value;
 
         /// <summary> The tag of this field </summary>
         public int Tag { get; }

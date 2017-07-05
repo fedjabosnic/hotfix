@@ -17,6 +17,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".common", ".common", "{D0FC
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotFix.Demo.Acceptor", "HotFix.Demo.Acceptor\HotFix.Demo.Acceptor.csproj", "{1B14CE3D-3274-48AD-94B7-B0925ED900D1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HotFix.Demo.Initiator", "HotFix.Demo.Initiator\HotFix.Demo.Initiator.csproj", "{6DDBCECF-3B57-4CAD-BAD2-93CC1D71911E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{A364023B-5F1C-4F61-A329-A8E33F6582B4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A364023B-5F1C-4F61-A329-A8E33F6582B4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A364023B-5F1C-4F61-A329-A8E33F6582B4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B14CE3D-3274-48AD-94B7-B0925ED900D1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B14CE3D-3274-48AD-94B7-B0925ED900D1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B14CE3D-3274-48AD-94B7-B0925ED900D1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B14CE3D-3274-48AD-94B7-B0925ED900D1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DDBCECF-3B57-4CAD-BAD2-93CC1D71911E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DDBCECF-3B57-4CAD-BAD2-93CC1D71911E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DDBCECF-3B57-4CAD-BAD2-93CC1D71911E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DDBCECF-3B57-4CAD-BAD2-93CC1D71911E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

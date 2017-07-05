@@ -87,6 +87,16 @@ namespace HotFix.Core
             _buffer[_end++] = SOH;
         }
 
+        public void Set(int tag, FIXField field)
+        {
+            _end += _buffer.WriteInt(_end, field.Tag);
+            _buffer[_end++] = EQL;
+
+            Buffer.BlockCopy(field._message, field._value.Offset, _buffer, _end, field._value.Length);
+            _end += field._value.Length;
+            _buffer[_end++] = SOH;
+        }
+
         public void Build()
         {
             _bodyEnd = _end - 1;
