@@ -51,12 +51,24 @@ namespace HotFix.Core
 
                 _tail = _current + 1;
 
-                if (_tail == _head)
-                {
-                    _tail = _head = _current = 0;
-                }
+                // If there's no more buffered data - reset the buffer
+                if (_tail == _head) _tail = _head = _current = 0;
 
                 return message.Valid;
+            }
+
+            // If there's no more buffer space - reset the buffer
+            if (_head == _buffer.Length && _head == _current)
+            {
+                var buffered = _head - _tail;
+
+                // NOTE: This may or may not be needed but we put it in for safety
+                if(_tail < buffered) throw new Exception("Unable to reset buffer - not enough space");
+
+                Buffer.BlockCopy(_buffer, _tail, _buffer, 0, buffered);
+
+                _tail = 0;
+                _head = _current = buffered;
             }
 
             return false;
