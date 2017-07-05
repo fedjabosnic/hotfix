@@ -100,7 +100,8 @@ namespace HotFix.Benchmark.suites
                 .Set(735, 1)
                 .Set(695, 5);
 
-            Message.Set(279, 0)
+            Message
+                .Set(279, 0)
                 .Set(55, "GBP/JPY")
                 .Set(269, 0)
                 .Set(278, "1211918502")
@@ -112,7 +113,8 @@ namespace HotFix.Benchmark.suites
                 .Set(735, 1)
                 .Set(695, 5);
 
-            Message.Set(279, 2)
+            Message
+                .Set(279, 2)
                 .Set(55, "GBP/JPY")
                 .Set(269, 0)
                 .Set(278, "1211918436")
@@ -122,7 +124,8 @@ namespace HotFix.Benchmark.suites
                 .Set(15, "GBP")
                 .Set(282, 290);
 
-            Message.Set(279, 2)
+            Message
+                .Set(279, 2)
                 .Set(55, "GBP/JPY")
                 .Set(269, 0)
                 .Set(278, "1211918436")
@@ -132,7 +135,8 @@ namespace HotFix.Benchmark.suites
                 .Set(15, "GBP")
                 .Set(282, 290);
 
-            Message.Set(279, 2)
+            Message
+                .Set(279, 2)
                 .Set(55, "GBP/JPY")
                 .Set(269, 0)
                 .Set(278, "1211918436")
@@ -144,7 +148,8 @@ namespace HotFix.Benchmark.suites
                 .Set(735, 1)
                 .Set(695, 5);
 
-            Message.Set(279, 2)
+            Message
+                .Set(279, 2)
                 .Set(55, "GBP/JPY")
                 .Set(269, 0)
                 .Set(278, "1211918436")
