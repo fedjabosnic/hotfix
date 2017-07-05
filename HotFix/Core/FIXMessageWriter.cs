@@ -11,18 +11,18 @@ namespace HotFix.Core
         private readonly byte[] _body;
         private int _bodyEnd;
 
-        internal readonly byte[] _buffer;
-        internal int _end;
+        internal readonly byte[] Buffer;
+        internal int End;
 
         public FIXMessageWriter(int maxLength)
         {
-            _buffer = new byte[maxLength];
+            Buffer = new byte[maxLength];
             _body = new byte[maxLength];
         }
 
         public FIXMessageWriter Clear()
         {
-            _end = 0;
+            End = 0;
             _bodyEnd = 0;
 
             return this;
@@ -31,53 +31,53 @@ namespace HotFix.Core
         public FIXMessageWriter Prepare(string beginString, string messageType, long seqNum, DateTime sendingTime, string sender, string target)
         {
             // write beginstring
-            _end = _buffer.WriteString(0, "8=");
-            _end += _buffer.WriteString(_end, beginString);
-            _buffer[_end++] = SOH;
+            End = Buffer.WriteString(0, "8=");
+            End += Buffer.WriteString(End, beginString);
+            Buffer[End++] = SOH;
 
             // write length placeholder
             // Should probably measure how many digits are needed to represent maxLength and use that many zeros
             // The zeros string could then be cached and reused since it can be calculated at construction time
-            _end += _buffer.WriteString(_end, "9=00000");
-            var lengthPosition = _end - 1; // points to the last zero
-            _buffer[_end++] = SOH;
+            End += Buffer.WriteString(End, "9=00000");
+            var lengthPosition = End - 1; // points to the last zero
+            Buffer[End++] = SOH;
 
             // write messagetype
-            _end += _buffer.WriteString(_end, "35=");
-            _end += _buffer.WriteString(_end, messageType);
-            _buffer[_end++] = SOH;
+            End += Buffer.WriteString(End, "35=");
+            End += Buffer.WriteString(End, messageType);
+            Buffer[End++] = SOH;
 
             // write seqnum
-            _end += _buffer.WriteString(_end, "34=");
-            _end += _buffer.WriteLong(_end, seqNum);
-            _buffer[_end++] = SOH;
+            End += Buffer.WriteString(End, "34=");
+            End += Buffer.WriteLong(End, seqNum);
+            Buffer[End++] = SOH;
 
             // write sendingTime
-            _end += _buffer.WriteString(_end, "52=");
-            _end += _buffer.WriteDateTime(_end, sendingTime);
-            _buffer[_end++] = SOH;
+            End += Buffer.WriteString(End, "52=");
+            End += Buffer.WriteDateTime(End, sendingTime);
+            Buffer[End++] = SOH;
 
             // write sender
-            _end += _buffer.WriteString(_end, "49=");
-            _end += _buffer.WriteString(_end, sender);
-            _buffer[_end++] = SOH;
+            End += Buffer.WriteString(End, "49=");
+            End += Buffer.WriteString(End, sender);
+            Buffer[End++] = SOH;
 
             // write target
-            _end += _buffer.WriteString(_end, "56=");
-            _end += _buffer.WriteString(_end, target);
-            _buffer[_end++] = SOH;
+            End += Buffer.WriteString(End, "56=");
+            End += Buffer.WriteString(End, target);
+            Buffer[End++] = SOH;
 
             // copy body
-            Buffer.BlockCopy(_body, 0, _buffer, _end, _bodyEnd);
-            _end += _bodyEnd;
+            System.Buffer.BlockCopy(_body, 0, Buffer, End, _bodyEnd);
+            End += _bodyEnd;
 
             // update length
-            _buffer.WriteIntBackwards(lengthPosition, _end - (lengthPosition + 2));
+            Buffer.WriteIntBackwards(lengthPosition, End - (lengthPosition + 2));
 
             // calculate and write checksum
             var checksum = CalculateChecksum();
-            _end += _buffer.WriteString(_end, "10=000\u0001");
-            _buffer.WriteIntBackwards(_end - 2, checksum);
+            End += Buffer.WriteString(End, "10=000\u0001");
+            Buffer.WriteIntBackwards(End - 2, checksum);
 
             return this;
         }
@@ -142,7 +142,7 @@ namespace HotFix.Core
             _bodyEnd += _body.WriteInt(_bodyEnd, field.Tag);
             _body[_bodyEnd++] = EQL;
 
-            Buffer.BlockCopy(field._message, field._value.Offset, _body, _bodyEnd, field._value.Length);
+            System.Buffer.BlockCopy(field._message, field._value.Offset, _body, _bodyEnd, field._value.Length);
             _bodyEnd += field._value.Length;
             _body[_bodyEnd++] = SOH;
 
@@ -153,14 +153,14 @@ namespace HotFix.Core
         {
             var checksum = 0;
 
-            for (var i = 0; i < _end; i++)
+            for (var i = 0; i < End; i++)
             {
-                checksum += _buffer[i];
+                checksum += Buffer[i];
             }
 
             return checksum % 256;
         }
 
-        public override string ToString() => System.Text.Encoding.ASCII.GetString(_buffer, 0, _end);
+        public override string ToString() => System.Text.Encoding.ASCII.GetString(Buffer, 0, End);
     }
 }

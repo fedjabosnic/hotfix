@@ -80,7 +80,7 @@ namespace HotFix.Core
         /// <param name="message"> The message to write </param>
         public void Write(FIXMessageWriter message)
         {
-            Transport.Write(message._buffer, 0, message._end);
+            Transport.Write(message.Buffer, 0, message.End);
         }
     }
 }
