@@ -28,8 +28,8 @@ namespace HotFix
             Console.WriteLine();
             Console.WriteLine("Note: You can play with the message fields to see how message size affect performance");
             Console.WriteLine();
-            Console.WriteLine("Press any key to run the test...");
-            Console.ReadKey();
+            Console.WriteLine("Press enter to run the test...");
+            Console.ReadLine();
             Console.Clear();
 
             DateTime start;
@@ -41,6 +41,7 @@ namespace HotFix
             var acceptor = new Configuration
             {
                 Role = Role.Acceptor,
+                Version = "FIX.4.2",
                 Host = "127.0.0.1",
                 Port = 1234,
                 Sender = "TARGET",
@@ -54,6 +55,7 @@ namespace HotFix
             var initiator = new Configuration
             {
                 Role = Role.Initiator,
+                Version = "FIX.4.2",
                 Host = "127.0.0.1",
                 Port = 1234,
                 Sender = "DAEV",
@@ -181,8 +183,8 @@ namespace HotFix
             Console.WriteLine($"         G2: {gc2}");
             Console.WriteLine();
 
-            Console.WriteLine("Test finished, press any key to exit...");
-            Console.ReadKey();
+            Console.WriteLine("Test finished, press enter to exit...");
+            Console.ReadLine();
         }
 
         public static long Percentile(List<long> sequence, double excelPercentile)

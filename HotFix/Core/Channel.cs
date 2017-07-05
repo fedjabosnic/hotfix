@@ -3,6 +3,10 @@ using HotFix.Transport;
 
 namespace HotFix.Core
 {
+    /// <summary>
+    /// A channel is a message layer abstraction over a transport, allowing messages
+    /// to be written and read from a transport
+    /// </summary>
     public class Channel
     {
         private const char SOH = '\u0001';
@@ -21,6 +25,11 @@ namespace HotFix.Core
             _buffer = new byte[bufferSize];
         }
 
+        /// <summary>
+        /// Reads a message from the transport and returns true/false to indicate whether a valid message was read
+        /// </summary>
+        /// <param name="message"> The message to read into </param>
+        /// <returns> Whether a valid message was read </returns>
         public bool Read(FIXMessage message)
         {
             if (_current == _head)
@@ -53,6 +62,10 @@ namespace HotFix.Core
             return false;
         }
 
+        /// <summary>
+        /// Writes a message to the transport
+        /// </summary>
+        /// <param name="message"> The message to write </param>
         public void Write(FIXMessageWriter message)
         {
             Transport.Write(message._buffer, 0, message._end);

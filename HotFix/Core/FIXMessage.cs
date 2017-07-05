@@ -12,6 +12,7 @@ namespace HotFix.Core
         internal FIXField[] Fields { get; private set; }
         public int Count { get; private set; }
 
+        /// <summary> Whether this message contains a valid set of fields </summary>
         public bool Valid { get; private set; }
 
         public FIXMessage(int length = 4096, int fields = 1024)
@@ -219,6 +220,9 @@ namespace HotFix.Core
             }
         }
 
+        /// <summary>
+        /// Clears the message for reuse
+        /// </summary>
         public void Clear()
         {
             Count = 0;

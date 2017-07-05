@@ -8,14 +8,22 @@ namespace HotFix.Core
         private readonly byte[] _message;
         private readonly Segment _value;
 
+        /// <summary> The tag of this field </summary>
         public int Tag { get; }
+        /// <summary> The length of this field </summary>
         public int Length { get; }
+        /// <summary> The checksum of this field </summary>
         public int Checksum { get; }
 
+        /// <summary> Returns the field value as a 32 bit number </summary>
         public int AsInt => _message.ReadInt(_value.Offset, _value.Length);
+        /// <summary> Returns the field value as a 64 bit number </summary>
         public long AsLong => _message.ReadLong(_value.Offset, _value.Length);
+        /// <summary> Returns the field value as a decimal number </summary>
         public double AsFloat => _message.ReadFloat(_value.Offset, _value.Length);
+        /// <summary> Returns the field value as a string </summary>
         public string AsString => _message.ReadString(_value.Offset, _value.Length);
+        /// <summary> Returns the field value as a datetime </summary>
         public DateTime AsDateTime => _message.ReadDateTime(_value.Offset, _value.Length);
 
         public FIXField(byte[] message, int tag, Segment value, int length, int checksum)

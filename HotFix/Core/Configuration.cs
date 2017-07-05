@@ -6,7 +6,7 @@ namespace HotFix.Core
     {
         public Role Role { get; set; }
 
-        public string Version { get; set; } = "FIX.4.2";
+        public string Version { get; set; }
         public string Target { get; set; }
         public string Sender { get; set; }
 
