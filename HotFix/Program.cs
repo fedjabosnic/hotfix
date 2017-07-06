@@ -48,7 +48,8 @@ namespace HotFix
                 Target = "DAEV",
                 InboundSeqNum = 1,
                 OutboundSeqNum = 1,
-                HeartbeatInterval = 5
+                HeartbeatInterval = 5,
+                //LogFile = "acceptor.log"
             };
 
             // Configure initiator session
@@ -62,7 +63,8 @@ namespace HotFix
                 Target = "TARGET",
                 InboundSeqNum = 1,
                 OutboundSeqNum = 1,
-                HeartbeatInterval = 5
+                HeartbeatInterval = 5,
+                //LogFile = "initiator.log"
             };
 
             // Create and start acceptor session on background thread
@@ -87,7 +89,7 @@ namespace HotFix
                                 .Clear()
                                 .Set(999, Acceptor.Clock.Time.Ticks);
 
-                            Acceptor.Send("X", Acceptor.State, Acceptor.Channel, message);
+                            Acceptor.Send("X", message);
                         }
                     }
                 }

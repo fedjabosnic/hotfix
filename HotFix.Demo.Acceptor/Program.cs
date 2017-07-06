@@ -30,8 +30,6 @@ namespace HotFix.Demo.Acceptor
 
             using (var session = engine.Open(configuration))
             {
-                var state = session.State;
-
                 var inbound = session.Inbound;
                 var outbound = session.Outbound;
 
@@ -59,7 +57,7 @@ namespace HotFix.Demo.Acceptor
                         .Set(14, inbound[38])   // CumQty 
                         .Set(151, 0);           // LeavesQty 
 
-                    session.Send("8", state, session.Channel, outbound);
+                    session.Send("8", outbound);
                 }
 
                 session.Logout();

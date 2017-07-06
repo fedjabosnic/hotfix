@@ -35,7 +35,6 @@ namespace HotFix.Demo.Initiator
             using (var session = engine.Open(configuration))
             {
                 var clock = session.Clock;
-                var state = session.State;
 
                 var inbound = session.Inbound;
                 var outbound = session.Outbound;
@@ -56,7 +55,7 @@ namespace HotFix.Demo.Initiator
                         .Set(44, 1.13200)            // Price 
                         .Set(40, 2);                 // OrdType (limit) 
 
-                    session.Send("D", state, session.Channel, outbound);
+                    session.Send("D", outbound);
 
                     while (!session.Receive()) { }
 
@@ -76,13 +75,13 @@ namespace HotFix.Demo.Initiator
 
             histogram = histogram.Skip(1000).Select(x => x).ToList();
 
+            Console.WriteLine($"      min: {$"{histogram.Min() / 10m:N}",14} µs");
             Console.WriteLine($"   50.00%: {$"{Percentile(histogram, 0.5000) / 10m:N}",14} µs");
             Console.WriteLine($"   90.00%: {$"{Percentile(histogram, 0.9000) / 10m:N}",14} µs");
             Console.WriteLine($"   99.00%: {$"{Percentile(histogram, 0.9900) / 10m:N}",14} µs");
             Console.WriteLine($"   99.90%: {$"{Percentile(histogram, 0.9990) / 10m:N}",14} µs");
             Console.WriteLine($"   99.99%: {$"{Percentile(histogram, 0.9999) / 10m:N}",14} µs");
-            Console.WriteLine($"  100.00%: {$"{Percentile(histogram, 1.0000) / 10m:N}",14} µs");
-
+            Console.WriteLine($"      max: {$"{histogram.Max() / 10m:N}",14} µs");
         }
 
         public static long Percentile(List<long> sequence, double excelPercentile)
