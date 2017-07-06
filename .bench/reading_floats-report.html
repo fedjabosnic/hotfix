@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>reading_floats</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet=v0.10.4, OS=Windows 10.0.10586
+Processor=Intel Core i7-3770 CPU 3.40GHz (Ivy Bridge), ProcessorCount=8
+Frequency=3316018 Hz, Resolution=301.5665 ns, Timer=TSC
+  [Host]     : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
+  DefaultJob : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method</th><th> Mean</th><th>Error</th><th>StdDev</th><th>StdErr</th><th>  Min</th><th>   Q1</th><th>Median</th><th>   Q3</th><th>  Max</th><th> Op/s</th><th>Scaled</th><th>ScaledSD</th><th>Gen 0</th><th>Allocated</th>
+</tr>
+</thead><tbody><tr><td>standard</td><td>188.8231 ns</td><td>1.8592 ns</td><td>1.7391 ns</td><td>0.4490 ns</td><td>186.4982 ns</td><td>187.4883 ns</td><td>188.2730 ns</td><td>190.4131 ns</td><td>192.0371 ns</td><td>5295963.52</td><td>1.00</td><td>0.00</td><td>0.0082</td><td>0.05 kB</td>
+</tr><tr><td>hotfix</td><td>19.3937 ns</td><td>0.0755 ns</td><td>0.0669 ns</td><td>0.0179 ns</td><td>19.2694 ns</td><td>19.3479 ns</td><td>19.3886 ns</td><td>19.4585 ns</td><td>19.4798 ns</td><td>51563179.04</td><td>0.10</td><td>0.00</td><td>-</td><td>0 kB</td>
+</tr></tbody></table>
+</body>
+</html>

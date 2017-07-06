@@ -1,79 +1,220 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using HotFix.Core;
 
 namespace HotFix
 {
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static Engine Engine;
+        public static Session Acceptor;
+        public static Session Initiator;
+
+        public static bool Running = true;
+        public static List<long> Timings = new List<long>(10000000);
+
+        public static void Main(string[] args)
         {
-            Console.WriteLine("Preparing...");
-
-            var count = 1000000;
-            var results = new List<DateTime>(count);
-
-            var throwaway1 = "20170327 15:33:21.596".GetDateTime();
-            var throwaway2 = "20170327 07:45:18.123".GetDateTime();
-            var throwaway3 = "20170327 12:37:13.645".GetDateTime();
-            var throwaway4 = "20170327 14:12:32.566".GetDateTime();
-            var throwaway5 = "20170327 21:04:37.236".GetDateTime();
-
-            var report = "8=FIX.4.2|9=396|35=8|34=000008059|52=20170531-08:18:01.768|49=SENDER....|56=RECEIVER.....|20=0|39=2|150=2|17=U201:053117:00000079:B|40=2|55=EUR/CAD|54=1|38=000900000.00|151=000000000.00|14=000900000.00|32=000100000.00|31=00001.503850|6=00001.503940|64=20170602|60=20170531-08:18:01.767|75=20170531|9200=S|9300=0647|9500=00000.000000|37=0804188884|15=EUR|44=00001.504200|375=None|11=20170531.FXALGO0900.001.00011|10=241|".Replace("|", "\u0001");
-            var md = "8=FIX.4.2|9=968|35=X|34=53677|52=20170525-00:55:16.153|49=SENDER..|56=RECEIVER..........|262=c6424b19-af74-4c17-8266-9c52ca583ad2|268=8|279=2|55=GBP/JPY|269=0|278=1211918436|270=144.808000|271=1000000.000000|110=0.000000|15=GBP|282=290|279=2|55=GBP/JPY|269=0|278=1211918437|270=144.802000|271=2000000.000000|110=0.000000|15=GBP|282=290|279=0|55=GBP/JPY|269=0|278=1211918501|270=144.809000|271=1000000.000000|110=0.000000|15=GBP|282=290|735=1|695=5|279=0|55=GBP/JPY|269=0|278=1211918502|270=144.803000|271=2000000.000000|110=0.000000|15=GBP|282=290|735=1|695=5|279=2|55=GBP/JPY|269=1|278=1211918438|270=144.826000|271=1000000.000000|110=0.000000|15=GBP|282=290|279=2|55=GBP/JPY|269=1|278=1211918439|270=144.833000|271=2000000.000000|110=0.000000|15=GBP|282=290|279=0|55=GBP/JPY|269=1|278=1211918503|270=144.828000|271=1000000.000000|110=0.000000|15=GBP|282=290|735=1|695=5|279=0|55=GBP/JPY|269=1|278=1211918504|270=144.834000|271=2000000.000000|110=0.000000|15=GBP|282=290|735=1|695=5|10=161|".Replace("|","\u0001");
-
-            var message = new Message();
-
-            Console.WriteLine("Press any key to run test...");
-            Console.WriteLine("");
+            Console.WriteLine("Performance benchmark");
+            Console.WriteLine();
+            Console.WriteLine(
+                "This performance benchmark will run an acceptor and an initiator on two background threads " +
+                "connected over loopback via tcp transport. We measure the overall one-way path of messaging " +
+                "from the acceptor to the initiator, including: \n\n" +
+                "user code -> encoding -> sending -> receiving -> decoding -> user code");
+            Console.WriteLine();
+            Console.WriteLine("Note: You can play with the message fields to see how message size affect performance");
+            Console.WriteLine();
+            Console.WriteLine("Press enter to run the test...");
             Console.ReadLine();
+            Console.Clear();
+
+            DateTime start;
+            Console.WriteLine($"Started at {start = DateTime.UtcNow}");
+
+            Engine = new Engine();
+
+            // Configure acceptor session
+            var acceptor = new Configuration
+            {
+                Role = Role.Acceptor,
+                Version = "FIX.4.2",
+                Host = "127.0.0.1",
+                Port = 1234,
+                Sender = "TARGET",
+                Target = "DAEV",
+                InboundSeqNum = 1,
+                OutboundSeqNum = 1,
+                HeartbeatInterval = 5,
+                //LogFile = "acceptor.log"
+            };
+
+            // Configure initiator session
+            var initiator = new Configuration
+            {
+                Role = Role.Initiator,
+                Version = "FIX.4.2",
+                Host = "127.0.0.1",
+                Port = 1234,
+                Sender = "DAEV",
+                Target = "TARGET",
+                InboundSeqNum = 1,
+                OutboundSeqNum = 1,
+                HeartbeatInterval = 5,
+                //LogFile = "initiator.log"
+            };
+
+            // Create and start acceptor session on background thread
+            Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    Acceptor = Engine.Open(acceptor);
+                    Acceptor.Logon();
+
+                    Console.WriteLine("Acceptor logged on");
+
+                    while (Running)
+                    {
+                        Acceptor.Receive();
+
+                        var message = Acceptor.Outbound;
+
+                        for (var i = 0; i < 100; i++)
+                        {
+                            message
+                                .Clear()
+                                .Set(999, Acceptor.Clock.Time.Ticks);
+
+                            Acceptor.Send("X", message);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Acceptor failed because: {e.Message}");
+                    Console.WriteLine();
+                    Console.WriteLine(e);
+                }
+            }, TaskCreationOptions.LongRunning);
+
+            Thread.Sleep(1000);
+
+            // Start initiator session on background thread
+            Task.Factory.StartNew(() =>
+            {
+                try
+                {
+                    Initiator = Engine.Open(initiator);
+                    Initiator.Logon();
+
+                    Console.WriteLine("Initiator logged on");
+
+                    while (Running)
+                    {
+                        Initiator.Receive();
+
+                        if (Initiator.Inbound.Valid && Initiator.Inbound[35].Is("X"))
+                        {
+                            // Take measurement in microseconds - application send to application receive time (one way end-to-end)
+                            Timings.Add((Initiator.Clock.Time.Ticks - Initiator.Inbound[999].AsLong) / 10);
+                        }
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Initiator failed because: {e.Message}");
+                    Console.WriteLine();
+                    Console.WriteLine(e);
+                }
+            }, TaskCreationOptions.LongRunning);
+
+            Console.WriteLine();
+            Console.WriteLine("Press any key to end the test...");
+            Console.WriteLine();
+
+            Thread.Sleep(3000);
 
             GC.Collect();
-            Thread.Sleep(100);
+            GC.Collect();
+            GC.Collect();
 
-            var c0 = GC.CollectionCount(0);
-            var c1 = GC.CollectionCount(1);
-            var c2 = GC.CollectionCount(2);
-
-            var timer = new Stopwatch();
-
-            timer.Start();
-
-            for (var i = 0; i < count; i++)
-            {
-                // Parse message and retrieve timestamp field
-                results.Add(message.Parse(md)[52].DateTime);
-            }
-
-            timer.Stop();
-
-            Console.WriteLine("Done");
-
-            Console.WriteLine();
-            Console.WriteLine($"Entries: {count}");
-            Console.WriteLine($"Elapsed: {timer.ElapsedMilliseconds} millis");
-            Console.WriteLine($"Rates:   {count / ((double)timer.ElapsedTicks / Stopwatch.Frequency)} entries per second");
-            Console.WriteLine($"         {((double)timer.ElapsedTicks / Stopwatch.Frequency) / count * 1000000} micros per entry");
-            Console.WriteLine();
-            Console.WriteLine($"Collections:");
-            Console.WriteLine($"      Gen 0: {GC.CollectionCount(0) - c0}");
-            Console.WriteLine($"      Gen 1: {GC.CollectionCount(1) - c1}");
-            Console.WriteLine($"      Gen 2: {GC.CollectionCount(2) - c2}");
-            Console.WriteLine();
-            Console.WriteLine(throwaway1);
-            Console.WriteLine(throwaway2);
-            Console.WriteLine(throwaway3);
-            Console.WriteLine(throwaway4);
-            Console.WriteLine(throwaway5);
-            Console.WriteLine(results[12345]);
-            Console.WriteLine();
-            Console.WriteLine("Press any key to exit");
+            var gc0 = GC.CollectionCount(0);
+            var gc1 = GC.CollectionCount(1);
+            var gc2 = GC.CollectionCount(2);
 
             Console.ReadLine();
+
+            Running = false;
+
+            Thread.Sleep(100);
+
+            gc0 = GC.CollectionCount(0) - gc0;
+            gc1 = GC.CollectionCount(1) - gc1;
+            gc2 = GC.CollectionCount(2) - gc2;
+
+            // Skip first few measurements (exclude jit and optimize passes)
+            Timings = Timings.Skip(1000).ToList();
+
+            Console.Clear();
+            Console.WriteLine($"Count:    {Timings.Count}");
+            Console.WriteLine($"Duration: {DateTime.UtcNow - start}");
+            Console.WriteLine();
+            Console.WriteLine($"End to end one-way");
+            Console.WriteLine($"------------------");
+            Console.WriteLine($"Latency max: {$"{Timings.Max():N}",14} micros");
+            Console.WriteLine($"        avg: {$"{Timings.Average():N}",14} micros");
+            Console.WriteLine($"        min: {$"{Timings.Min():N}",14} micros");
+            Console.WriteLine();
+            Console.WriteLine($"        99%: {$"{Percentile(Timings, 0.99):N}",14} micros");
+            Console.WriteLine($"        90%: {$"{Percentile(Timings, 0.90):N}",14} micros");
+            Console.WriteLine($"        50%: {$"{Percentile(Timings, 0.50):N}",14} micros");
+            Console.WriteLine();
+            Console.WriteLine($"        std: {$"{StdDev(Timings):N}",14} micros");
+            Console.WriteLine();
+            Console.WriteLine($"Garbage col:");
+            Console.WriteLine($"         G0: {gc0}");
+            Console.WriteLine($"         G1: {gc1}");
+            Console.WriteLine($"         G2: {gc2}");
+            Console.WriteLine();
+
+            Console.WriteLine("Test finished, press enter to exit...");
+            Console.ReadLine();
+        }
+
+        public static long Percentile(List<long> sequence, double excelPercentile)
+        {
+            var sorted = sequence.OrderBy(x => x).ToList();
+
+            var N = sorted.Count;
+            var n = (N - 1) * excelPercentile + 1;
+            // Another method: double n = (N + 1) * excelPercentile; 
+
+            if (n == 1d) return sorted[0];
+            if (n == N) return sorted[N - 1];
+
+            var k = (int)n;
+            var d = n - k;
+            return (long)(sorted[k - 1] + d * (sorted[k] - sorted[k - 1]));
+        }
+
+        public static double StdDev(List<long> values)
+        {
+            var count = values.Count;
+
+            if (count <= 1) return 0;
+
+            // Compute the Average 
+            var avg = values.Average();
+
+            // Perform the Sum of (value-avg)^2 
+            var sum = values.Sum(d => (d - avg) * (d - avg));
+
+            // Put it all together 
+            return Math.Sqrt(sum / count);
         }
     }
-
-    
 }

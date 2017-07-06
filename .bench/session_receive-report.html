@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang='en'>
+<head>
+<meta charset='utf-8' />
+<title>session_receive</title>
+
+<style type="text/css">
+	table { border-collapse: collapse; display: block; width: 100%; overflow: auto; }
+	td, th { padding: 6px 13px; border: 1px solid #ddd; }
+	tr { background-color: #fff; border-top: 1px solid #ccc; }
+	tr:nth-child(even) { background: #f8f8f8; }
+</style>
+</head>
+<body>
+<pre><code>
+BenchmarkDotNet=v0.10.4, OS=Windows 10.0.10586
+Processor=Intel Core i7-3770 CPU 3.40GHz (Ivy Bridge), ProcessorCount=8
+Frequency=3312788 Hz, Resolution=301.8605 ns, Timer=TSC
+  [Host]     : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
+  DefaultJob : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
+</code></pre>
+<pre><code></code></pre>
+
+<table>
+<thead><tr><th>Method</th><th>   Mean</th><th>Error</th><th>StdDev</th><th>StdErr</th><th>    Min</th><th>     Q1</th><th> Median</th><th>     Q3</th><th>    Max</th><th>Op/s</th><th>Allocated</th>
+</tr>
+</thead><tbody><tr><td>small</td><td>922.5739 ns</td><td>8.9980 ns</td><td>8.4168 ns</td><td>2.1732 ns</td><td>911.8879 ns</td><td>915.3006 ns</td><td>921.6549 ns</td><td>928.0504 ns</td><td>939.5186 ns</td><td>1083924.04</td><td>0 kB</td>
+</tr><tr><td>medium</td><td>2,519.4718 ns</td><td>14.4516 ns</td><td>13.5180 ns</td><td>3.4903 ns</td><td>2,499.4726 ns</td><td>2,509.0117 ns</td><td>2,516.9755 ns</td><td>2,525.3850 ns</td><td>2,545.0181 ns</td><td>396908.59</td><td>0 kB</td>
+</tr><tr><td>large</td><td>6,046.8065 ns</td><td>46.6824 ns</td><td>43.6667 ns</td><td>11.2747 ns</td><td>5,995.6543 ns</td><td>6,010.3130 ns</td><td>6,030.0913 ns</td><td>6,094.8681 ns</td><td>6,136.6264 ns</td><td>165376.55</td><td>0 kB</td>
+</tr></tbody></table>
+</body>
+</html>
