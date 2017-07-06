@@ -5,10 +5,13 @@ namespace HotFix.Core
 {
     /// <summary>
     /// A channel is a message layer abstraction over a transport, allowing messages
-    /// to be written and read from a transport
+    /// to be written and read from a transport.
     /// </summary>
     public class Channel
     {
+        public Action<byte[], int, int> Inbound { get; set; }
+        public Action<byte[], int, int> Outbound { get; set; }
+
         private const char SOH = '\u0001';
 
         private readonly byte[] _buffer;
@@ -18,6 +21,11 @@ namespace HotFix.Core
 
         public ITransport Transport { get; }
 
+        /// <summary>
+        /// Creates a new channel with the specified buffer for the provided transport.
+        /// </summary>
+        /// <param name="transport">The underlying transport.</param>
+        /// <param name="bufferSize">The buffer size.</param>
         public Channel(ITransport transport, int bufferSize)
         {
             Transport = transport;
@@ -26,10 +34,10 @@ namespace HotFix.Core
         }
 
         /// <summary>
-        /// Reads a message from the transport and returns true/false to indicate whether a valid message was read
+        /// Reads a message from the transport and returns true/false to indicate whether a valid message was read.
         /// </summary>
-        /// <param name="message"> The message to read into </param>
-        /// <returns> Whether a valid message was read </returns>
+        /// <param name="message">The message to read into.</param>
+        /// <returns>Whether a valid message was read.</returns>
         public bool Read(FIXMessage message)
         {
             if (_current == _head)
@@ -48,6 +56,8 @@ namespace HotFix.Core
                 if (_buffer[_current - 7] != SOH) continue;
 
                 message.Parse(_buffer, _tail, _current - _tail + 1);
+
+                Inbound?.Invoke(_buffer, _tail, _current - _tail + 1);
 
                 _tail = _current + 1;
 
@@ -75,12 +85,13 @@ namespace HotFix.Core
         }
 
         /// <summary>
-        /// Writes a message to the transport
+        /// Writes a message to the transport.
         /// </summary>
-        /// <param name="message"> The message to write </param>
+        /// <param name="message">The message to write.</param>
         public void Write(FIXMessageWriter message)
         {
             Transport.Write(message.Buffer, 0, message.Length);
+            Outbound?.Invoke(message.Buffer, 0, message.Length);
         }
     }
 }

@@ -65,6 +65,8 @@
     <Compile Include="Transport\ConsoleTransport.cs" />
     <Compile Include="Transport\ITransport.cs" />
     <Compile Include="Transport\TcpTransport.cs" />
+    <Compile Include="Utilities\FileLogger.cs" />
+    <Compile Include="Utilities\ILogger.cs" />
     <Compile Include="Utilities\RealTimeClock.cs" />
     <Compile Include="Utilities\IClock.cs" />
     <Compile Include="Utilities\Os.cs" />

@@ -8,6 +8,8 @@ namespace HotFix.Core
     {
         /// <summary> A factory method for clocks </summary>
         public Func<IConfiguration, IClock> Clocks { get; set; }
+        /// <summary> A factory method for loggers </summary>
+        public Func<IConfiguration, ILogger> Loggers { get; set; }
         /// <summary> A factory method for transports </summary>
         public Func<IConfiguration, ITransport> Transports { get; set; }
 
@@ -20,7 +22,10 @@ namespace HotFix.Core
 
         public Engine()
         {
-            Clocks = c => new RealTimeClock();
+            var clock = new RealTimeClock();
+
+            Clocks = c => clock;
+            Loggers = c => c.LogFile != null ? new FileLogger(clock, c.LogFile) : null;
             Transports = c => TcpTransport.Create(c.Role == Role.Acceptor, c.Host, c.Port);
 
             BufferSize = 65536;
@@ -29,19 +34,28 @@ namespace HotFix.Core
         }
 
         /// <summary>
-        /// Opens a session along with the relevant transport
+        /// Opens a session along with the relevant transport.
         /// <remarks>
-        /// This is a blocking operation which directly connects the transport
+        /// This is a blocking operation which directly connects the underlying transport.
         /// </remarks>
         /// </summary>
-        /// <param name="configuration">The session configuration</param>
-        /// <returns>The connected session</returns>
+        /// <param name="configuration">The session configuration.</param>
+        /// <returns>The connected session.</returns>
         public Session Open(IConfiguration configuration)
         {
             var clock = Clocks(configuration);
+            var logger = Loggers(configuration);
             var transport = Transports(configuration);
 
-            return new Session(configuration, clock, transport, BufferSize, MaxMessageLength, MaxMessageFields);
+            var session = new Session(configuration, clock, transport, BufferSize, MaxMessageLength, MaxMessageFields);
+
+            if (logger != null)
+            {
+                session.Channel.Inbound = logger.Inbound;
+                session.Channel.Outbound = logger.Outbound;
+            }
+
+            return session;
         }
     }
 }
