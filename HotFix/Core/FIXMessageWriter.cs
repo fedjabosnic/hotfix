@@ -12,7 +12,7 @@ namespace HotFix.Core
         private int _bodyEnd;
 
         internal readonly byte[] Buffer;
-        internal int End;
+        internal int Length;
 
         public FIXMessageWriter(int maxLength)
         {
@@ -22,7 +22,7 @@ namespace HotFix.Core
 
         public FIXMessageWriter Clear()
         {
-            End = 0;
+            Length = 0;
             _bodyEnd = 0;
 
             return this;
@@ -30,54 +30,54 @@ namespace HotFix.Core
 
         public FIXMessageWriter Prepare(string beginString, string messageType, long seqNum, DateTime sendingTime, string sender, string target)
         {
-            // write beginstring
-            End = Buffer.WriteString(0, "8=");
-            End += Buffer.WriteString(End, beginString);
-            Buffer[End++] = SOH;
+            // Write beginstring
+            Length = Buffer.WriteString(0, "8=");
+            Length += Buffer.WriteString(Length, beginString);
+            Buffer[Length++] = SOH;
 
-            // write length placeholder
-            // Should probably measure how many digits are needed to represent maxLength and use that many zeros
-            // The zeros string could then be cached and reused since it can be calculated at construction time
-            End += Buffer.WriteString(End, "9=00000");
-            var lengthPosition = End - 1; // points to the last zero
-            Buffer[End++] = SOH;
+            // Write length placeholder
+            // TODO: Should probably measure how many digits are needed to represent maxLength and use that many zeros
+            //       The zeros string could then be cached and reused since it can be calculated at construction time
+            Length += Buffer.WriteString(Length, "9=00000");
+            var lengthPosition = Length - 1; // points to the last zero
+            Buffer[Length++] = SOH;
 
-            // write messagetype
-            End += Buffer.WriteString(End, "35=");
-            End += Buffer.WriteString(End, messageType);
-            Buffer[End++] = SOH;
+            // Write messagetype
+            Length += Buffer.WriteString(Length, "35=");
+            Length += Buffer.WriteString(Length, messageType);
+            Buffer[Length++] = SOH;
 
-            // write seqnum
-            End += Buffer.WriteString(End, "34=");
-            End += Buffer.WriteLong(End, seqNum);
-            Buffer[End++] = SOH;
+            // Write seqnum
+            Length += Buffer.WriteString(Length, "34=");
+            Length += Buffer.WriteLong(Length, seqNum);
+            Buffer[Length++] = SOH;
 
-            // write sendingTime
-            End += Buffer.WriteString(End, "52=");
-            End += Buffer.WriteDateTime(End, sendingTime);
-            Buffer[End++] = SOH;
+            // Write sendingTime
+            Length += Buffer.WriteString(Length, "52=");
+            Length += Buffer.WriteDateTime(Length, sendingTime);
+            Buffer[Length++] = SOH;
 
-            // write sender
-            End += Buffer.WriteString(End, "49=");
-            End += Buffer.WriteString(End, sender);
-            Buffer[End++] = SOH;
+            // Write sender
+            Length += Buffer.WriteString(Length, "49=");
+            Length += Buffer.WriteString(Length, sender);
+            Buffer[Length++] = SOH;
 
-            // write target
-            End += Buffer.WriteString(End, "56=");
-            End += Buffer.WriteString(End, target);
-            Buffer[End++] = SOH;
+            // Write target
+            Length += Buffer.WriteString(Length, "56=");
+            Length += Buffer.WriteString(Length, target);
+            Buffer[Length++] = SOH;
 
-            // copy body
-            System.Buffer.BlockCopy(_body, 0, Buffer, End, _bodyEnd);
-            End += _bodyEnd;
+            // Copy body
+            System.Buffer.BlockCopy(_body, 0, Buffer, Length, _bodyEnd);
+            Length += _bodyEnd;
 
-            // update length
-            Buffer.WriteIntBackwards(lengthPosition, End - (lengthPosition + 2));
+            // Update length
+            Buffer.WriteIntBackwards(lengthPosition, Length - (lengthPosition + 2));
 
-            // calculate and write checksum
+            // Calculate and write checksum
             var checksum = CalculateChecksum();
-            End += Buffer.WriteString(End, "10=000\u0001");
-            Buffer.WriteIntBackwards(End - 2, checksum);
+            Length += Buffer.WriteString(Length, "10=000\u0001");
+            Buffer.WriteIntBackwards(Length - 2, checksum);
 
             return this;
         }
@@ -153,7 +153,7 @@ namespace HotFix.Core
         {
             var checksum = 0;
 
-            for (var i = 0; i < End; i++)
+            for (var i = 0; i < Length; i++)
             {
                 checksum += Buffer[i];
             }
@@ -161,6 +161,6 @@ namespace HotFix.Core
             return checksum % 256;
         }
 
-        public override string ToString() => System.Text.Encoding.ASCII.GetString(Buffer, 0, End);
+        public override string ToString() => System.Text.Encoding.ASCII.GetString(Buffer, 0, Length);
     }
 }

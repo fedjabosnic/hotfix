@@ -53,7 +53,7 @@ namespace HotFix.Demo.Initiator
                         .Set(54, 1)                  // Side (buy) 
                         .Set(38, 1000.00)            // OrderQty 
                         .Set(44, 1.13200)            // Price 
-                        .Set(40, 2);                  // OrdType (limit) 
+                        .Set(40, 2);                 // OrdType (limit) 
 
                     session.Send("D", state, session.Channel, outbound);
 

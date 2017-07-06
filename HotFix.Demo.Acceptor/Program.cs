@@ -56,7 +56,7 @@ namespace HotFix.Demo.Acceptor
                         .Set(44, inbound[44])   // Price 
                         .Set(6,  inbound[44])   // AvgPrice 
                         .Set(14, inbound[38])   // CumQty 
-                        .Set(151, 0);            // LeavesQty 
+                        .Set(151, 0);           // LeavesQty 
 
                     session.Send("8", state, session.Channel, outbound);
                 }

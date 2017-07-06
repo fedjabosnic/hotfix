@@ -63,105 +63,17 @@ namespace HotFix.Benchmark.suites
             Message
                 .Clear()
                 .Set(262, "c6424b19-af74-4c17-8266-9c52ca583ad2")
-                .Set(268, 8);
-
-            Message
-                .Set(279, 2)
-                .Set(55, "GBP/JPY")
-                .Set(269, 0)
-                .Set(278, "1211918436")
-                .Set(270, 144.808000d)
-                .Set(271, 1000000d)
-                .Set(110, 0d)
-                .Set(15, "GBP")
-                .Set(282, 290);
-
-            Message
-                .Set(279, 2)
-                .Set(55, "GBP/JPY")
-                .Set(269, 0)
-                .Set(278, "1211918437")
-                .Set(270, 144.802000d)
-                .Set(271, 2000000d)
-                .Set(110, 0d)
-                .Set(15, "GBP")
-                .Set(282, 290);
-
-            Message
-                .Set(279, 0)
-                .Set(55, "GBP/JPY")
-                .Set(269, 0)
-                .Set(278, "1211918501")
-                .Set(270, 144.808000d)
-                .Set(271, 1000000d)
-                .Set(110, 0d)
-                .Set(15, "GBP")
-                .Set(282, 290)
-                .Set(735, 1)
-                .Set(695, 5);
-
-            Message
-                .Set(279, 0)
-                .Set(55, "GBP/JPY")
-                .Set(269, 0)
-                .Set(278, "1211918502")
-                .Set(270, 144.808000d)
-                .Set(271, 1000000d)
-                .Set(110, 0d)
-                .Set(15, "GBP")
-                .Set(282, 290)
-                .Set(735, 1)
-                .Set(695, 5);
-
-            Message
-                .Set(279, 2)
-                .Set(55, "GBP/JPY")
-                .Set(269, 0)
-                .Set(278, "1211918436")
-                .Set(270, 144.808000d)
-                .Set(271, 1000000d)
-                .Set(110, 0d)
-                .Set(15, "GBP")
-                .Set(282, 290);
-
-            Message
-                .Set(279, 2)
-                .Set(55, "GBP/JPY")
-                .Set(269, 0)
-                .Set(278, "1211918436")
-                .Set(270, 144.808000d)
-                .Set(271, 1000000d)
-                .Set(110, 0d)
-                .Set(15, "GBP")
-                .Set(282, 290);
-
-            Message
-                .Set(279, 2)
-                .Set(55, "GBP/JPY")
-                .Set(269, 0)
-                .Set(278, "1211918436")
-                .Set(270, 144.808000d)
-                .Set(271, 1000000d)
-                .Set(110, 0d)
-                .Set(15, "GBP")
-                .Set(282, 290)
-                .Set(735, 1)
-                .Set(695, 5);
-
-            Message
-                .Set(279, 2)
-                .Set(55, "GBP/JPY")
-                .Set(269, 0)
-                .Set(278, "1211918436")
-                .Set(270, 144.808000d)
-                .Set(271, 1000000d)
-                .Set(110, 0d)
-                .Set(15, "GBP")
-                .Set(282, 290)
-                .Set(735, 1)
-                .Set(695, 5);
-
-            Message.Prepare("FIX.4.2", "X", 8059, SendingTime, "SENDER....", "RECEIVER.....");
+                .Set(268, 8)
+                // Add quotes
+                .Set(279, 2).Set(55, "GBP/JPY").Set(269, 0).Set(278, "1211918436").Set(270, 144.808000d).Set(271, 1000000d).Set(110, 0d).Set(15, "GBP").Set(282, 290)
+                .Set(279, 2).Set(55, "GBP/JPY").Set(269, 0).Set(278, "1211918437").Set(270, 144.802000d).Set(271, 2000000d).Set(110, 0d).Set(15, "GBP").Set(282, 290)
+                .Set(279, 0).Set(55, "GBP/JPY").Set(269, 0).Set(278, "1211918501").Set(270, 144.808000d).Set(271, 1000000d).Set(110, 0d).Set(15, "GBP").Set(282, 290).Set(735, 1).Set(695, 5)
+                .Set(279, 0).Set(55, "GBP/JPY").Set(269, 0).Set(278, "1211918502").Set(270, 144.808000d).Set(271, 1000000d).Set(110, 0d).Set(15, "GBP").Set(282, 290).Set(735, 1).Set(695, 5)
+                .Set(279, 2).Set(55, "GBP/JPY").Set(269, 0).Set(278, "1211918436").Set(270, 144.808000d).Set(271, 1000000d).Set(110, 0d).Set(15, "GBP").Set(282, 290)
+                .Set(279, 2).Set(55, "GBP/JPY").Set(269, 0).Set(278, "1211918436").Set(270, 144.808000d).Set(271, 1000000d).Set(110, 0d).Set(15, "GBP").Set(282, 290)
+                .Set(279, 2).Set(55, "GBP/JPY").Set(269, 0).Set(278, "1211918436").Set(270, 144.808000d).Set(271, 1000000d).Set(110, 0d).Set(15, "GBP").Set(282, 290).Set(735, 1).Set(695, 5)
+                .Set(279, 2).Set(55, "GBP/JPY").Set(269, 0).Set(278, "1211918436").Set(270, 144.808000d).Set(271, 1000000d).Set(110, 0d).Set(15, "GBP").Set(282, 290).Set(735, 1).Set(695, 5)
+                .Prepare("FIX.4.2", "X", 8059, SendingTime, "SENDER....", "RECEIVER.....");
         }
     }
 }
