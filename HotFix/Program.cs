@@ -83,15 +83,11 @@ namespace HotFix
 
                         for (var i = 0; i < 100; i++)
                         {
-                            message.Prepare("X");
-                            message.Set(34, Acceptor.State.OutboundSeqNum);
-                            message.Set(52, Acceptor.Clock.Time);
-                            message.Set(49, Acceptor.Configuration.Sender);
-                            message.Set(56, Acceptor.Configuration.Target);
-                            message.Set(999, Acceptor.Clock.Time.Ticks);
-                            message.Build();
+                            message
+                                .Clear()
+                                .Set(999, Acceptor.Clock.Time.Ticks);
 
-                            Acceptor.Send(Acceptor.State, Acceptor.Channel, message);
+                            Acceptor.Send("X", Acceptor.State, Acceptor.Channel, message);
                         }
                     }
                 }

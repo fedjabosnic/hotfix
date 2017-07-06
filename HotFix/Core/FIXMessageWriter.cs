@@ -8,123 +8,159 @@ namespace HotFix.Core
         private const byte SOH = (byte)'\u0001';
         private const byte EQL = (byte) '=';
 
-        internal readonly byte[] _buffer;
-        internal int _end;
-
-        private readonly int _headerEnd;
+        private readonly byte[] _body;
         private int _bodyEnd;
-        private int _trailerEnd;
 
+        internal readonly byte[] Buffer;
+        internal int Length;
 
-        public FIXMessageWriter(int maxLength, string beginString)
+        public FIXMessageWriter(int maxLength)
         {
-            _buffer = new byte[maxLength];
-
-            _end += _buffer.WriteString(_end, "8=");
-            _end += _buffer.WriteString(_end, beginString);
-            _buffer[_end++] = SOH;
-
-            _end += _buffer.WriteString(_end, "9=");
-            _end += _buffer.WriteString(_end, "00000");
-            _buffer[_end] = SOH;
-
-            _headerEnd = _end;
-            _end++;
-
-            _end += _buffer.WriteString(_end, "35=");
+            Buffer = new byte[maxLength];
+            _body = new byte[maxLength];
         }
 
-        public void Prepare(string messageType)
+        public FIXMessageWriter Clear()
         {
-            _end = _headerEnd + 4;
+            Length = 0;
+            _bodyEnd = 0;
 
-            _end += _buffer.WriteString(_end, messageType);
-            _buffer[_end++] = SOH;
+            return this;
         }
 
-        public void Set(int tag, string value)
+        public FIXMessageWriter Prepare(string beginString, string messageType, long seqNum, DateTime sendingTime, string sender, string target)
         {
-            _end += _buffer.WriteInt(_end, tag);
-            _buffer[_end++] = EQL;
+            // Write beginstring
+            Length = Buffer.WriteString(0, "8=");
+            Length += Buffer.WriteString(Length, beginString);
+            Buffer[Length++] = SOH;
 
-            _end += _buffer.WriteString(_end, value);
-            _buffer[_end++] = SOH;
-        }
+            // Write length placeholder
+            // TODO: Should probably measure how many digits are needed to represent maxLength and use that many zeros
+            //       The zeros string could then be cached and reused since it can be calculated at construction time
+            Length += Buffer.WriteString(Length, "9=00000");
+            var lengthPosition = Length - 1; // points to the last zero
+            Buffer[Length++] = SOH;
 
-        public void Set(int tag, int value)
-        {
-            _end += _buffer.WriteInt(_end, tag);
-            _buffer[_end++] = EQL;
+            // Write messagetype
+            Length += Buffer.WriteString(Length, "35=");
+            Length += Buffer.WriteString(Length, messageType);
+            Buffer[Length++] = SOH;
 
-            _end += _buffer.WriteInt(_end, value);
-            _buffer[_end++] = SOH;
-        }
+            // Write seqnum
+            Length += Buffer.WriteString(Length, "34=");
+            Length += Buffer.WriteLong(Length, seqNum);
+            Buffer[Length++] = SOH;
 
-        public void Set(int tag, DateTime value)
-        {
-            _end += _buffer.WriteInt(_end, tag);
-            _buffer[_end++] = EQL;
+            // Write sendingTime
+            Length += Buffer.WriteString(Length, "52=");
+            Length += Buffer.WriteDateTime(Length, sendingTime);
+            Buffer[Length++] = SOH;
 
-            _end += _buffer.WriteDateTime(_end, value);
-            _buffer[_end++] = SOH;
-        }
+            // Write sender
+            Length += Buffer.WriteString(Length, "49=");
+            Length += Buffer.WriteString(Length, sender);
+            Buffer[Length++] = SOH;
 
-        public void Set(int tag, long value)
-        {
-            _end += _buffer.WriteInt(_end, tag);
-            _buffer[_end++] = EQL;
+            // Write target
+            Length += Buffer.WriteString(Length, "56=");
+            Length += Buffer.WriteString(Length, target);
+            Buffer[Length++] = SOH;
 
-            _end += _buffer.WriteLong(_end, value);
-            _buffer[_end++] = SOH;
-        }
+            // Copy body
+            System.Buffer.BlockCopy(_body, 0, Buffer, Length, _bodyEnd);
+            Length += _bodyEnd;
 
-        public void Set(int tag, double value)
-        {
-            _end += _buffer.WriteInt(_end, tag);
-            _buffer[_end++] = EQL;
+            // Update length
+            Buffer.WriteIntBackwards(lengthPosition, Length - (lengthPosition + 2));
 
-            _end += _buffer.WriteFloat(_end, value);
-            _buffer[_end++] = SOH;
-        }
-
-        public void Set(int tag, FIXField field)
-        {
-            _end += _buffer.WriteInt(_end, field.Tag);
-            _buffer[_end++] = EQL;
-
-            Buffer.BlockCopy(field._message, field._value.Offset, _buffer, _end, field._value.Length);
-            _end += field._value.Length;
-            _buffer[_end++] = SOH;
-        }
-
-        public void Build()
-        {
-            _bodyEnd = _end - 1;
-
-            var length = _bodyEnd - _headerEnd;
-            _buffer.WriteString(_headerEnd - 5, "00000");
-            _buffer.WriteIntBackwards(_headerEnd - 1, length);
-
+            // Calculate and write checksum
             var checksum = CalculateChecksum();
-            _end += _buffer.WriteString(_end, "10=000\u0001");
+            Length += Buffer.WriteString(Length, "10=000\u0001");
+            Buffer.WriteIntBackwards(Length - 2, checksum);
 
-            _trailerEnd = _end;
+            return this;
+        }
 
-            _buffer.WriteIntBackwards(_trailerEnd - 2, checksum);
+        public FIXMessageWriter Set(int tag, string value)
+        {
+            _bodyEnd += _body.WriteInt(_bodyEnd, tag);
+            _body[_bodyEnd++] = EQL;
+
+            _bodyEnd += _body.WriteString(_bodyEnd, value);
+            _body[_bodyEnd++] = SOH;
+
+            return this;
+        }
+
+        public FIXMessageWriter Set(int tag, int value)
+        {
+            _bodyEnd += _body.WriteInt(_bodyEnd, tag);
+            _body[_bodyEnd++] = EQL;
+
+            _bodyEnd += _body.WriteInt(_bodyEnd, value);
+            _body[_bodyEnd++] = SOH;
+
+            return this;
+        }
+
+        public FIXMessageWriter Set(int tag, DateTime value)
+        {
+            _bodyEnd += _body.WriteInt(_bodyEnd, tag);
+            _body[_bodyEnd++] = EQL;
+
+            _bodyEnd += _body.WriteDateTime(_bodyEnd, value);
+            _body[_bodyEnd++] = SOH;
+
+            return this;
+        }
+
+        public FIXMessageWriter Set(int tag, long value)
+        {
+            _bodyEnd += _body.WriteInt(_bodyEnd, tag);
+            _body[_bodyEnd++] = EQL;
+
+            _bodyEnd += _body.WriteLong(_bodyEnd, value);
+            _body[_bodyEnd++] = SOH;
+
+            return this;
+        }
+
+        public FIXMessageWriter Set(int tag, double value)
+        {
+            _bodyEnd += _body.WriteInt(_bodyEnd, tag);
+            _body[_bodyEnd++] = EQL;
+
+            _bodyEnd += _body.WriteFloat(_bodyEnd, value);
+            _body[_bodyEnd++] = SOH;
+
+            return this;
+        }
+
+        public FIXMessageWriter Set(int tag, FIXField field)
+        {
+            _bodyEnd += _body.WriteInt(_bodyEnd, field.Tag);
+            _body[_bodyEnd++] = EQL;
+
+            System.Buffer.BlockCopy(field._message, field._value.Offset, _body, _bodyEnd, field._value.Length);
+            _bodyEnd += field._value.Length;
+            _body[_bodyEnd++] = SOH;
+
+            return this;
         }
 
         private int CalculateChecksum()
         {
             var checksum = 0;
 
-            for (var i = 0; i <= _bodyEnd; i++)
+            for (var i = 0; i < Length; i++)
             {
-                checksum += _buffer[i];
+                checksum += Buffer[i];
             }
 
             return checksum % 256;
         }
 
-        public override string ToString() => System.Text.Encoding.ASCII.GetString(_buffer, 0, _end);
+        public override string ToString() => System.Text.Encoding.ASCII.GetString(Buffer, 0, Length);
     }
 }
