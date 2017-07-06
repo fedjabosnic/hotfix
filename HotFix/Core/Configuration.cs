@@ -14,8 +14,9 @@ namespace HotFix.Core
         public int Port { get; set; }
 
         public int HeartbeatInterval { get; set; }
-
         public long InboundSeqNum { get; set; }
         public long OutboundSeqNum { get; set; }
+
+        public string LogFile { get; set; }
     }
 }

@@ -16,5 +16,7 @@ namespace HotFix.Core
         int HeartbeatInterval { get; set; }
         long InboundSeqNum { get; set; }
         long OutboundSeqNum { get; set; }
+
+        string LogFile { get; set; }
     }
 }
