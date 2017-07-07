@@ -10,7 +10,7 @@
   build:
     verbosity: normal
 - 
-  version: 0.1.0.{build}
+  version: 0.1.1.{build}
   branches:
     only:
     - master
@@ -19,7 +19,7 @@
   image: Visual Studio 2015
   assembly_info:
     patch: true
-    file: '**\VersionInfo.*'
+    file: '**\AssemblyInfo.*'
     assembly_version: '{version}'
     assembly_file_version: '{version}'
     assembly_informational_version: '{version}'
