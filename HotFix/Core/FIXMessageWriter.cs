@@ -161,6 +161,14 @@ namespace HotFix.Core
             return checksum % 256;
         }
 
-        public override string ToString() => System.Text.Encoding.ASCII.GetString(Buffer, 0, Length);
+        public override string ToString()
+        {
+            return System.Text.Encoding.ASCII.GetString(Buffer, 0, Length);
+        }
+
+        public void WriteTo(byte[] target, int offset)
+        {
+            System.Buffer.BlockCopy(Buffer, 0, target, offset, Length);
+        }
     }
 }

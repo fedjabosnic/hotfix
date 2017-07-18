@@ -234,5 +234,10 @@ namespace HotFix.Core
         {
             return System.Text.Encoding.ASCII.GetString(Raw, 0, Length);
         }
+
+        public void WriteTo(byte[] target, int offset)
+        {
+            Buffer.BlockCopy(Raw, 0, target, offset, Length);
+        }
     }
 }
