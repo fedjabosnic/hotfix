@@ -128,11 +128,14 @@ namespace HotFix.Core
                     state.Synchronizing = false;
                     state.TestRequestPending = false;
 
-                    if (inbound[35].Is("1")) HandleTestRequest();
-                    if (inbound[35].Is("2")) HandleResendRequest();
-                    if (inbound[35].Is("4")) HandleSequenceReset();
-                    if (inbound[35].Is("5")) HandleLogout();
-                    if (inbound[35].Is("A")) HandleLogon();
+                    var type = inbound[35];
+
+                    if (type.Is("0")) HandleHeartbeat();
+                    else if (type.Is("1")) HandleTestRequest();
+                    else if (type.Is("2")) HandleResendRequest();
+                    else if (type.Is("4")) HandleSequenceReset();
+                    else if (type.Is("5")) HandleLogout();
+                    else if (type.Is("A")) HandleLogon();
 
                     state.InboundSeqNum++;
                     state.InboundTimestamp = clock.Time;
