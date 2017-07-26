@@ -27,8 +27,8 @@ namespace HotFix.Benchmark.suites.session
 
             Heartbeat =
                 System.Text.Encoding.ASCII.GetBytes(
-                    ("8=FIX.4.2|9=72|35=8|34=000008059|52=20170531-08:18:01.768|49=SENDER..|56=RECEIVER....." +
-                    "|10=210|")
+                    ("8=FIX.4.2|9=72|35=0|34=000008059|52=20170531-08:18:01.768|49=SENDER..|56=RECEIVER....." +
+                    "|10=202|")
                 .Replace("|", "\u0001"));
 
             ExecutionReport =
