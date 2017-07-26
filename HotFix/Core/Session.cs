@@ -12,10 +12,12 @@ namespace HotFix.Core
 
         /// <summary> The session configuration </summary>
         public IConfiguration Configuration { get; }
-        /// <summary> The session configuration </summary>
+        /// <summary> The session channel </summary>
         public Channel Channel { get; }
-        /// <summary> The session configuration </summary>
+        /// <summary> The session state </summary>
         public State State { get; }
+
+        /// <summary> Whether the session is active </summary>
         public bool Active { get; private set; }
 
         /// <summary> The inbound fix message </summary>
@@ -38,12 +40,16 @@ namespace HotFix.Core
             Configuration = configuration;
 
             Channel = new Channel(transport, bufferSize);
+
             State = new State
             {
                 InboundSeqNum = configuration.InboundSeqNum,
                 OutboundSeqNum = configuration.OutboundSeqNum,
                 InboundTimestamp = clock.Time,
-                OutboundTimestamp = clock.Time
+                OutboundTimestamp = clock.Time,
+                HeartbeatInterval = TimeSpan.FromSeconds(configuration.HeartbeatInterval * 1.0),
+                HeartbeatTimeoutMin = TimeSpan.FromSeconds(configuration.HeartbeatInterval * 1.2),
+                HeartbeatTimeoutMax = TimeSpan.FromSeconds(configuration.HeartbeatInterval * 2.0)
             };
 
             Inbound = new FIXMessage(maxMessageLength, maxMessageFields);
@@ -86,8 +92,7 @@ namespace HotFix.Core
             if (!Active) return;
 
             // Send a logout message
-            Outbound.Clear();
-            Send("5", Outbound);
+            Send("5", Outbound.Clear());
 
             Active = false;
         }
@@ -98,6 +103,7 @@ namespace HotFix.Core
         /// You should call this continuously as often as possible to process incoming messages and keep the session alive.
         /// </remarks>
         /// </summary>
+        /// <returns>A boolean indicating whether a valid message was successfully received</returns>
         public bool Receive()
         {
             var clock = Clock;
@@ -106,7 +112,6 @@ namespace HotFix.Core
             var configuration = Configuration;
 
             var inbound = Inbound;
-            var outbound = Outbound;
 
             inbound.Clear();
 
@@ -139,23 +144,19 @@ namespace HotFix.Core
                 }
             }
 
-            if (clock.Time - state.OutboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval))
+            if (clock.Time - state.OutboundTimestamp > state.HeartbeatInterval)
             {
                 SendHeartbeat();
             }
 
-            if (clock.Time - state.InboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval * 1.2))
+            if (clock.Time - state.InboundTimestamp > state.HeartbeatTimeoutMin)
             {
-                if (clock.Time - state.InboundTimestamp > TimeSpan.FromSeconds(configuration.HeartbeatInterval * 2))
+                if (clock.Time - state.InboundTimestamp > state.HeartbeatTimeoutMax)
                 {
                     throw new EngineException("Did not receive any messages for too long");
                 }
 
-                if (!state.TestRequestPending)
-                {
-                    SendTestRequest();
-                    state.TestRequestPending = true;
-                }
+                if (!state.TestRequestPending) SendTestRequest();
             }
 
             return inbound.Valid;
@@ -185,22 +186,24 @@ namespace HotFix.Core
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SendHeartbeat()
+        private void SendHeartbeat()
         {
             Outbound.Clear();
             Send("0", Outbound);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SendTestRequest()
+        private void SendTestRequest()
         {
             Outbound.Clear().Set(112, Clock.Time.Ticks);
 
             Send("1", Outbound);
+
+            State.TestRequestPending = true;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void SendResendRequest()
+        private void SendResendRequest()
         {
             var state = State;
 
@@ -214,7 +217,12 @@ namespace HotFix.Core
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void HandleTestRequest()
+        private void HandleHeartbeat()
+        {
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void HandleTestRequest()
         {
             // Prepare and send a heartbeat (with the test request id)
             Outbound.Clear().Set(112, Inbound[112].AsString);
@@ -223,7 +231,7 @@ namespace HotFix.Core
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void HandleResendRequest()
+        private void HandleResendRequest()
         {
             // Validate request
             if (!Inbound[16].Is(0L)) throw new EngineException("Unsupported resend request received (partial gap fills are not supported)");
@@ -235,7 +243,7 @@ namespace HotFix.Core
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void HandleSequenceReset()
+        private void HandleSequenceReset()
         {
             var inbound = Inbound;
 
@@ -247,18 +255,20 @@ namespace HotFix.Core
             State.InboundSeqNum = inbound[36].AsLong;
         }
 
-        public void HandleLogout()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void HandleLogout()
         {
             Logout();
         }
 
-        public void HandleLogon()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private void HandleLogon()
         {
             throw new EngineException("Logon message received while already logged on");
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void AcceptLogon()
+        private void AcceptLogon()
         {
             var state = State;
             var channel = Channel;
@@ -273,16 +283,17 @@ namespace HotFix.Core
 
                 if (inbound.Valid)
                 {
-                    if (!Inbound[8].Is(configuration.Version)) throw new EngineException("Unexpected begin string received");
-                    if (!Inbound[49].Is(configuration.Target)) throw new EngineException("Unexpected comp id received");
-                    if (!Inbound[56].Is(configuration.Sender)) throw new EngineException("Unexpected comp id received");
+                    if (!inbound[8].Is(configuration.Version)) throw new EngineException("Unexpected begin string received");
+                    if (!inbound[49].Is(configuration.Target)) throw new EngineException("Unexpected comp id received");
+                    if (!inbound[56].Is(configuration.Sender)) throw new EngineException("Unexpected comp id received");
 
-                    if (!Inbound[35].Is("A")) throw new EngineException("Unexpected first message received (expected a logon)");
-                    if (!Inbound[108].Is(Configuration.HeartbeatInterval)) throw new EngineException("Unexpected heartbeat interval received");
-                    if (!Inbound[98].Is(0)) throw new EngineException("Unexpected encryption method received");
-                    if (!Inbound[141].Is("Y")) throw new EngineException("Unexpected reset on logon received");
+                    if (!inbound[35].Is("A")) throw new EngineException("Unexpected first message received (expected a logon)");
+                    if (!inbound[108].Is(Configuration.HeartbeatInterval)) throw new EngineException("Unexpected heartbeat interval received");
+                    if (!inbound[98].Is(0)) throw new EngineException("Unexpected encryption method received");
+                    if (!inbound[141].Is("Y")) throw new EngineException("Unexpected reset on logon received");
 
-                    if (Inbound[34].AsLong < state.InboundSeqNum) throw new EngineException("Sequence number too low");
+                    if (inbound[34].AsLong < state.InboundSeqNum) throw new EngineException("Sequence number too low");
+
 
                     outbound
                         .Clear()
@@ -295,7 +306,7 @@ namespace HotFix.Core
                     state.InboundSeqNum++;
                     state.InboundTimestamp = Clock.Time;
 
-                    if (Inbound[34].AsLong > state.InboundSeqNum)
+                    if (inbound[34].AsLong > state.InboundSeqNum)
                     {
                         state.InboundSeqNum--; // HACK
                         SendResendRequest();
@@ -309,7 +320,7 @@ namespace HotFix.Core
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void InitiateLogon()
+        private void InitiateLogon()
         {
             var state = State;
             var channel = Channel;
@@ -332,19 +343,19 @@ namespace HotFix.Core
 
                 if (inbound.Valid)
                 {
-                    if (!Inbound[8].Is(configuration.Version)) throw new EngineException("Unexpected begin string received");
-                    if (!Inbound[49].Is(configuration.Target)) throw new EngineException("Unexpected comp id received");
-                    if (!Inbound[56].Is(configuration.Sender)) throw new EngineException("Unexpected comp id received");
+                    if (!inbound[8].Is(configuration.Version)) throw new EngineException("Unexpected begin string received");
+                    if (!inbound[49].Is(configuration.Target)) throw new EngineException("Unexpected comp id received");
+                    if (!inbound[56].Is(configuration.Sender)) throw new EngineException("Unexpected comp id received");
 
                     if (!inbound[35].Is("A")) throw new EngineException("Unexpected first message received (expected a logon)");
                     if (!inbound[108].Is(configuration.HeartbeatInterval)) throw new EngineException("Unexpected heartbeat interval received");
                     if (!inbound[98].Is(0)) throw new EngineException("Unexpected encryption method received");
                     if (!inbound[141].Is("Y")) throw new EngineException("Unexpected reset on logon received");
 
-                    if (!Inbound[34].Is(state.InboundSeqNum))
+                    if (!inbound[34].Is(state.InboundSeqNum))
                     {
-                        if (Inbound[34].AsLong < state.InboundSeqNum) throw new EngineException("Sequence number too low");
-                        if (Inbound[34].AsLong > state.InboundSeqNum)
+                        if (inbound[34].AsLong < state.InboundSeqNum) throw new EngineException("Sequence number too low");
+                        if (inbound[34].AsLong > state.InboundSeqNum)
                         {
                             SendResendRequest();
                             return;
