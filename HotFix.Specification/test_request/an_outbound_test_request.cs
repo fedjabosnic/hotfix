@@ -10,6 +10,48 @@ namespace HotFix.Specification.test_request
     public class an_outbound_test_request
     {
         [TestMethod]
+        public void is_not_sent_when_the_heartbeat_interval_is_zero()
+        {
+            new Specification()
+                .Configure(new Configuration
+                {
+                    Role = Role.Initiator,
+                    Version = "FIX.4.2",
+                    Sender = "Client",
+                    Target = "Server",
+                    HeartbeatInterval = 0,
+                    OutboundSeqNum = 1,
+                    InboundSeqNum = 1
+                })
+                .Steps(new List<string>
+                {
+                    "! 20170623-14:51:45.012",
+                    "> 8=FIX.4.2|9=00072|35=A|34=1|52=20170623-14:51:45.012|49=Client|56=Server|108=0|98=0|141=Y|10=089|",
+                    "! 20170623-14:51:45.051",
+                    "< 8=FIX.4.2|9=72|35=A|34=1|49=Server|52=20170623-14:51:45.051|56=Client|108=0|98=0|141=Y|10=204|",
+                    "! 20170623-14:51:46.000",
+                    "! 20170623-14:51:47.000",
+                    "! 20170623-14:51:48.000",
+                    "! 20170623-14:51:49.000",
+                    "! 20170623-14:51:50.000",
+                    "! 20170623-14:51:55.000",
+                    "! 20170623-14:52:00.000",
+                    "! 20170623-14:52:30.000",
+                    "! 20170623-14:53:00.000",
+                    "! 20170623-14:54:00.000",
+                    "! 20170623-14:55:00.000",
+                    // The engine should not send test requests even though a lot of time passes
+                    "! 20170623-15:00:00.000"
+                })
+                .Verify((session, configuration, _) =>
+                {
+                    session.State.InboundSeqNum.Should().Be(2);
+                    session.State.OutboundSeqNum.Should().Be(2);
+                })
+                .Run();
+        }
+
+        [TestMethod]
         public void is_sent_when_no_messages_have_been_received_for_slightly_longer_than_the_heartbeat_interval()
         {
             new Specification()
