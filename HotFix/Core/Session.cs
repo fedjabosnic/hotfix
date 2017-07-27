@@ -25,6 +25,15 @@ namespace HotFix.Core
         /// <summary> The outbound fix message </summary>
         public FIXMessageWriter Outbound;
 
+        /// <summary>An event raised when the session has logged on.</summary>
+        public event Action<Session> LoggedOn;
+        /// <summary>An event raised when the session has logged out.</summary>
+        public event Action<Session> LoggedOut;
+        /// <summary>An event raised when the session has received a message.</summary>
+        public event Action<Session, FIXMessage> Received;
+        /// <summary>An event raised when the session has sent a message.</summary>
+        public event Action<Session, FIXMessageWriter> Sent;
+
         /// <summary>
         /// Creates a new session.
         /// </summary>
@@ -79,6 +88,8 @@ namespace HotFix.Core
             }
 
             Active = true;
+
+            LoggedOn?.Invoke(this);
         }
 
         /// <summary>
@@ -95,6 +106,8 @@ namespace HotFix.Core
             Send("5", Outbound.Clear());
 
             Active = false;
+
+            LoggedOut?.Invoke(this);
         }
 
         /// <summary>
@@ -103,7 +116,7 @@ namespace HotFix.Core
         /// You should call this continuously as often as possible to process incoming messages and keep the session alive.
         /// </remarks>
         /// </summary>
-        /// <returns>A boolean indicating whether a valid message was successfully received</returns>
+        /// <returns>A boolean indicating whether a valid message was successfully received.</returns>
         public bool Receive()
         {
             var clock = Clock;
@@ -127,6 +140,8 @@ namespace HotFix.Core
                 {
                     state.Synchronizing = false;
                     state.TestRequestPending = false;
+
+                    Received?.Invoke(this, inbound);
 
                     var type = inbound[35];
 
@@ -179,6 +194,8 @@ namespace HotFix.Core
 
             state.OutboundSeqNum++;
             state.OutboundTimestamp = Clock.Time;
+
+            Sent?.Invoke(this, message);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -189,6 +206,8 @@ namespace HotFix.Core
             Channel.Write(message);
 
             State.OutboundTimestamp = Clock.Time;
+
+            Sent?.Invoke(this, message);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -300,6 +319,7 @@ namespace HotFix.Core
 
                     if (inbound[34].AsLong < state.InboundSeqNum) throw new EngineException("Sequence number too low");
 
+                    Received?.Invoke(this, inbound);
 
                     outbound
                         .Clear()
@@ -363,10 +383,14 @@ namespace HotFix.Core
                         if (inbound[34].AsLong < state.InboundSeqNum) throw new EngineException("Sequence number too low");
                         if (inbound[34].AsLong > state.InboundSeqNum)
                         {
+                            Received?.Invoke(this, inbound);
+
                             SendResendRequest();
                             return;
                         }
                     }
+
+                    Received?.Invoke(this, inbound);
 
                     state.InboundSeqNum++;
                     state.InboundTimestamp = Clock.Time;

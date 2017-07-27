@@ -5,16 +5,24 @@ using HotFix.Core;
 
 namespace HotFix.Demo.Initiator
 {
+    /// <summary>
+    /// This demo is an initiator implemented with the lower level api by directly manipulating the session. It will
+    /// connect to the specified acceptor and send the specified number of orders, measuring the end-to-end time for
+    /// trading including transport overheads.
+    /// </summary>
     class Program
     {
-        private static int _orders;
+        public static List<long> Histogram;
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Sending orders...");
+            Console.WriteLine();
 
+            var host = args[0];
+            var port = int.Parse(args[1]);
             var count = int.Parse(args[2]);
-            var histogram = new List<long>(count * 2);
+
+            Histogram = new List<long>(count * 2);
 
             var engine = new Engine();
 
@@ -22,8 +30,8 @@ namespace HotFix.Demo.Initiator
             {
                 Role = Role.Initiator,
                 Version = "FIX.4.2",
-                Host = args[0],
-                Port = int.Parse(args[1]),
+                Host = host,
+                Port = port,
                 Sender = "Client",
                 Target = "Server",
                 InboundSeqNum = 1,
@@ -32,66 +40,67 @@ namespace HotFix.Demo.Initiator
                 //LogFile = @"messages.log" // Enable to see logging impact
             };
 
-            using (var session = engine.Open(configuration))
+            using (var initiator = engine.Open(configuration))
             {
-                var clock = session.Clock;
+                initiator.Logon();
 
-                var inbound = session.Inbound;
-                var outbound = session.Outbound;
+                Console.WriteLine("Logged on");
 
-                session.Logon();
-
-                while (session.Active && _orders < count)
+                for (var i = 0; i < count; i++)
                 {
-                    var sent = clock.Time;
-
-                    outbound
+                    var order = initiator
+                        .Outbound
                         .Clear()
-                        .Set(60, clock.Time)         // TransactTime 
-                        .Set(11, ++_orders)          // ClOrdId 
-                        .Set(55, "EUR/USD")          // Symbol 
-                        .Set(54, 1)                  // Side (buy) 
-                        .Set(38, 1000.00)            // OrderQty 
-                        .Set(44, 1.13200)            // Price 
-                        .Set(40, 2);                 // OrdType (limit) 
+                        .Set(60, initiator.Clock.Time)       // TransactTime
+                        .Set(11, initiator.Clock.Time.Ticks) // ClOrdId
+                        .Set(55, "EUR/USD")                  // Symbol
+                        .Set(54, 1)                          // Side (buy)
+                        .Set(38, 1000.00)                    // OrderQty
+                        .Set(44, 1.13200)                    // Price
+                        .Set(40, 2);                         // OrdType (limit)
 
-                    session.Send("D", outbound);
+                    // Send order
+                    initiator.Send("D", order);
 
-                    while (!session.Receive()) { }
+                    // Wait for an execution report (ignore everything else)
+                    while (!initiator.Receive() && !initiator.Inbound[35].Is("8")) { }
 
-                    if (inbound[35].Is("8"))
-                    {
-                        var received = clock.Time;
-
-                        histogram.Add(received.Ticks - sent.Ticks);
-                    }
+                    // Update statistics
+                    Histogram.Add(initiator.Clock.Time.Ticks - initiator.Inbound[11].AsLong);
                 }
 
-                session.Logout();
+                initiator.Logout();
+
+                Console.WriteLine("Logged out");
             }
 
-            Console.WriteLine();
-            Console.WriteLine("Orders: " + _orders);
 
-            histogram = histogram.Skip(1000).Select(x => x).ToList();
-
-            Console.WriteLine($"      min: {$"{histogram.Min() / 10m:N}",14} µs");
-            Console.WriteLine($"   50.00%: {$"{Percentile(histogram, 0.5000) / 10m:N}",14} µs");
-            Console.WriteLine($"   90.00%: {$"{Percentile(histogram, 0.9000) / 10m:N}",14} µs");
-            Console.WriteLine($"   99.00%: {$"{Percentile(histogram, 0.9900) / 10m:N}",14} µs");
-            Console.WriteLine($"   99.90%: {$"{Percentile(histogram, 0.9990) / 10m:N}",14} µs");
-            Console.WriteLine($"   99.99%: {$"{Percentile(histogram, 0.9999) / 10m:N}",14} µs");
-            Console.WriteLine($"      max: {$"{histogram.Max() / 10m:N}",14} µs");
+            PrintStatistics();
         }
 
-        public static long Percentile(List<long> sequence, double excelPercentile)
+        private static void PrintStatistics()
+        {
+            Console.WriteLine("Orders: " + Histogram.Count);
+
+            Histogram = Histogram.Skip(1000).Select(x => x).ToList();
+
+            Console.WriteLine($"      min: {$"{Histogram.Min() / 10m:N}",14} µs");
+            Console.WriteLine($"   50.00%: {$"{Percentile(Histogram, 0.5000m) / 10m:N}",14} µs");
+            Console.WriteLine($"   90.00%: {$"{Percentile(Histogram, 0.9000m) / 10m:N}",14} µs");
+            Console.WriteLine($"   99.00%: {$"{Percentile(Histogram, 0.9900m) / 10m:N}",14} µs");
+            Console.WriteLine($"   99.90%: {$"{Percentile(Histogram, 0.9990m) / 10m:N}",14} µs");
+            Console.WriteLine($"   99.99%: {$"{Percentile(Histogram, 0.9999m) / 10m:N}",14} µs");
+            Console.WriteLine($"      max: {$"{Histogram.Max() / 10m:N}",14} µs");
+        }
+
+        public static long Percentile(List<long> sequence, decimal excelPercentile)
         {
             var sorted = sequence.OrderBy(x => x).ToList();
 
             var N = sorted.Count;
             var n = (N - 1) * excelPercentile + 1;
 
-            if (n == 1d) return sorted[0];
+            if (n == 1m) return sorted[0];
             if (n == N) return sorted[N - 1];
 
             var k = (int)n;

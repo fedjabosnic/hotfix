@@ -57,5 +57,34 @@ namespace HotFix.Core
 
             return session;
         }
+
+        /// <summary> 
+        /// Runs a session for the provided configuration, allowing logon, logout and message handler to be specified. 
+        /// <remarks> 
+        /// The logon and logout callbacks are invoked after the session has successfully logged on or out. 
+        /// The message handler should return false for every message it does not handle so that the session can deal with it. 
+        /// </remarks> 
+        /// </summary> 
+        /// <param name="configuration">The session configuration.</param> 
+        /// <param name="logon">The logon callback.</param> 
+        /// <param name="logout">The logout callback.</param> 
+        /// <param name="handler">The message handler.</param> 
+        public void Run(IConfiguration configuration, Action<Session> logon, Action<Session> logout, Func<Session, FIXMessage, bool> handler)
+        {
+            using (var session = this.Open(configuration))
+            {
+                session.LoggedOn += logon;
+                session.LoggedOut += logout;
+
+                session.Logon();
+
+                while (session.Active)
+                {
+                    if (session.Receive()) handler(session, session.Inbound);
+                }
+
+                session.Logout();
+            }
+        }
     }
 }

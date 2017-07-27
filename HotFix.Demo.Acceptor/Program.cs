@@ -3,14 +3,20 @@ using HotFix.Core;
 
 namespace HotFix.Demo.Acceptor
 {
+    /// <summary>
+    /// This demo is an acceptor implemented with the event driven api. It will wait for and accept a single inbound connection;
+    /// once a session has been established it will immediately execute any orders that it receives.
+    /// </summary>
     class Program
     {
-        private static int _orders;
-        private static int _executions;
-
         static void Main(string[] args)
         {
-            Console.WriteLine("Waiting for orders...");
+            Console.WriteLine();
+
+            var host = args[0];
+            var port = int.Parse(args[1]);
+            var orders = 0;
+            var executions = 0;
 
             var engine = new Engine();
 
@@ -18,8 +24,8 @@ namespace HotFix.Demo.Acceptor
             {
                 Role = Role.Acceptor,
                 Version = "FIX.4.2",
-                Host = "127.0.0.1",
-                Port = int.Parse(args[0]),
+                Host = host,
+                Port = port,
                 Sender = "Server",
                 Target = "Client",
                 InboundSeqNum = 1,
@@ -28,44 +34,49 @@ namespace HotFix.Demo.Acceptor
                 //LogFile = @"messages.log" // Enable to see logging impact
             };
 
-            using (var session = engine.Open(configuration))
-            {
-                var inbound = session.Inbound;
-                var outbound = session.Outbound;
-
-                session.Logon();
-
-                while (session.Active)
+            engine.Run(
+                configuration,
+                session =>
                 {
-                    session.Receive();
+                    Console.WriteLine("Logged on");
+                },
+                session =>
+                {
+                    Console.WriteLine("Logged out");
+                },
+                (session, message) =>
+                {
+                    if (message[35].Is("D"))
+                    {
+                        // Immediately fill any order at the requested price
+                        var report = session
+                            .Outbound
+                            .Clear()
+                            .Set(37, ++orders)     // OrderId
+                            .Set(17, ++executions) // ExecId
+                            .Set(20, 0)            // ExecTransType (New)
+                            .Set(150, 2)           // ExecType (Fill)
+                            .Set(39, 2)            // OrdStatus (Filled)
+                            .Set(11, message[11])  // ClOrdId
+                            .Set(55, message[55])  // Symbol
+                            .Set(54, message[54])  // Side
+                            .Set(38, message[38])  // OrderQty
+                            .Set(44, message[44])  // Price
+                            .Set(06, message[44])  // AvgPrice
+                            .Set(14, message[38])  // CumQty
+                            .Set(151, 0);          // LeavesQty
 
-                    if (!inbound.Valid || !inbound[35].Is("D")) continue;
+                        session.Send("8", report);
 
-                    outbound
-                        .Clear()
-                        .Set(37, ++_orders)     // OrderId 
-                        .Set(11, ++_executions) // ExecId 
-                        .Set(20, 0)             // ExecTransType (New) 
-                        .Set(150, 2)            // ExecType (Fill) 
-                        .Set(39, 2)             // OrdStatus (Filled) 
-                        .Set(11, inbound[11])   // ClOrdId 
-                        .Set(55, inbound[55])   // Symbol 
-                        .Set(54, inbound[54])   // Side 
-                        .Set(38, inbound[38])   // OrderQty 
-                        .Set(44, inbound[44])   // Price 
-                        .Set(6,  inbound[44])   // AvgPrice 
-                        .Set(14, inbound[38])   // CumQty 
-                        .Set(151, 0);           // LeavesQty 
+                        return true;
+                    }
 
-                    session.Send("8", outbound);
-                }
-
-                session.Logout();
-            }
+                    return false;
+                });
 
             Console.WriteLine();
-            Console.WriteLine("Orders: " + _orders);
-            Console.WriteLine("Filled: " + _executions);
+            Console.WriteLine("Orders: " + orders);
+            Console.WriteLine("Filled: " + executions);
         }
     }
 }
