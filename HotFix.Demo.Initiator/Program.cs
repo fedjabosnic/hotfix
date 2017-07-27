@@ -28,7 +28,7 @@ namespace HotFix.Demo.Initiator
                 Target = "Server",
                 InboundSeqNum = 1,
                 OutboundSeqNum = 1,
-                HeartbeatInterval = 86400,
+                HeartbeatInterval = 0,
                 //LogFile = @"messages.log" // Enable to see logging impact
             };
 

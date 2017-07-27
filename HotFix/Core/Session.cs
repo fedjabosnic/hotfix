@@ -147,19 +147,22 @@ namespace HotFix.Core
                 }
             }
 
-            if (clock.Time - state.OutboundTimestamp > state.HeartbeatInterval)
+            if (state.HeartbeatInterval != TimeSpan.Zero)
             {
-                SendHeartbeat();
-            }
-
-            if (clock.Time - state.InboundTimestamp > state.HeartbeatTimeoutMin)
-            {
-                if (clock.Time - state.InboundTimestamp > state.HeartbeatTimeoutMax)
+                if (clock.Time - state.OutboundTimestamp > state.HeartbeatInterval)
                 {
-                    throw new EngineException("Did not receive any messages for too long");
+                    SendHeartbeat();
                 }
 
-                if (!state.TestRequestPending) SendTestRequest();
+                if (clock.Time - state.InboundTimestamp > state.HeartbeatTimeoutMin)
+                {
+                    if (clock.Time - state.InboundTimestamp > state.HeartbeatTimeoutMax)
+                    {
+                        throw new EngineException("Did not receive any messages for too long");
+                    }
+
+                    if (!state.TestRequestPending) SendTestRequest();
+                }
             }
 
             return inbound.Valid;
