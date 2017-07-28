@@ -131,7 +131,7 @@ namespace HotFix.Core
             _bodyEnd += _body.WriteInt(_bodyEnd, tag);
             _body[_bodyEnd++] = EQL;
 
-            _bodyEnd += _body.WriteFloat(_bodyEnd, value);
+            _bodyEnd += _body.WriteFloat(_bodyEnd, value, 6);
             _body[_bodyEnd++] = SOH;
 
             return this;

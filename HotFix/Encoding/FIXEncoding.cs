@@ -5,6 +5,23 @@ namespace HotFix.Encoding
 {
     public static class FIXEncoding
     {
+        public static long[] Powers =
+        {
+            1,
+            10,
+            100,
+            1000,
+            10000,
+            100000,
+            1000000,
+            10000000,
+            100000000,
+            1000000000,
+            10000000000,
+            100000000000,
+            1000000000000
+        };
+
         /// <summary>
         /// Parses an integer (Int32) from the provided byte array.
         /// </summary>
@@ -433,24 +450,34 @@ namespace HotFix.Encoding
 
         /// <summary>
         /// Writes a double to the given byte array. 
-        /// The number is rounded to 6 decimal places.
+        /// The number is rounded to the specified number of decimal places.
         /// </summary>
         /// <param name="buffer">The buffer to write to.</param>
         /// <param name="position">The position to start writing.</param>
         /// <param name="value">The number to write.</param>
+        /// <param name="decimals">The number of decimal places to round to.</param>
         /// <returns>The number of characters written.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static int WriteFloat(this byte[] buffer, int position, double value)
+        public static int WriteFloat(this byte[] buffer, int position, double value, int decimals)
         {
             var start = position;
+            var power = Powers[decimals];
             var integer = (long)value;
-            var fraction = (long)Math.Round(Math.Abs(value) * 1000000L) % 1000000L;
+            var fraction = (long)Math.Round(Math.Abs(value) * power) % power;
 
             position += buffer.WriteLong(position, integer);
-            buffer[position++] = (byte)'.';
-            position += buffer.WriteLong(position, fraction);
 
-            return position - start;
+            if (decimals == 0) return position - start;
+
+            buffer[position++] = (byte)'.';
+            var written = buffer.WriteLongBackwards(position + decimals - 1, fraction);
+
+            for (var i = position; i < position + decimals - written; i++)
+            {
+                buffer[i] = (byte)'0';
+            }
+
+            return position - start + decimals;
         }
 
         /// <summary>
