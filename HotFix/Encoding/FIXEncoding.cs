@@ -394,6 +394,44 @@ namespace HotFix.Encoding
         }
 
         /// <summary>
+        /// Writes a long to the given byte array. 
+        /// The number is written before the given position, so that the last digit is at that position.
+        /// </summary>
+        /// <param name="buffer">The buffer to write to.</param>
+        /// <param name="position">The position that marks the end of the number.</param>
+        /// <param name="value">The number to write.</param>
+        /// <returns>The number of characters written</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static int WriteLongBackwards(this byte[] buffer, int position, long value)
+        {
+            if (value == 0)
+            {
+                buffer[position] = (byte)'0';
+                return 1;
+            }
+
+            var initial = position;
+            var negative = false;
+
+            if (value < 0)
+            {
+                negative = true;
+                value = -value; // Note: Code won't work for long.MinValue
+            }
+
+            while (value > 0)
+            {
+                var n = '0' + (char)(value % 10);
+                buffer[position--] = (byte)n;
+                value /= 10;
+            }
+
+            if (negative) buffer[position--] = (byte)'-';
+
+            return initial - position;
+        }
+
+        /// <summary>
         /// Writes a double to the given byte array. 
         /// The number is rounded to 6 decimal places.
         /// </summary>

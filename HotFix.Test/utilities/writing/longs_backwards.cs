@@ -6,7 +6,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace HotFix.Test.utilities.writing
 {
     [TestClass]
-    public class longs
+    public class longs_backwards
     {
         private byte[] _buffer;
 
@@ -19,27 +19,27 @@ namespace HotFix.Test.utilities.writing
         [TestMethod]
         public void zero()
         {
-            var written = _buffer.WriteLong(3, 0);
+            var written = _buffer.WriteLongBackwards(20, 0);
 
-            System.Text.Encoding.ASCII.GetString(_buffer).Should().Be("\0\0\0" + "0" + "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0");
+            System.Text.Encoding.ASCII.GetString(_buffer).Should().Be("\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0" + "0" + "\0\0\0");
             written.Should().Be(1);
         }
 
         [TestMethod]
         public void positive()
         {
-            var written = _buffer.WriteLong(3, 1234567890987654321);
+            var written = _buffer.WriteLongBackwards(20, 1234567890987654321);
 
-            System.Text.Encoding.ASCII.GetString(_buffer).Should().Be("\0\0\0" + "1234567890987654321" + "\0\0");
+            System.Text.Encoding.ASCII.GetString(_buffer).Should().Be("\0\0" + "1234567890987654321" + "\0\0\0");
             written.Should().Be(19);
         }
 
         [TestMethod]
         public void negative()
         {
-            var written = _buffer.WriteLong(3, -1234567890987654321);
+            var written = _buffer.WriteLongBackwards(20, -1234567890987654321);
 
-            System.Text.Encoding.ASCII.GetString(_buffer).Should().Be("\0\0\0" + "-1234567890987654321" + "\0");
+            System.Text.Encoding.ASCII.GetString(_buffer).Should().Be("\0" + "-1234567890987654321" + "\0\0\0");
             written.Should().Be(20);
         }
 
@@ -47,7 +47,7 @@ namespace HotFix.Test.utilities.writing
         [ExpectedException(typeof(IndexOutOfRangeException))]
         public void out_of_bounds()
         {
-            _buffer.WriteLong(7, 1234567890987654321);
+            _buffer.WriteLongBackwards(7, 1234567890987654321);
         }
     }
 }
