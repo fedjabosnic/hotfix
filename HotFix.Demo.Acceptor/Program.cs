@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using HotFix.Core;
 
 namespace HotFix.Demo.Acceptor
@@ -34,49 +35,58 @@ namespace HotFix.Demo.Acceptor
                 //LogFile = @"messages.log" // Enable to see logging impact
             };
 
-            engine.Run(
-                configuration,
-                session =>
-                {
-                    Console.WriteLine("Logged on");
-                },
-                session =>
-                {
-                    Console.WriteLine("Logged out");
-                },
-                (session, message) =>
-                {
-                    if (message[35].Is("D"))
+            while (true)
+            {
+                Console.WriteLine("Waiting for client...");
+                Console.WriteLine();
+
+                engine.Run(
+                    configuration,
+                    session =>
                     {
-                        // Immediately fill any order at the requested price
-                        var report = session
-                            .Outbound
-                            .Clear()
-                            .Set(37, ++orders)     // OrderId
-                            .Set(17, ++executions) // ExecId
-                            .Set(20, 0)            // ExecTransType (New)
-                            .Set(150, 2)           // ExecType (Fill)
-                            .Set(39, 2)            // OrdStatus (Filled)
-                            .Set(11, message[11])  // ClOrdId
-                            .Set(55, message[55])  // Symbol
-                            .Set(54, message[54])  // Side
-                            .Set(38, message[38])  // OrderQty
-                            .Set(44, message[44])  // Price
-                            .Set(06, message[44])  // AvgPrice
-                            .Set(14, message[38])  // CumQty
-                            .Set(151, 0);          // LeavesQty
+                        Console.WriteLine("Logged on");
+                    },
+                    session =>
+                    {
+                        Console.WriteLine("Logged out");
+                    },
+                    (session, message) =>
+                    {
+                        if (message[35].Is("D"))
+                        {
+                            // Immediately fill any order at the requested price
+                            var report = session
+                                .Outbound
+                                .Clear()
+                                .Set(37, ++orders) // OrderId
+                                .Set(17, ++executions) // ExecId
+                                .Set(20, 0) // ExecTransType (New)
+                                .Set(150, 2) // ExecType (Fill)
+                                .Set(39, 2) // OrdStatus (Filled)
+                                .Set(11, message[11]) // ClOrdId
+                                .Set(55, message[55]) // Symbol
+                                .Set(54, message[54]) // Side
+                                .Set(38, message[38]) // OrderQty
+                                .Set(44, message[44]) // Price
+                                .Set(06, message[44]) // AvgPrice
+                                .Set(14, message[38]) // CumQty
+                                .Set(151, 0); // LeavesQty
 
-                        session.Send("8", report);
+                            session.Send("8", report);
 
-                        return true;
-                    }
+                            return true;
+                        }
 
-                    return false;
-                });
+                        return false;
+                    });
 
-            Console.WriteLine();
-            Console.WriteLine("Orders: " + orders);
-            Console.WriteLine("Filled: " + executions);
+                Console.WriteLine();
+                Console.WriteLine("Orders: " + orders);
+                Console.WriteLine("Filled: " + executions);
+                Console.WriteLine();
+
+                Thread.Sleep(1000);
+            }
         }
     }
 }
