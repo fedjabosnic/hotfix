@@ -81,9 +81,11 @@
     <Compile Include="utilities\reading\longs.cs" />
     <Compile Include="utilities\reading\strings.cs" />
     <Compile Include="utilities\writing\datetimes.cs" />
+    <Compile Include="utilities\writing\ints_backwards.cs" />
     <Compile Include="utilities\writing\longs.cs" />
     <Compile Include="utilities\writing\ints.cs" />
     <Compile Include="utilities\writing\floats.cs" />
+    <Compile Include="utilities\writing\longs_backwards.cs" />
     <Compile Include="utilities\writing\strings.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -2,7 +2,7 @@
 
 BenchmarkDotNet=v0.10.4, OS=Windows 10.0.10586
 Processor=Intel Core i7-3770 CPU 3.40GHz (Ivy Bridge), ProcessorCount=8
-Frequency=3316018 Hz, Resolution=301.5665 ns, Timer=TSC
+Frequency=3312788 Hz, Resolution=301.8605 ns, Timer=TSC
   [Host]     : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
   DefaultJob : Clr 4.0.30319.42000, 64bit RyuJIT-v4.6.1086.0
 
@@ -10,5 +10,5 @@ Frequency=3316018 Hz, Resolution=301.5665 ns, Timer=TSC
 ```
  |   Method |        Mean |     Error |    StdDev |    StdErr |         Min |          Q1 |      Median |          Q3 |         Max |        Op/s | Scaled | ScaledSD |  Gen 0 | Allocated |
  |--------- |------------:|----------:|----------:|----------:|------------:|------------:|------------:|------------:|------------:|------------:|-------:|---------:|-------:|----------:|
- | standard | 559.8382 ns | 6.1695 ns | 5.7710 ns | 1.4901 ns | 550.9681 ns | 556.1342 ns | 557.3432 ns | 564.8725 ns | 570.6534 ns |  1786230.25 |   1.00 |     0.00 | 0.0016 |   0.06 kB |
- |   hotfix |  54.6385 ns | 0.7168 ns | 0.6705 ns | 0.1731 ns |  53.8826 ns |  54.1943 ns |  54.5059 ns |  54.9796 ns |  56.0666 ns | 18302125.43 |   0.10 |     0.00 |      - |      0 kB |
+ | standard | 549.2370 ns | 9.5689 ns | 8.4826 ns | 2.2671 ns | 540.8282 ns | 542.2569 ns | 545.7795 ns | 555.1501 ns | 568.1713 ns |  1820707.57 |   1.00 |     0.00 | 0.0013 |   0.06 kB |
+ |   hotfix |  62.0243 ns | 1.1076 ns | 1.0361 ns | 0.2675 ns |  60.8746 ns |  61.0131 ns |  61.6912 ns |  62.9505 ns |  64.1909 ns | 16122701.14 |   0.11 |     0.00 |      - |      0 kB |
