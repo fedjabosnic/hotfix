@@ -33,9 +33,13 @@ namespace HotFix.Transport
 
             socket.IOControl(SIO_LOOPBACK_FAST_PATH, BitConverter.GetBytes(1), null);
             socket.Bind(endpoint);
-            socket.Listen(500);
+            socket.Listen(1);
 
-            return new TcpTransport(new NetworkStream(socket.Accept(), true));
+            var client = socket.Accept();
+
+            socket.Dispose();
+
+            return new TcpTransport(new NetworkStream(client, true));
         }
 
         public TcpTransport(NetworkStream stream)
