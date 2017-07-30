@@ -113,15 +113,4 @@ namespace HotFix.Demo.Initiator
             using (var writer = new StreamWriter(@"..\..\..\.bench\histogram-decode.hgrm")) Decode.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
         }
     }
-
-    public class Histogram
-    {
-        
-        private long[] Measurements;
-
-        public Histogram()
-        {
-            
-        }
-    }
 }
