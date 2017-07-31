@@ -61,8 +61,8 @@ namespace HotFix.Core
                 HeartbeatTimeoutMax = TimeSpan.FromSeconds(configuration.HeartbeatInterval * 2.0)
             };
 
-            Inbound = new FIXMessage(maxMessageLength, maxMessageFields);
-            Outbound = new FIXMessageWriter(maxMessageLength);
+            Inbound = new FIXMessage(maxMessageLength, maxMessageFields) { Clock = Clock };
+            Outbound = new FIXMessageWriter(maxMessageLength) { Clock = Clock };
         }
 
         /// <summary>

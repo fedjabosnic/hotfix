@@ -1,18 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using HdrHistogram;
 using HotFix.Core;
 
 namespace HotFix.Demo.Initiator
 {
     /// <summary>
     /// This demo is an initiator implemented with the lower level api by directly manipulating the session. It will
-    /// connect to the specified acceptor and send the specified number of orders, measuring the end-to-end time for
+    /// connect to the specified acceptor and send the specified number of orders, measuring the round trip time for
     /// trading including transport overheads.
     /// </summary>
     class Program
     {
-        public static List<long> Histogram;
+        public static LongHistogram Rtt;
+        public static LongHistogram Encode;
+        public static LongHistogram Decode;
 
         static void Main(string[] args)
         {
@@ -22,7 +26,9 @@ namespace HotFix.Demo.Initiator
             var port = int.Parse(args[1]);
             var count = int.Parse(args[2]);
 
-            Histogram = new List<long>(count * 2);
+            Rtt = new LongHistogram(1, 10000000, 5);
+            Encode = new LongHistogram(1, 10000000, 5);
+            Decode = new LongHistogram(1, 10000000, 5);
 
             var engine = new Engine();
 
@@ -48,16 +54,18 @@ namespace HotFix.Demo.Initiator
 
                 for (var i = 0; i < count; i++)
                 {
+                    var time = initiator.Clock.Time;
+
                     var order = initiator
                         .Outbound
                         .Clear()
-                        .Set(60, initiator.Clock.Time)       // TransactTime
-                        .Set(11, initiator.Clock.Time.Ticks) // ClOrdId
-                        .Set(55, "EUR/USD")                  // Symbol
-                        .Set(54, 1)                          // Side (buy)
-                        .Set(38, 1000.00)                    // OrderQty
-                        .Set(44, 1.13200)                    // Price
-                        .Set(40, 2);                         // OrdType (limit)
+                        .Set(60, time)       // TransactTime
+                        .Set(11, time.Ticks) // ClOrdId
+                        .Set(55, "EUR/USD")  // Symbol
+                        .Set(54, 1)          // Side (buy)
+                        .Set(38, 1000.00)    // OrderQty
+                        .Set(44, 1.13200)    // Price
+                        .Set(40, 2);         // OrdType (limit)
 
                     // Send order
                     initiator.Send("D", order);
@@ -65,8 +73,14 @@ namespace HotFix.Demo.Initiator
                     // Wait for an execution report (ignore everything else)
                     while (!initiator.Receive() && !initiator.Inbound[35].Is("8")) { }
 
+                    var rtt = initiator.Clock.Time.Ticks - time.Ticks;
+
+                    if (i < 1000) continue;
+
                     // Update statistics
-                    Histogram.Add(initiator.Clock.Time.Ticks - initiator.Inbound[11].AsLong);
+                    Rtt.RecordValue(rtt);
+                    Encode.RecordValue(initiator.Outbound.Duration);
+                    Decode.RecordValue(initiator.Inbound.Duration);
                 }
 
                 initiator.Logout();
@@ -74,39 +88,29 @@ namespace HotFix.Demo.Initiator
                 Console.WriteLine("Logged out");
             }
 
-
             PrintStatistics();
+            SaveStatistics();
         }
 
         private static void PrintStatistics()
         {
-            Console.WriteLine("Orders: " + Histogram.Count);
-
-            Histogram = Histogram.Skip(1000).Select(x => x).ToList();
-
-            Console.WriteLine($"      min: {$"{Histogram.Min() / 10m:N}",14} µs");
-            Console.WriteLine($"   50.00%: {$"{Percentile(Histogram, 0.5000m) / 10m:N}",14} µs");
-            Console.WriteLine($"   90.00%: {$"{Percentile(Histogram, 0.9000m) / 10m:N}",14} µs");
-            Console.WriteLine($"   99.00%: {$"{Percentile(Histogram, 0.9900m) / 10m:N}",14} µs");
-            Console.WriteLine($"   99.90%: {$"{Percentile(Histogram, 0.9990m) / 10m:N}",14} µs");
-            Console.WriteLine($"   99.99%: {$"{Percentile(Histogram, 0.9999m) / 10m:N}",14} µs");
-            Console.WriteLine($"      max: {$"{Histogram.Max() / 10m:N}",14} µs");
+            Console.WriteLine();
+            Console.WriteLine($"|         |    Round trip |        Encode |        Decode |");
+            Console.WriteLine($"|---------|---------------|---------------|---------------|");
+            Console.WriteLine($"|     min | {$"{Rtt.GetValueAtPercentile( 00.00) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile( 00.00) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile( 00.00) / 10m:N}",10} µs |");
+            Console.WriteLine($"|  50.00% | {$"{Rtt.GetValueAtPercentile( 50.00) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile( 50.00) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile( 50.00) / 10m:N}",10} µs |");
+            Console.WriteLine($"|  90.00% | {$"{Rtt.GetValueAtPercentile( 90.00) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile( 90.00) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile( 90.00) / 10m:N}",10} µs |");
+            Console.WriteLine($"|  99.00% | {$"{Rtt.GetValueAtPercentile( 99.00) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile( 99.00) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile( 99.00) / 10m:N}",10} µs |");
+            Console.WriteLine($"|  99.90% | {$"{Rtt.GetValueAtPercentile( 99.90) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile( 99.90) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile( 99.90) / 10m:N}",10} µs |");
+            Console.WriteLine($"|  99.99% | {$"{Rtt.GetValueAtPercentile( 99.99) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile( 99.99) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile( 99.99) / 10m:N}",10} µs |");
+            Console.WriteLine($"|     max | {$"{Rtt.GetValueAtPercentile(100.00) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile(100.00) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile(100.00) / 10m:N}",10} µs |");
         }
 
-        public static long Percentile(List<long> sequence, decimal excelPercentile)
+        private static void SaveStatistics()
         {
-            var sorted = sequence.OrderBy(x => x).ToList();
-
-            var N = sorted.Count;
-            var n = (N - 1) * excelPercentile + 1;
-
-            if (n == 1m) return sorted[0];
-            if (n == N) return sorted[N - 1];
-
-            var k = (int)n;
-            var d = n - k;
-
-            return (long)(sorted[k - 1] + d * (sorted[k] - sorted[k - 1]));
+            using (var writer = new StreamWriter(@"..\..\..\.bench\histogram-rtt.hgrm")) Rtt.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
+            using (var writer = new StreamWriter(@"..\..\..\.bench\histogram-encode.hgrm")) Encode.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
+            using (var writer = new StreamWriter(@"..\..\..\.bench\histogram-decode.hgrm")) Decode.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
         }
     }
 }
