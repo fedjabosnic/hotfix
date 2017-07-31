@@ -25,7 +25,7 @@ namespace HotFix.Utilities
         public FileLogger(IClock clock, string file)
         {
             _clock = clock;
-            _file = new FileStream(file, FileMode.OpenOrCreate, FileAccess.Write, FileShare.Read, 4096, FileOptions.SequentialScan);
+            _file = new FileStream(file, FileMode.Append, FileAccess.Write, FileShare.Read, 4096, FileOptions.SequentialScan);
 
             _inbound[0] = (byte)'\r';
             _inbound[1] = (byte)'\n';
