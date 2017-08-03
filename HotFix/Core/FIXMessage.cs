@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using HotFix.Utilities;
 
 namespace HotFix.Core
 {
     public class FIXMessage
     {
+        internal IClock Clock;
         internal byte[] Raw { get; private set; }
         internal int Length { get; private set; }
 
@@ -14,6 +16,11 @@ namespace HotFix.Core
 
         /// <summary> Whether this message contains a valid set of fields </summary>
         public bool Valid { get; private set; }
+
+        public long Duration => _finish - _start;
+
+        private long _start;
+        private long _finish;
 
         public FIXMessage(int length = 4096, int fields = 1024)
         {
@@ -32,6 +39,8 @@ namespace HotFix.Core
         /// <returns>A reference to this instance, built from the parsed message.</returns>
         public FIXMessage Parse(byte[] message, int offset, int count)
         {
+            _start = Clock?.Time.Ticks ?? 0;
+
             try
             {
                 Buffer.BlockCopy(message, offset, Raw, 0, count);
@@ -74,6 +83,8 @@ namespace HotFix.Core
                 Valid = false;
                 Count = 0;
             }
+
+            _finish = Clock?.Time.Ticks ?? 0;
 
             return this;
         }
@@ -233,6 +244,11 @@ namespace HotFix.Core
         public override string ToString()
         {
             return System.Text.Encoding.ASCII.GetString(Raw, 0, Length);
+        }
+
+        public void WriteTo(byte[] target, int offset)
+        {
+            Buffer.BlockCopy(Raw, 0, target, offset, Length);
         }
     }
 }

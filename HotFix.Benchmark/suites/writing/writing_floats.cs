@@ -30,6 +30,6 @@ namespace HotFix.Benchmark.suites.writing
         }
 
         [Benchmark]
-        public int hotfix() => Buffer.WriteFloat(0, Number);
+        public int hotfix() => Buffer.WriteFloat(0, Number, 6);
     }
 }

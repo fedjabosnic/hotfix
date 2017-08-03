@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using HotFix.Utilities;
 
 namespace HotFix.Transport
 {
     public class TcpTransport : ITransport
     {
-        const int SIO_LOOPBACK_FAST_PATH = -1744830448;
-
         private readonly NetworkStream _stream;
 
         public static TcpTransport Create(bool server, string address, int port)
@@ -20,7 +19,7 @@ namespace HotFix.Transport
             var endpoint = new IPEndPoint(IPAddress.Parse(address), port);
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { ReceiveTimeout = 1000, NoDelay = true };
 
-            socket.IOControl(SIO_LOOPBACK_FAST_PATH, BitConverter.GetBytes(1), null);
+            socket.EnableFastPath();
             socket.Connect(endpoint);
 
             return new TcpTransport(new NetworkStream(socket, true));
@@ -31,11 +30,15 @@ namespace HotFix.Transport
             var endpoint = new IPEndPoint(IPAddress.Parse(address), port);
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { ReceiveTimeout = 1000, NoDelay = true };
 
-            socket.IOControl(SIO_LOOPBACK_FAST_PATH, BitConverter.GetBytes(1), null);
+            socket.EnableFastPath();
             socket.Bind(endpoint);
-            socket.Listen(500);
+            socket.Listen(1);
 
-            return new TcpTransport(new NetworkStream(socket.Accept(), true));
+            var client = socket.Accept();
+
+            socket.Dispose();
+
+            return new TcpTransport(new NetworkStream(client, true));
         }
 
         public TcpTransport(NetworkStream stream)

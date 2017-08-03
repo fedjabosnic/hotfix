@@ -1,20 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using HdrHistogram;
 using HotFix.Core;
 
 namespace HotFix.Demo.Initiator
 {
+    /// <summary>
+    /// This demo is an initiator implemented with the lower level api by directly manipulating the session. It will
+    /// connect to the specified acceptor and send the specified number of orders, measuring the round trip time for
+    /// trading including transport overheads.
+    /// </summary>
     class Program
     {
-        private static int _orders;
+        public static LongHistogram Rtt;
+        public static LongHistogram Encode;
+        public static LongHistogram Decode;
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Sending orders...");
+            Console.WriteLine();
 
+            var host = args[0];
+            var port = int.Parse(args[1]);
             var count = int.Parse(args[2]);
-            var histogram = new List<long>(count * 2);
+
+            Rtt = new LongHistogram(1, 10000000, 5);
+            Encode = new LongHistogram(1, 10000000, 5);
+            Decode = new LongHistogram(1, 10000000, 5);
 
             var engine = new Engine();
 
@@ -22,82 +36,81 @@ namespace HotFix.Demo.Initiator
             {
                 Role = Role.Initiator,
                 Version = "FIX.4.2",
-                Host = args[0],
-                Port = int.Parse(args[1]),
+                Host = host,
+                Port = port,
                 Sender = "Client",
                 Target = "Server",
                 InboundSeqNum = 1,
                 OutboundSeqNum = 1,
-                HeartbeatInterval = 86400,
+                HeartbeatInterval = 0,
                 //LogFile = @"messages.log" // Enable to see logging impact
             };
 
-            using (var session = engine.Open(configuration))
+            using (var initiator = engine.Open(configuration))
             {
-                var clock = session.Clock;
+                initiator.Logon();
 
-                var inbound = session.Inbound;
-                var outbound = session.Outbound;
+                Console.WriteLine("Logged on");
 
-                session.Logon();
-
-                while (session.Active && _orders < count)
+                for (var i = 0; i < count; i++)
                 {
-                    var sent = clock.Time;
+                    var time = initiator.Clock.Time;
 
-                    outbound
+                    var order = initiator
+                        .Outbound
                         .Clear()
-                        .Set(60, clock.Time)         // TransactTime 
-                        .Set(11, ++_orders)          // ClOrdId 
-                        .Set(55, "EUR/USD")          // Symbol 
-                        .Set(54, 1)                  // Side (buy) 
-                        .Set(38, 1000.00)            // OrderQty 
-                        .Set(44, 1.13200)            // Price 
-                        .Set(40, 2);                 // OrdType (limit) 
+                        .Set(60, time)       // TransactTime
+                        .Set(11, time.Ticks) // ClOrdId
+                        .Set(55, "EUR/USD")  // Symbol
+                        .Set(54, 1)          // Side (buy)
+                        .Set(38, 1000.00)    // OrderQty
+                        .Set(44, 1.13200)    // Price
+                        .Set(40, 2);         // OrdType (limit)
 
-                    session.Send("D", outbound);
+                    // Send order
+                    initiator.Send("D", order);
 
-                    while (!session.Receive()) { }
+                    // Wait for an execution report (ignore everything else)
+                    while (!initiator.Receive() && !initiator.Inbound[35].Is("8")) { }
 
-                    if (inbound[35].Is("8"))
-                    {
-                        var received = clock.Time;
+                    var rtt = initiator.Clock.Time.Ticks - time.Ticks;
 
-                        histogram.Add(received.Ticks - sent.Ticks);
-                    }
+                    if (i < 1000) continue;
+
+                    // Update statistics
+                    Rtt.RecordValue(rtt);
+                    Encode.RecordValue(initiator.Outbound.Duration);
+                    Decode.RecordValue(initiator.Inbound.Duration);
                 }
 
-                session.Logout();
+                initiator.Logout();
+
+                Console.WriteLine("Logged out");
             }
 
-            Console.WriteLine();
-            Console.WriteLine("Orders: " + _orders);
-
-            histogram = histogram.Skip(1000).Select(x => x).ToList();
-
-            Console.WriteLine($"      min: {$"{histogram.Min() / 10m:N}",14} µs");
-            Console.WriteLine($"   50.00%: {$"{Percentile(histogram, 0.5000) / 10m:N}",14} µs");
-            Console.WriteLine($"   90.00%: {$"{Percentile(histogram, 0.9000) / 10m:N}",14} µs");
-            Console.WriteLine($"   99.00%: {$"{Percentile(histogram, 0.9900) / 10m:N}",14} µs");
-            Console.WriteLine($"   99.90%: {$"{Percentile(histogram, 0.9990) / 10m:N}",14} µs");
-            Console.WriteLine($"   99.99%: {$"{Percentile(histogram, 0.9999) / 10m:N}",14} µs");
-            Console.WriteLine($"      max: {$"{histogram.Max() / 10m:N}",14} µs");
+            PrintStatistics();
+            SaveStatistics();
         }
 
-        public static long Percentile(List<long> sequence, double excelPercentile)
+        private static void PrintStatistics()
         {
-            var sorted = sequence.OrderBy(x => x).ToList();
+            Console.WriteLine();
+            Console.WriteLine($"|         |    Round trip |        Encode |        Decode |");
+            Console.WriteLine($"|---------|---------------|---------------|---------------|");
+            Console.WriteLine($"|     min | {$"{Rtt.GetValueAtPercentile( 00.00) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile( 00.00) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile( 00.00) / 10m:N}",10} µs |");
+            Console.WriteLine($"|  50.00% | {$"{Rtt.GetValueAtPercentile( 50.00) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile( 50.00) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile( 50.00) / 10m:N}",10} µs |");
+            Console.WriteLine($"|  90.00% | {$"{Rtt.GetValueAtPercentile( 90.00) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile( 90.00) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile( 90.00) / 10m:N}",10} µs |");
+            Console.WriteLine($"|  99.00% | {$"{Rtt.GetValueAtPercentile( 99.00) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile( 99.00) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile( 99.00) / 10m:N}",10} µs |");
+            Console.WriteLine($"|  99.90% | {$"{Rtt.GetValueAtPercentile( 99.90) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile( 99.90) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile( 99.90) / 10m:N}",10} µs |");
+            Console.WriteLine($"|  99.99% | {$"{Rtt.GetValueAtPercentile( 99.99) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile( 99.99) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile( 99.99) / 10m:N}",10} µs |");
+            Console.WriteLine($"|     max | {$"{Rtt.GetValueAtPercentile(100.00) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile(100.00) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile(100.00) / 10m:N}",10} µs |");
+        }
 
-            var N = sorted.Count;
-            var n = (N - 1) * excelPercentile + 1;
-
-            if (n == 1d) return sorted[0];
-            if (n == N) return sorted[N - 1];
-
-            var k = (int)n;
-            var d = n - k;
-
-            return (long)(sorted[k - 1] + d * (sorted[k] - sorted[k - 1]));
+        private static void SaveStatistics()
+        {
+            using (var writer = new StreamWriter(@"..\..\..\.bench\histogram-rtt.hgrm")) Rtt.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
+            using (var writer = new StreamWriter(@"..\..\..\.bench\histogram-encode.hgrm")) Encode.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
+            using (var writer = new StreamWriter(@"..\..\..\.bench\histogram-decode.hgrm")) Decode.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
         }
     }
 }

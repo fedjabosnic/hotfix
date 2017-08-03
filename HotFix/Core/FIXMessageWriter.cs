@@ -1,10 +1,12 @@
 ﻿using System;
 using HotFix.Encoding;
+using HotFix.Utilities;
 
 namespace HotFix.Core
 {
     public class FIXMessageWriter
     {
+        internal IClock Clock;
         private const byte SOH = (byte)'\u0001';
         private const byte EQL = (byte) '=';
 
@@ -14,14 +16,20 @@ namespace HotFix.Core
         internal readonly byte[] Buffer;
         internal int Length;
 
+        public long Duration => _finish - _start;
+
+        private long _start;
+        private long _finish;
+
         public FIXMessageWriter(int maxLength)
         {
             Buffer = new byte[maxLength];
             _body = new byte[maxLength];
         }
-
         public FIXMessageWriter Clear()
         {
+            _start = Clock?.Time.Ticks ?? 0;
+
             Length = 0;
             _bodyEnd = 0;
 
@@ -79,6 +87,8 @@ namespace HotFix.Core
             Length += Buffer.WriteString(Length, "10=000\u0001");
             Buffer.WriteIntBackwards(Length - 2, checksum);
 
+            _finish = Clock?.Time.Ticks ?? 0;
+
             return this;
         }
 
@@ -131,7 +141,7 @@ namespace HotFix.Core
             _bodyEnd += _body.WriteInt(_bodyEnd, tag);
             _body[_bodyEnd++] = EQL;
 
-            _bodyEnd += _body.WriteFloat(_bodyEnd, value);
+            _bodyEnd += _body.WriteFloat(_bodyEnd, value, 6);
             _body[_bodyEnd++] = SOH;
 
             return this;
@@ -161,6 +171,14 @@ namespace HotFix.Core
             return checksum % 256;
         }
 
-        public override string ToString() => System.Text.Encoding.ASCII.GetString(Buffer, 0, Length);
+        public override string ToString()
+        {
+            return System.Text.Encoding.ASCII.GetString(Buffer, 0, Length);
+        }
+
+        public void WriteTo(byte[] target, int offset)
+        {
+            System.Buffer.BlockCopy(Buffer, 0, target, offset, Length);
+        }
     }
 }

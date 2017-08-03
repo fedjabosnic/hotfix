@@ -14,7 +14,7 @@ namespace HotFix.Benchmark.suites
     {
         public readonly DateTime SendingTime = DateTime.ParseExact("2017/05/31 08:18:01.768", "yyyy/MM/dd HH:mm:ss.fff", null);
         public readonly DateTime FutSettleDate = DateTime.ParseExact("2017/06/02", "yyyy/MM/dd", null);
-        public readonly DateTime TransactTime = DateTime.ParseExact("2017/05/31 08:18:01.767", "yyyy/MM/dd", null);
+        public readonly DateTime TransactTime = DateTime.ParseExact("2017/05/31 08:18:01.767", "yyyy/MM/dd HH:mm:ss.fff", null);
         public readonly DateTime TradeDate = DateTime.ParseExact("2017/05/31", "yyyy/MM/dd", null);
 
         public readonly FIXMessageWriter Message = new FIXMessageWriter(1000);
