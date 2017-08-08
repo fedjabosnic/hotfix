@@ -47,13 +47,7 @@ namespace HotFix.Core
             var logger = Loggers(configuration);
             var transport = Transports(configuration);
 
-            var session = new Session(configuration, clock, transport, BufferSize, MaxMessageLength, MaxMessageFields);
-
-            if (logger != null)
-            {
-                session.Channel.Inbound = logger.Inbound;
-                session.Channel.Outbound = logger.Outbound;
-            }
+            var session = new Session(configuration, clock, transport, logger, BufferSize, MaxMessageLength, MaxMessageFields);
 
             return session;
         }
