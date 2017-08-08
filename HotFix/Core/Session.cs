@@ -9,6 +9,8 @@ namespace HotFix.Core
     {
         /// <summary> The session clock </summary>
         public IClock Clock { get; }
+        /// <summary> The session logger </summary>
+        public ILogger Logger { get; }
 
         /// <summary> The session configuration </summary>
         public IConfiguration Configuration { get; }
@@ -40,12 +42,14 @@ namespace HotFix.Core
         /// <param name="configuration">The session configuration</param>
         /// <param name="clock">The session clock</param>
         /// <param name="transport">The session transport</param>
+        /// <param name="logger">The session logger</param>
         /// <param name="bufferSize">The buffersize to use for buffering</param>
         /// <param name="maxMessageLength">The maximum supported length of a fix message</param>
         /// <param name="maxMessageFields">The maximum supported number of fields in a fix message</param>
-        public Session(IConfiguration configuration, IClock clock, ITransport transport, int bufferSize, int maxMessageLength, int maxMessageFields)
+        public Session(IConfiguration configuration, IClock clock, ITransport transport, ILogger logger, int bufferSize, int maxMessageLength, int maxMessageFields)
         {
             Clock = clock;
+            Logger = logger;
             Configuration = configuration;
 
             Channel = new Channel(transport, bufferSize);
@@ -60,6 +64,12 @@ namespace HotFix.Core
                 HeartbeatTimeoutMin = TimeSpan.FromSeconds(configuration.HeartbeatInterval * 1.2),
                 HeartbeatTimeoutMax = TimeSpan.FromSeconds(configuration.HeartbeatInterval * 2.0)
             };
+
+            if (Logger != null)
+            {
+                Channel.Inbound = Logger.Inbound;
+                Channel.Outbound = Logger.Outbound;
+            }
 
             Inbound = new FIXMessage(maxMessageLength, maxMessageFields) { Clock = Clock };
             Outbound = new FIXMessageWriter(maxMessageLength) { Clock = Clock };
@@ -407,7 +417,8 @@ namespace HotFix.Core
         /// </summary>
         public void Dispose()
         {
-            Channel.Transport.Dispose();
+            Channel?.Transport?.Dispose();
+            Logger?.Dispose();
         }
     }
 
