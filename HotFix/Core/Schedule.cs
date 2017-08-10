@@ -9,5 +9,7 @@ namespace HotFix.Core
         public TimeSpan OpenTime { get; set; }
         public DayOfWeek CloseDay { get; set; }
         public TimeSpan CloseTime { get; set; }
+
+        public override string ToString() => $"{Name}: {OpenDay} {OpenTime} - {CloseDay} {CloseTime}";
     }
 }

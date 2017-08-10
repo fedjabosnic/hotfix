@@ -1,4 +1,5 @@
 using System;
+using System.Threading;
 using HotFix.Transport;
 using HotFix.Utilities;
 
@@ -65,19 +66,46 @@ namespace HotFix.Core
         /// <param name="handler">The message handler.</param> 
         public void Run(IConfiguration configuration, Action<Session> logon, Action<Session> logout, Func<Session, FIXMessage, bool> handler)
         {
-            using (var session = this.Open(configuration))
+            while (true)
             {
-                session.LoggedOn += logon;
-                session.LoggedOut += logout;
-
-                session.Logon();
-
-                while (session.Active)
+                try
                 {
-                    if (session.Receive()) handler(session, session.Inbound);
-                }
+                    var clock = Clocks(configuration);
+                    var schedule = configuration.Sessions.GetActive(clock.Time);
 
-                session.Logout();
+                    if (schedule == null)
+                    {
+                        Thread.Sleep(1000);
+                        continue;
+                    }
+
+                    var close = schedule.NextClosingTime(clock.Time);
+
+                    Console.WriteLine($"Opening session {schedule}");
+
+                    //TODO: Set up logger (filename)?
+
+                    using (var session = this.Open(configuration))
+                    {
+                        session.LoggedOn += logon;
+                        session.LoggedOut += logout;
+
+                        session.Logon();
+
+                        while (session.Active && clock.Time < close)
+                        {
+                            if (session.Receive()) handler(session, session.Inbound);
+                        }
+
+                        session.Logout();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e);
+                    
+                    Thread.Sleep(10000);
+                }
             }
         }
     }

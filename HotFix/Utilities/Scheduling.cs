@@ -1,10 +1,21 @@
 ﻿using System;
+using System.Collections.Generic;
 using HotFix.Core;
 
 namespace HotFix.Utilities
 {
     public static class Scheduling
     {
+        public static ISchedule GetActive(this List<ISchedule> sessions, DateTime at)
+        {
+            foreach (var session in sessions)
+            {
+                if (session.IsActiveAt(at)) return session;
+            }
+
+            return null;
+        }
+
         public static DateTime NextClosingTime(this ISchedule schedule, DateTime datetime)
         {
             var startOfWeek = (datetime - TimeSpan.FromDays((int)datetime.DayOfWeek)).Date;
