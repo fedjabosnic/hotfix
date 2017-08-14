@@ -8,7 +8,7 @@ using static System.DayOfWeek;
 namespace HotFix.Test.utilities.scheduling
 {
     [TestClass]
-    public class is_active_at
+    public class next_closing_time
     {
         [TestMethod]
         public void test1()
@@ -24,8 +24,8 @@ namespace HotFix.Test.utilities.scheduling
                 CloseDay = Friday,
                 CloseTime = TimeSpan.Parse("10:00:00")
             }
-            .IsActiveAt(DateTime.ParseExact("28/06/2017 12:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) // Wednesday
-            .Should().Be(true);
+            .NextClosingTime(DateTime.ParseExact("28/06/2017 12:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) // Wednesday
+            .Should().Be(DateTime.ParseExact("30/06/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
         }
 
         [TestMethod]
@@ -42,8 +42,8 @@ namespace HotFix.Test.utilities.scheduling
                 CloseDay = Friday,
                 CloseTime = TimeSpan.Parse("10:00:00")
             }
-            .IsActiveAt(DateTime.ParseExact("01/07/2017 12:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) // Saturday
-            .Should().Be(false);
+            .NextClosingTime(DateTime.ParseExact("01/07/2017 12:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) // Saturday
+            .Should().Be(DateTime.ParseExact("07/07/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
         }
 
         [TestMethod]
@@ -60,8 +60,8 @@ namespace HotFix.Test.utilities.scheduling
                 CloseDay = Monday,
                 CloseTime = TimeSpan.Parse("10:00:00")
             }
-            .IsActiveAt(DateTime.ParseExact("01/07/2017 12:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) //Saturday
-            .Should().Be(true);
+            .NextClosingTime(DateTime.ParseExact("01/07/2017 12:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) //Saturday
+            .Should().Be(DateTime.ParseExact("03/07/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
         }
 
         [TestMethod]
@@ -78,8 +78,8 @@ namespace HotFix.Test.utilities.scheduling
                 CloseDay = Monday,
                 CloseTime = TimeSpan.Parse("10:00:00")
             }
-            .IsActiveAt(DateTime.ParseExact("28/06/2017 12:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) //Wednesday
-            .Should().Be(false);
+            .NextClosingTime(DateTime.ParseExact("28/06/2017 12:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) //Wednesday
+            .Should().Be(DateTime.ParseExact("03/07/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
         }
 
         [TestMethod]
@@ -101,8 +101,8 @@ namespace HotFix.Test.utilities.scheduling
                 CloseDay = Wednesday,
                 CloseTime = TimeSpan.Parse("14:00:00")
             }
-            .IsActiveAt(DateTime.ParseExact("28/06/2017 12:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) //Wednesday
-            .Should().Be(true);
+            .NextClosingTime(DateTime.ParseExact("28/06/2017 12:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) //Wednesday
+            .Should().Be(DateTime.ParseExact("28/06/2017 14:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
         }
 
         [TestMethod]
@@ -124,8 +124,8 @@ namespace HotFix.Test.utilities.scheduling
                 CloseDay = Wednesday,
                 CloseTime = TimeSpan.Parse("12:00:00")
             }
-            .IsActiveAt(DateTime.ParseExact("28/06/2017 14:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) //Wednesday
-            .Should().Be(false);
+            .NextClosingTime(DateTime.ParseExact("28/06/2017 14:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) //Wednesday
+            .Should().Be(DateTime.ParseExact("05/07/2017 12:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
         }
 
         [TestMethod]
@@ -147,8 +147,8 @@ namespace HotFix.Test.utilities.scheduling
                 CloseDay = Wednesday,
                 CloseTime = TimeSpan.Parse("14:00:00")
             }
-            .IsActiveAt(DateTime.ParseExact("28/06/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) //Wednesday
-            .Should().Be(false);
+            .NextClosingTime(DateTime.ParseExact("28/06/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) //Wednesday
+            .Should().Be(DateTime.ParseExact("28/06/2017 14:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
         }
 
         [TestMethod]
@@ -174,8 +174,8 @@ namespace HotFix.Test.utilities.scheduling
                 CloseDay = Wednesday,
                 CloseTime = TimeSpan.Parse("10:00:00")
             }
-            .IsActiveAt(DateTime.ParseExact("28/06/2017 12:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) //Wednesday
-            .Should().Be(false);
+            .NextClosingTime(DateTime.ParseExact("28/06/2017 12:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) //Wednesday
+            .Should().Be(DateTime.ParseExact("05/07/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
         }
 
         [TestMethod]
@@ -201,8 +201,8 @@ namespace HotFix.Test.utilities.scheduling
                 CloseDay = Wednesday,
                 CloseTime = TimeSpan.Parse("12:00:00")
             }
-            .IsActiveAt(DateTime.ParseExact("28/06/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) //Wednesday
-            .Should().Be(true);
+            .NextClosingTime(DateTime.ParseExact("28/06/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) //Wednesday
+            .Should().Be(DateTime.ParseExact("28/06/2017 12:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
         }
 
         [TestMethod]
@@ -228,8 +228,8 @@ namespace HotFix.Test.utilities.scheduling
                 CloseDay = Wednesday,
                 CloseTime = TimeSpan.Parse("10:00:00")
             }
-            .IsActiveAt(DateTime.ParseExact("28/06/2017 14:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) //Wednesday
-            .Should().Be(true);
+            .NextClosingTime(DateTime.ParseExact("28/06/2017 14:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null)) //Wednesday
+            .Should().Be(DateTime.ParseExact("05/07/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
         }
     }
 }

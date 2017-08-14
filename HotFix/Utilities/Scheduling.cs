@@ -20,7 +20,11 @@ namespace HotFix.Utilities
         {
             var startOfWeek = (datetime - TimeSpan.FromDays((int)datetime.DayOfWeek)).Date;
 
-            return startOfWeek.AddDays((int)schedule.CloseDay) + schedule.CloseTime;
+            var startDate = startOfWeek.AddDays((int)schedule.OpenDay) + schedule.OpenTime;
+            var endDate = startOfWeek.AddDays((int)schedule.CloseDay) + schedule.CloseTime;
+
+            if (endDate > startDate) return datetime <= endDate ? endDate : endDate.AddDays(7);
+            return datetime <= endDate ? endDate : endDate.AddDays(7);
         }
 
         public static bool IsActiveAt(this ISchedule schedule, DateTime datetime)
