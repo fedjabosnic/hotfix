@@ -71,7 +71,7 @@ namespace HotFix.Core
                 try
                 {
                     var clock = Clocks(configuration);
-                    var schedule = configuration.Sessions.GetActive(clock.Time);
+                    var schedule = configuration.Schedules.GetActive(clock.Time);
 
                     if (schedule == null)
                     {
@@ -79,11 +79,7 @@ namespace HotFix.Core
                         continue;
                     }
 
-                    var close = schedule.NextClosingTime(clock.Time);
-
                     Console.WriteLine($"Opening session {schedule}");
-
-                    //TODO: Set up logger (filename)?
 
                     using (var session = this.Open(configuration))
                     {
@@ -92,7 +88,7 @@ namespace HotFix.Core
 
                         session.Logon();
 
-                        while (session.Active && clock.Time < close)
+                        while (session.Active && clock.Time < schedule.Close)
                         {
                             if (session.Receive()) handler(session, session.Inbound);
                         }

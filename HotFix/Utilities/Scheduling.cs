@@ -7,61 +7,32 @@ namespace HotFix.Utilities
     public static class Scheduling
     {
         /// <summary>
-        /// Returns the first session in the list that the given date matches, or null otherwise.
+        /// Returns the open and close dates and times of the first schedule in the list that the given date matches, or null otherwise.
         /// </summary>
-        /// <param name="sessions">A non-empty list of sessions.</param>
-        /// <param name="at">The date and time to check against the sessions.</param>
-        /// <returns>An active session, or null.</returns>
-        public static ISchedule GetActive(this List<ISchedule> sessions, DateTime at)
+        /// <param name="schedules">A non-empty list of schedules.</param>
+        /// <param name="at">The date and time to check against the schedules.</param>
+        /// <returns>The active schedule, or null.</returns>
+        internal static ActiveSchedule GetActive(this List<ISchedule> schedules, DateTime at)
         {
-            foreach (var session in sessions)
+            foreach (var schedule in schedules)
             {
-                if (session.IsActiveAt(at)) return session;
+                var startOfWeek = (at - TimeSpan.FromDays((int)at.DayOfWeek)).Date;
+
+                var openDate = startOfWeek.AddDays((int)schedule.OpenDay) + schedule.OpenTime;
+                var closeDate = startOfWeek.AddDays((int)schedule.CloseDay) + schedule.CloseTime;
+
+                if (closeDate > openDate)
+                {
+                    if (openDate <= at && at <= closeDate) return new ActiveSchedule {Open = openDate, Close = closeDate};
+                }
+                else
+                {
+                    if (at <= closeDate) return new ActiveSchedule {Open = openDate, Close = closeDate};
+                    if (at >= openDate) return new ActiveSchedule {Open = openDate, Close = closeDate.AddDays(7)};
+                }
             }
 
             return null;
-        }
-
-        /// <summary>
-        /// Returns the closing datetime of the session if it is active, or the closing datetime of the next occurence of the session.
-        /// </summary>
-        /// <param name="schedule">The session whose closing time needs to be calculated.</param>
-        /// <param name="datetime">The date after which to calculate the closing time.</param>
-        /// <returns>The next closing date and time.</returns>
-        public static DateTime NextClosingTime(this ISchedule schedule, DateTime datetime)
-        {
-            var startOfWeek = (datetime - TimeSpan.FromDays((int)datetime.DayOfWeek)).Date;
-
-            var startDate = startOfWeek.AddDays((int)schedule.OpenDay) + schedule.OpenTime;
-            var endDate = startOfWeek.AddDays((int)schedule.CloseDay) + schedule.CloseTime;
-
-            if (endDate > startDate) return datetime <= endDate ? endDate : endDate.AddDays(7);
-            return datetime <= endDate ? endDate : endDate.AddDays(7);
-        }
-
-        /// <summary>
-        /// Checks whether the datetime lies within the session.
-        /// </summary>
-        /// <param name="schedule">The session to check against.</param>
-        /// <param name="datetime">The date and time to check against.</param>
-        /// <returns>Whether the given datetime is in session.</returns>
-        public static bool IsActiveAt(this ISchedule schedule, DateTime datetime)
-        {
-            var startOfWeek = (datetime - TimeSpan.FromDays((int)datetime.DayOfWeek)).Date;
-
-            var startDate = startOfWeek.AddDays((int)schedule.OpenDay) + schedule.OpenTime;
-            var endDate = startOfWeek.AddDays((int)schedule.CloseDay) + schedule.CloseTime;
-
-            if (endDate > startDate)
-            {
-                if (startDate <= datetime && datetime <= endDate) return true;
-            }
-            else
-            {
-                if (datetime <= endDate || datetime >= startDate) return true;
-            }
-
-            return false;
         }
     }
 }

@@ -55,6 +55,7 @@
     <Compile Include="Core\Engine.cs" />
     <Compile Include="Core\ISchedule.cs" />
     <Compile Include="Core\Role.cs" />
+    <Compile Include="Core\ActiveSchedule.cs" />
     <Compile Include="Core\Schedule.cs" />
     <Compile Include="Core\Session.cs" />
     <Compile Include="Core\FIXMessageWriter.cs" />

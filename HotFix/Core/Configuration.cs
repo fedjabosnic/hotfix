@@ -20,6 +20,6 @@ namespace HotFix.Core
 
         public string LogFile { get; set; }
 
-        public List<ISchedule> Sessions { get; set; } = new List<ISchedule>();
+        public List<ISchedule> Schedules { get; set; } = new List<ISchedule>();
     }
 }
