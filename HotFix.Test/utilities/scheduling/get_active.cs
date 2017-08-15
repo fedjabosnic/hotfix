@@ -25,6 +25,7 @@ namespace HotFix.Test.utilities.scheduling
             {
                 new Schedule
                 {
+                    Name = "Tuesday",
                     OpenDay = Tuesday,
                     OpenTime = TimeSpan.FromHours(10),
                     CloseDay = Wednesday,
@@ -32,6 +33,7 @@ namespace HotFix.Test.utilities.scheduling
                 },
                 new Schedule
                 {
+                    Name = "Thursday",
                     OpenDay = Thursday,
                     OpenTime = TimeSpan.FromHours(10),
                     CloseDay = Saturday,
@@ -39,6 +41,7 @@ namespace HotFix.Test.utilities.scheduling
                 },
                 new Schedule
                 {
+                    Name = "Sunday",
                     OpenDay = Sunday,
                     OpenTime = TimeSpan.FromHours(10),
                     CloseDay = Monday,
@@ -53,6 +56,7 @@ namespace HotFix.Test.utilities.scheduling
             var schedule = _schedules.GetActive(DateTime.ParseExact("14/08/2017 08:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
 
             schedule.Should().NotBe(null);
+            schedule.Name.Should().Be("Sunday");
             schedule.Open.Should().Be(DateTime.ParseExact("13/08/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
             schedule.Close.Should().Be(DateTime.ParseExact("14/08/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
         }
@@ -71,6 +75,7 @@ namespace HotFix.Test.utilities.scheduling
             var schedule = _schedules.GetActive(DateTime.ParseExact("16/08/2017 08:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
 
             schedule.Should().NotBe(null);
+            schedule.Name.Should().Be("Tuesday");
             schedule.Open.Should().Be(DateTime.ParseExact("15/08/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
             schedule.Close.Should().Be(DateTime.ParseExact("16/08/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
         }
@@ -89,6 +94,7 @@ namespace HotFix.Test.utilities.scheduling
             var schedule = _schedules.GetActive(DateTime.ParseExact("18/08/2017 08:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
 
             schedule.Should().NotBe(null);
+            schedule.Name.Should().Be("Thursday");
             schedule.Open.Should().Be(DateTime.ParseExact("17/08/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
             schedule.Close.Should().Be(DateTime.ParseExact("19/08/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
         }
@@ -99,6 +105,7 @@ namespace HotFix.Test.utilities.scheduling
             var schedule = _schedules.GetActive(DateTime.ParseExact("19/08/2017 08:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
 
             schedule.Should().NotBe(null);
+            schedule.Name.Should().Be("Thursday");
             schedule.Open.Should().Be(DateTime.ParseExact("17/08/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
             schedule.Close.Should().Be(DateTime.ParseExact("19/08/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
         }
@@ -109,6 +116,7 @@ namespace HotFix.Test.utilities.scheduling
             var schedule = _schedules.GetActive(DateTime.ParseExact("20/08/2017 12:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
 
             schedule.Should().NotBe(null);
+            schedule.Name.Should().Be("Sunday");
             schedule.Open.Should().Be(DateTime.ParseExact("20/08/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
             schedule.Close.Should().Be(DateTime.ParseExact("21/08/2017 10:00:00.000", "dd/MM/yyyy HH:mm:ss.fff", null));
         }

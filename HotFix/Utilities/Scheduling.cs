@@ -16,6 +16,8 @@ namespace HotFix.Utilities
         {
             foreach (var schedule in schedules)
             {
+                var name = schedule.Name;
+
                 var startOfWeek = (at - TimeSpan.FromDays((int)at.DayOfWeek)).Date;
 
                 var openDate = startOfWeek.AddDays((int)schedule.OpenDay) + schedule.OpenTime;
@@ -23,12 +25,12 @@ namespace HotFix.Utilities
 
                 if (closeDate > openDate)
                 {
-                    if (openDate <= at && at <= closeDate) return new ActiveSchedule {Open = openDate, Close = closeDate};
+                    if (openDate <= at && at <= closeDate) return new ActiveSchedule { Name = name, Open = openDate, Close = closeDate};
                 }
                 else
                 {
-                    if (at <= closeDate) return new ActiveSchedule {Open = openDate, Close = closeDate};
-                    if (at >= openDate) return new ActiveSchedule {Open = openDate, Close = closeDate.AddDays(7)};
+                    if (at <= closeDate) return new ActiveSchedule { Name = name, Open = openDate, Close = closeDate};
+                    if (at >= openDate) return new ActiveSchedule { Name = name, Open = openDate, Close = closeDate.AddDays(7)};
                 }
             }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using HotFix.Core;
 
@@ -21,6 +22,10 @@ namespace HotFix.Demo.Acceptor
 
             var engine = new Engine();
 
+            var now = DateTime.UtcNow;
+            var day = now.DayOfWeek;
+            var time = now.TimeOfDay;
+
             var configuration = new Configuration
             {
                 Role = Role.Acceptor,
@@ -33,6 +38,17 @@ namespace HotFix.Demo.Acceptor
                 OutboundSeqNum = 1,
                 HeartbeatInterval = 0,
                 //LogFile = @"messages.log" // Enable to see logging impact
+                Schedules = new List<ISchedule>
+                {
+                    new Schedule
+                    {
+                        Name = "Session",
+                        OpenDay = day,
+                        OpenTime = time,
+                        CloseDay = day,
+                        CloseTime = time - TimeSpan.FromSeconds(1)
+                    }
+                }
             };
 
             while (true)
