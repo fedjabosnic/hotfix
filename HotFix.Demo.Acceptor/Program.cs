@@ -22,10 +22,6 @@ namespace HotFix.Demo.Acceptor
 
             var engine = new Engine();
 
-            var now = DateTime.UtcNow;
-            var day = now.DayOfWeek;
-            var time = now.TimeOfDay;
-
             var configuration = new Configuration
             {
                 Role = Role.Acceptor,
@@ -43,10 +39,10 @@ namespace HotFix.Demo.Acceptor
                     new Schedule
                     {
                         Name = "Session",
-                        OpenDay = day,
-                        OpenTime = time,
-                        CloseDay = day,
-                        CloseTime = time - TimeSpan.FromSeconds(1)
+                        OpenDay = DayOfWeek.Monday,
+                        OpenTime = TimeSpan.Parse("00:00:00"),
+                        CloseDay = DayOfWeek.Sunday,
+                        CloseTime = TimeSpan.Parse("23:59:59")
                     }
                 }
             };

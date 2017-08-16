@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading;
 using HotFix.Transport;
 using HotFix.Utilities;
@@ -79,8 +80,6 @@ namespace HotFix.Core
                         continue;
                     }
 
-                    Console.WriteLine($"Opening session {schedule}");
-
                     using (var session = this.Open(configuration))
                     {
                         session.LoggedOn += logon;
@@ -98,7 +97,7 @@ namespace HotFix.Core
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    Debug.WriteLine(e);
                     
                     Thread.Sleep(10000);
                 }

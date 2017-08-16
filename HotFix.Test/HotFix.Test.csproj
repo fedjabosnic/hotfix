@@ -80,7 +80,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="utilities\reading\longs.cs" />
     <Compile Include="utilities\reading\strings.cs" />
-    <Compile Include="utilities\scheduling\get_active.cs" />
+    <Compile Include="utilities\scheduling\getting_the_active_scheduled_session.cs" />
     <Compile Include="utilities\writing\datetimes.cs" />
     <Compile Include="utilities\writing\ints_backwards.cs" />
     <Compile Include="utilities\writing\longs.cs" />
