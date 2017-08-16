@@ -28,7 +28,7 @@ namespace HotFix.Core
 
             Clocks = c => clock;
             Loggers = c => c.LogFile != null ? new FileLogger(clock, c.LogFile) : null;
-            Transports = c => TcpTransport.Create(c.Role == Role.Acceptor, c.Host, c.Port);
+            Transports = c => TcpTransport.Create(clock, c.Role == Role.Acceptor, c.Host, c.Port);
 
             BufferSize = 65536;
             MaxMessageLength = 4096;
