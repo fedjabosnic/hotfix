@@ -72,6 +72,7 @@
     <Compile Include="core\message\check_for_a_field.cs" />
     <Compile Include="core\message\converting_to_string.cs" />
     <Compile Include="core\message\writing_to_a_byte_array.cs" />
+    <Compile Include="HelperExtensions.cs" />
     <Compile Include="utilities\reading\datetimes.cs" />
     <Compile Include="utilities\reading\floats.cs" />
     <Compile Include="utilities\reading\ints.cs" />

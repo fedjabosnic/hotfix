@@ -16,7 +16,7 @@ namespace HotFix.Test.core.messagewriter
             message
                 .Set(98, 0)
                 .Set(108, 30)
-                .Prepare("FIX.4.2", "A", 177, DateTime.ParseExact("2009/01/07 18:15:16", "yyyy/MM/dd HH:mm:ss", null), "SERVER", "CLIENT");
+                .Prepare("FIX.4.2", "A", 177, "2009/01/07 18:15:16.000".AsDateTime(), "SERVER", "CLIENT");
 
             var str = message.ToString();
 
@@ -30,7 +30,7 @@ namespace HotFix.Test.core.messagewriter
 
             // Prepare and build a small message
             message
-                .Prepare("FIX.4.2", "0", 8059, DateTime.ParseExact("2017/05/31 08:18:01.767", "yyyy/MM/dd HH:mm:ss.fff", null), "SENDER....", "RECEIVER.....");
+                .Prepare("FIX.4.2", "0", 8059, "2017/05/31 08:18:01.767".AsDateTime(), "SENDER....", "RECEIVER.....");
 
             var message1 = message.ToString();
 
@@ -40,7 +40,7 @@ namespace HotFix.Test.core.messagewriter
                 .Set(98, 0)
                 .Set(108, 30)
                 .Set(12345, "Some really long text to make the message really large sdkfjfkjs gfsabf sabf sahfvb ksdjflsahfpieghpEIGHXKJVB KLSGBS BHJUXVCJDV V JV jsdh fkasdgsadoas oghoash go iasg fcblxc nsleiso bnlzxcvn skjbg")
-                .Prepare("FIX.4.2", "A", 177, DateTime.ParseExact("2009/01/07 18:15:16", "yyyy/MM/dd HH:mm:ss", null), "SERVER", "CLIENT");
+                .Prepare("FIX.4.2", "A", 177, "2009/01/07 18:15:16.000".AsDateTime(), "SERVER", "CLIENT");
 
             var message2 = message.ToString();
 
@@ -59,14 +59,14 @@ namespace HotFix.Test.core.messagewriter
                 .Set(98, 0)
                 .Set(108, 30)
                 .Set(12345, "Some really long text to make the message really large sdkfjfkjs gfsabf sabf sahfvb ksdjflsahfpieghpEIGHXKJVB KLSGBS BHJUXVCJDV V JV jsdh fkasdgsadoas oghoash go iasg fcblxc nsleiso bnlzxcvn skjbg")
-                .Prepare("FIX.4.2", "A", 177, DateTime.ParseExact("2009/01/07 18:15:16", "yyyy/MM/dd HH:mm:ss", null), "SERVER", "CLIENT");
+                .Prepare("FIX.4.2", "A", 177, "2009/01/07 18:15:16.000".AsDateTime(), "SERVER", "CLIENT");
 
             var message1 = message.ToString();
 
             // Prepare and build a smaller message
             message
                 .Clear()
-                .Prepare("FIX.4.2", "0", 8059, DateTime.ParseExact("2017/05/31 08:18:01.767", "yyyy/MM/dd HH:mm:ss.fff", null), "SENDER....", "RECEIVER.....");
+                .Prepare("FIX.4.2", "0", 8059, "2017/05/31 08:18:01.767".AsDateTime(), "SENDER....", "RECEIVER.....");
 
             var message2 = message.ToString();
 
