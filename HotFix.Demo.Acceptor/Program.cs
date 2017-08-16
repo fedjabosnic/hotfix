@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using HotFix.Core;
 
@@ -33,6 +34,17 @@ namespace HotFix.Demo.Acceptor
                 OutboundSeqNum = 1,
                 HeartbeatInterval = 0,
                 //LogFile = @"messages.log" // Enable to see logging impact
+                Schedules = new List<ISchedule>
+                {
+                    new Schedule
+                    {
+                        Name = "Session",
+                        OpenDay = DayOfWeek.Monday,
+                        OpenTime = TimeSpan.Parse("00:00:00"),
+                        CloseDay = DayOfWeek.Sunday,
+                        CloseTime = TimeSpan.Parse("23:59:59")
+                    }
+                }
             };
 
             while (true)
