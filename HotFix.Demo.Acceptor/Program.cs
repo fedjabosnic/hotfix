@@ -16,14 +16,15 @@ namespace HotFix.Demo.Acceptor
         public static int GC1;
         public static int GC2;
 
+        private static int Orders;
+        private static int Executions;
+
         static void Main(string[] args)
         {
             Console.WriteLine();
 
             var host = args[0];
             var port = int.Parse(args[1]);
-            var orders = 0;
-            var executions = 0;
 
             var engine = new Engine();
 
@@ -52,92 +53,84 @@ namespace HotFix.Demo.Acceptor
                 }
             };
 
-            while (true)
-            {
-                try
+            engine.Run(
+                configuration,
+                Logon,
+                Logout,
+                (session, message) =>
                 {
-                    Console.WriteLine("---------------------");
-                    Console.WriteLine();
-                    Console.WriteLine("Waiting for client...");
-                    Console.WriteLine();
+                    if (message[35].Is("D"))
+                    {
+                        // Immediately fill any order at the requested price
+                        var report = session
+                            .Outbound
+                            .Clear()
+                            .Set(37, ++Orders)     // OrderId
+                            .Set(17, ++Executions) // ExecId
+                            .Set(20, 0)            // ExecTransType (New)
+                            .Set(150, 2)           // ExecType (Fill)
+                            .Set(39, 2)            // OrdStatus (Filled)
+                            .Set(11, message[11])  // ClOrdId
+                            .Set(55, message[55])  // Symbol
+                            .Set(54, message[54])  // Side
+                            .Set(38, message[38])  // OrderQty
+                            .Set(44, message[44])  // Price
+                            .Set(06, message[44])  // AvgPrice
+                            .Set(14, message[38])  // CumQty
+                            .Set(151, 0);          // LeavesQty
 
-                    GC.Collect(0, GCCollectionMode.Forced, true, true);
-                    GC.Collect(1, GCCollectionMode.Forced, true, true);
-                    GC.Collect(2, GCCollectionMode.Forced, true, true);
+                        session.Send("8", report);
 
-                    GC0 = GC.CollectionCount(0);
-                    GC1 = GC.CollectionCount(1);
-                    GC2 = GC.CollectionCount(2);
+                        return true;
+                    }
 
-                    Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
-                    Thread.CurrentThread.Priority = ThreadPriority.Highest;
-                    Thread.BeginThreadAffinity();
+                    return false;
+                });
+        }
 
-                    engine.Run(
-                        configuration,
-                        session =>
-                        {
-                            Console.WriteLine("Logged on");
-                        },
-                        session =>
-                        {
-                            Console.WriteLine("Logged out");
-                        },
-                        (session, message) =>
-                        {
-                            if (message[35].Is("D"))
-                            {
-                            // Immediately fill any order at the requested price
-                            var report = session
-                                    .Outbound
-                                    .Clear()
-                                    .Set(37, ++orders)     // OrderId
-                                    .Set(17, ++executions) // ExecId
-                                    .Set(20, 0)            // ExecTransType (New)
-                                    .Set(150, 2)           // ExecType (Fill)
-                                    .Set(39, 2)            // OrdStatus (Filled)
-                                    .Set(11, message[11])  // ClOrdId
-                                    .Set(55, message[55])  // Symbol
-                                    .Set(54, message[54])  // Side
-                                    .Set(38, message[38])  // OrderQty
-                                    .Set(44, message[44])  // Price
-                                    .Set(06, message[44])  // AvgPrice
-                                    .Set(14, message[38])  // CumQty
-                                    .Set(151, 0);          // LeavesQty
+        private static void Logon(Session session)
+        {
+            Console.WriteLine("Logged on");
 
-                            session.Send("8", report);
+            Orders = 0;
+            Executions = 0;
 
-                                return true;
-                            }
+            GC.Collect(0, GCCollectionMode.Forced, true, true);
+            GC.Collect(1, GCCollectionMode.Forced, true, true);
+            GC.Collect(2, GCCollectionMode.Forced, true, true);
 
-                            return false;
-                        });
+            GC0 = GC.CollectionCount(0);
+            GC1 = GC.CollectionCount(1);
+            GC2 = GC.CollectionCount(2);
 
-                    GC0 = GC.CollectionCount(0) - GC0;
-                    GC1 = GC.CollectionCount(1) - GC1;
-                    GC2 = GC.CollectionCount(2) - GC2;
+            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+            Thread.CurrentThread.Priority = ThreadPriority.Highest;
+            Thread.BeginThreadAffinity();
+        }
 
-                    Thread.EndThreadAffinity();
+        private static void Logout(Session session)
+        {
+            Console.WriteLine("Logged out");
 
-                    Console.WriteLine();
-                    Console.WriteLine("Orders: " + orders);
-                    Console.WriteLine("Filled: " + executions);
-                    Console.WriteLine();
-                    Console.WriteLine($"GC 0: {GC0}");
-                    Console.WriteLine($"GC 1: {GC1}");
-                    Console.WriteLine($"GC 2: {GC2}");
-                    Console.WriteLine();
+            Thread.EndThreadAffinity();
 
-                    orders = 0;
-                    executions = 0;
+            GC0 = GC.CollectionCount(0) - GC0;
+            GC1 = GC.CollectionCount(1) - GC1;
+            GC2 = GC.CollectionCount(2) - GC2;
 
-                    Thread.Sleep(1000);
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e.Message);
-                }
-            }
+            Console.WriteLine();
+            Console.WriteLine("Orders: " + Orders);
+            Console.WriteLine("Filled: " + Executions);
+            Console.WriteLine();
+            Console.WriteLine($"GC 0: {GC0}");
+            Console.WriteLine($"GC 1: {GC1}");
+            Console.WriteLine($"GC 2: {GC2}");
+            Console.WriteLine();
+
+            Console.WriteLine("---------------------");
+            Console.WriteLine();
+            Console.WriteLine("Waiting for client...");
+            Console.WriteLine();
         }
     }
 }
