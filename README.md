@@ -4,7 +4,7 @@
 
 Hotfix is a **FIX engine** written in pure .net geared towards **low latency** and **high throughput**.
 
-The engine is _highly optimized_ and _garbage free_, exhibiting predictably low latency even to the higher percentiles. Over loopback it can achieve a median **12 μs** round trip time...
+The engine is _highly optimized_ and _garbage free_, exhibiting predictably low latency even to the higher percentiles. Messages can be encoded/decoded in **< 1 μs** and over loopback the engine can achieve a median **12 μs** round trip time...
 
 ## Install
 

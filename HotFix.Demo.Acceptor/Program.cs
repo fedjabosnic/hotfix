@@ -53,11 +53,15 @@ namespace HotFix.Demo.Acceptor
                 }
             };
 
+            Console.WriteLine();
+            Console.WriteLine("Waiting for client...");
+            Console.WriteLine();
+
             engine.Run(
                 configuration,
-                Logon,
-                Logout,
-                (session, message) =>
+                logon: Logon,
+                logout: Logout,
+                inbound: (session, message) =>
                 {
                     if (message[35].Is("D"))
                     {
@@ -80,11 +84,7 @@ namespace HotFix.Demo.Acceptor
                             .Set(151, 0);          // LeavesQty
 
                         session.Send("8", report);
-
-                        return true;
                     }
-
-                    return false;
                 });
         }
 
