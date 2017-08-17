@@ -7,14 +7,19 @@ namespace HotFix.Transport
 {
     public class TcpTransport : ITransport
     {
-        private readonly NetworkStream _stream;
+        private readonly IClock _clock;
+        private readonly Socket _socket;
+        private readonly TimeSpan _interval;
+        private readonly TimeSpan _afterburn;
+        private readonly IntPtr[] _descriptor;
+        private DateTime _last;
 
-        public static TcpTransport Create(bool server, string address, int port)
+        public static TcpTransport Create(IClock clock, bool server, string address, int port)
         {
-            return server ? Accept(address, port) : Initiate(address, port);
+            return server ? Accept(clock, address, port) : Initiate(clock, address, port);
         }
 
-        public static TcpTransport Initiate(string address, int port)
+        public static TcpTransport Initiate(IClock clock, string address, int port)
         {
             var endpoint = new IPEndPoint(IPAddress.Parse(address), port);
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { ReceiveTimeout = 1000, NoDelay = true };
@@ -22,10 +27,10 @@ namespace HotFix.Transport
             socket.EnableFastPath();
             socket.Connect(endpoint);
 
-            return new TcpTransport(new NetworkStream(socket, true));
+            return new TcpTransport(clock, socket);
         }
 
-        public static TcpTransport Accept(string address, int port)
+        public static TcpTransport Accept(IClock clock, string address, int port)
         {
             var endpoint = new IPEndPoint(IPAddress.Parse(address), port);
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { ReceiveTimeout = 1000, NoDelay = true };
@@ -38,34 +43,61 @@ namespace HotFix.Transport
 
             socket.Dispose();
 
-            return new TcpTransport(new NetworkStream(client, true));
+            return new TcpTransport(clock, client);
         }
 
-        public TcpTransport(NetworkStream stream)
+        public TcpTransport(IClock clock, Socket socket)
         {
-            _stream = stream;
+            _clock = clock;
+            _socket = socket;
+            _interval = TimeSpan.Parse("00:00:01");
+            _afterburn = TimeSpan.Parse("00:00:01");
+            _descriptor = new IntPtr[2];
         }
 
         public int Read(byte[] buffer, int offset, int count)
         {
-            var start = DateTime.UtcNow;
+            var last = _last.Ticks;
+            var start = _clock.Time.Ticks;
+            var interval = start + _interval.Ticks;
+            var afterburn = last + _afterburn.Ticks;
 
-            while (!_stream.DataAvailable)
+            afterburn = interval < afterburn ? interval : afterburn;
+
+            // Afterburn mode
+            while (_clock.Time.Ticks < afterburn)
             {
-                if (DateTime.UtcNow - start > TimeSpan.FromSeconds(1)) return 0;
+                // Check for data without blocking to avoid context switching
+                if (_socket.Poll(_descriptor, 0)) goto read;
             }
 
-            return _stream.Read(buffer, offset, count);
+            var now = _clock.Time.Ticks;
+            var remaining = (int)(interval - now);
+
+            // Normal mode
+            if (remaining > 0)
+            {
+                // Block for data up to the remaining time (possible context switch if data isn't immediately available)
+                if (_socket.Poll(_descriptor, remaining / 10)) goto read;
+            }
+
+            return 0;
+
+            read:
+
+            _last = _clock.Time;
+
+            return _socket.Receive(buffer, offset, count, SocketFlags.None);
         }
 
         public void Write(byte[] buffer, int offset, int count)
         {
-            _stream.Write(buffer, offset, count);
+            _socket.Send(buffer, offset, count, SocketFlags.None);
         }
 
         public void Dispose()
         {
-            _stream?.Dispose();
+            _socket?.Dispose();
         }
     }
 }

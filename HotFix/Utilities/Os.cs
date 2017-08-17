@@ -12,6 +12,21 @@ namespace HotFix.Utilities
         [DllImport("Kernel32.dll", CallingConvention = CallingConvention.Winapi)]
         internal static extern void GetSystemTimePreciseAsFileTime(out long filetime);
 
+        [DllImport("ws2_32.dll", SetLastError = true)]
+        internal static extern int select(
+            [In] int ignoredParameter,
+            [In, Out] IntPtr[] readfds,
+            [In, Out] IntPtr[] writefds,
+            [In, Out] IntPtr[] exceptfds,
+            [In] ref TimeValue timeout);
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
+        internal struct TimeValue
+        {
+            public int Seconds;
+            public int Microseconds;
+        }
+
         /// <summary>
         /// Attempts to enable the fast path for localhost.
         /// <remarks>
@@ -30,6 +45,27 @@ namespace HotFix.Utilities
             {
                 if (e.ErrorCode != WSAEOPNOTSUPP) throw;
             }
+        }
+
+        /// <summary>
+        /// A garbage-free implementation of the <see cref="Socket.Poll"/> function (only providing read polling).
+        /// </summary>
+        /// <param name="socket">The socket to poll.</param>
+        /// <param name="descriptor">The socket descriptor.</param>
+        /// <param name="microseconds">The duration to wait.</param>
+        /// <returns>Whether there is data available to be read.</returns>
+        internal static bool Poll(this Socket socket, IntPtr[] descriptor, int microseconds)
+        {
+            if (microseconds == 0) return socket.Available != 0;
+
+            var tv = new Os.TimeValue { Seconds = microseconds / 1000000, Microseconds = microseconds % 1000000 };
+
+            descriptor[0] = (IntPtr)1;
+            descriptor[1] = socket.Handle;
+
+            Os.select(0, descriptor, null, null, ref tv);
+
+            return (int)descriptor[0] != 0 && descriptor[1] == socket.Handle;
         }
     }
 }

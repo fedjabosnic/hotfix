@@ -53,7 +53,10 @@
   <ItemGroup>
     <Compile Include="Core\Channel.cs" />
     <Compile Include="Core\Engine.cs" />
+    <Compile Include="Core\ISchedule.cs" />
     <Compile Include="Core\Role.cs" />
+    <Compile Include="Core\ActiveSchedule.cs" />
+    <Compile Include="Core\Schedule.cs" />
     <Compile Include="Core\Session.cs" />
     <Compile Include="Core\FIXMessageWriter.cs" />
     <Compile Include="Core\Configuration.cs" />
@@ -72,6 +75,7 @@
     <Compile Include="Utilities\RealTimeClock.cs" />
     <Compile Include="Utilities\IClock.cs" />
     <Compile Include="Utilities\Os.cs" />
+    <Compile Include="Utilities\Scheduling.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using System.Linq;
+using System.Threading;
 using HdrHistogram;
 using HotFix.Core;
 
@@ -17,6 +17,10 @@ namespace HotFix.Demo.Initiator
         public static LongHistogram Rtt;
         public static LongHistogram Encode;
         public static LongHistogram Decode;
+
+        public static int GC0;
+        public static int GC1;
+        public static int GC2;
 
         static void Main(string[] args)
         {
@@ -52,6 +56,18 @@ namespace HotFix.Demo.Initiator
 
                 Console.WriteLine("Logged on");
 
+                GC.Collect(0, GCCollectionMode.Forced, true, true);
+                GC.Collect(1, GCCollectionMode.Forced, true, true);
+                GC.Collect(2, GCCollectionMode.Forced, true, true);
+
+                GC0 = GC.CollectionCount(0);
+                GC1 = GC.CollectionCount(1);
+                GC2 = GC.CollectionCount(2);
+
+                Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+                Thread.CurrentThread.Priority = ThreadPriority.Highest;
+                Thread.BeginThreadAffinity();
+
                 for (var i = 0; i < count; i++)
                 {
                     var time = initiator.Clock.Time;
@@ -83,6 +99,12 @@ namespace HotFix.Demo.Initiator
                     Decode.RecordValue(initiator.Inbound.Duration);
                 }
 
+                GC0 = GC.CollectionCount(0) - GC0;
+                GC1 = GC.CollectionCount(1) - GC1;
+                GC2 = GC.CollectionCount(2) - GC2;
+
+                Thread.EndThreadAffinity();
+
                 initiator.Logout();
 
                 Console.WriteLine("Logged out");
@@ -104,6 +126,10 @@ namespace HotFix.Demo.Initiator
             Console.WriteLine($"|  99.90% | {$"{Rtt.GetValueAtPercentile( 99.90) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile( 99.90) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile( 99.90) / 10m:N}",10} µs |");
             Console.WriteLine($"|  99.99% | {$"{Rtt.GetValueAtPercentile( 99.99) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile( 99.99) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile( 99.99) / 10m:N}",10} µs |");
             Console.WriteLine($"|     max | {$"{Rtt.GetValueAtPercentile(100.00) / 10m:N}",10} µs | {$"{Encode.GetValueAtPercentile(100.00) / 10m:N}",10} µs | {$"{Decode.GetValueAtPercentile(100.00) / 10m:N}",10} µs |");
+            Console.WriteLine();
+            Console.WriteLine($"GC 0: {GC0}");
+            Console.WriteLine($"GC 1: {GC1}");
+            Console.WriteLine($"GC 2: {GC2}");
         }
 
         private static void SaveStatistics()
