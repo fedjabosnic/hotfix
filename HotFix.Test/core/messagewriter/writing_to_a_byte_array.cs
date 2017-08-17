@@ -18,7 +18,7 @@ namespace HotFix.Test.core.messagewriter
             message
                 .Set(98, 0)
                 .Set(108, 30)
-                .Prepare("FIX.4.2", "A", 177, DateTime.ParseExact("2009/01/07 18:15:16", "yyyy/MM/dd HH:mm:ss", null), "SERVER", "CLIENT")
+                .Prepare("FIX.4.2", "A", 177, "2009/01/07 18:15:16.000".AsDateTime(), "SERVER", "CLIENT")
                 .WriteTo(target, 3);
 
             var result = System.Text.Encoding.ASCII.GetString(target);

@@ -13,7 +13,7 @@ namespace HotFix.Test.utilities.reading
         {
             var result = System.Text.Encoding.ASCII.GetBytes("20170327-15:45:13").ReadDateTime();
 
-            result.Should().Be(DateTime.ParseExact("27/03/2017 15:45:13", "dd/MM/yyyy HH:mm:ss", null));
+            result.Should().Be("2017/03/27 15:45:13.000".AsDateTime());
         }
 
         [TestMethod]
@@ -21,7 +21,7 @@ namespace HotFix.Test.utilities.reading
         {
             var result = System.Text.Encoding.ASCII.GetBytes("20170327-15:45:13.596").ReadDateTime();
 
-            result.Should().Be(DateTime.ParseExact("27/03/2017 15:45:13.596", "dd/MM/yyyy HH:mm:ss.fff", null));
+            result.Should().Be("2017/03/27 15:45:13.596".AsDateTime());
         }
     }
 }

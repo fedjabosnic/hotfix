@@ -13,7 +13,7 @@ namespace HotFix.Test.core.field
         {
             var field = new FIXField(System.Text.Encoding.ASCII.GetBytes("34=XXXXXX-YY:YY:YY.ZZZ\u0001"), 0, new Segment(3, 21), 25, 0);
 
-            field.Is(DateTime.ParseExact("27/03/2017 09:34:21.456", "dd/MM/yyyy HH:mm:ss.fff", null)).Should().Be(false);
+            field.Is("2017/03/27 09:34:21.456".AsDateTime()).Should().Be(false);
         }
 
         [TestMethod]
@@ -21,7 +21,7 @@ namespace HotFix.Test.core.field
         {
             var field = new FIXField(System.Text.Encoding.ASCII.GetBytes("34=20170423-12:32:23.123\u0001"), 0, new Segment(3, 21), 25, 0);
 
-            field.Is(DateTime.ParseExact("27/03/2017 09:34:21.456", "dd/MM/yyyy HH:mm:ss.fff", null)).Should().Be(false);
+            field.Is("2017/03/27 09:34:21.456".AsDateTime()).Should().Be(false);
         }
 
         [TestMethod]
@@ -29,7 +29,7 @@ namespace HotFix.Test.core.field
         {
             var field = new FIXField(System.Text.Encoding.ASCII.GetBytes("34=20170327-09:34:21.456\u0001"), 0, new Segment(3, 21), 25, 0);
 
-            field.Is(DateTime.ParseExact("27/03/2017 09:34:21.456", "dd/MM/yyyy HH:mm:ss.fff", null)).Should().Be(true);
+            field.Is("2017/03/27 09:34:21.456".AsDateTime()).Should().Be(true);
         }
     }
 }
