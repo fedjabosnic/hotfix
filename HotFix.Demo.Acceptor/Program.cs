@@ -40,7 +40,7 @@ namespace HotFix.Demo.Acceptor
                 OutboundSeqNum = 1,
                 HeartbeatInterval = 0,
                 //LogFile = @"messages.log" // Enable to see logging impact
-                Schedules = new List<ISchedule>
+                Schedules = new List<Schedule>
                 {
                     new Schedule
                     {

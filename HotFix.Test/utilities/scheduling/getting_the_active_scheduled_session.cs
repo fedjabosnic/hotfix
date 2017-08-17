@@ -35,12 +35,12 @@ namespace HotFix.Test.utilities.scheduling
         //  F: last day of schedule
         //  G: the current-week part in a 2-week schedule
 
-        private List<ISchedule> _schedules;
+        private List<Schedule> _schedules;
 
         [TestInitialize]
         public void Setup()
         {
-            _schedules = new List<ISchedule>
+            _schedules = new List<Schedule>
             {
                 new Schedule
                 {

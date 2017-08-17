@@ -7,15 +7,15 @@ namespace HotFix.Specification
 {
     public class Specification
     {
-        public IConfiguration Configuration { get; set; }
+        public Configuration Configuration { get; set; }
         public List<string> Instructions { get; set; }
 
-        public Action<Session, IConfiguration, VirtualTransport> Verification { get; set; }
+        public Action<Session, Configuration, VirtualTransport> Verification { get; set; }
 
         public Type Exception { get; set; }
         public string Message { get; set; }
 
-        public Specification Configure(IConfiguration configuration)
+        public Specification Configure(Configuration configuration)
         {
             Configuration = configuration;
 
@@ -29,7 +29,7 @@ namespace HotFix.Specification
             return this;
         }
 
-        public Specification Verify(Action<Session, IConfiguration, VirtualTransport> verification)
+        public Specification Verify(Action<Session, Configuration, VirtualTransport> verification)
         {
             Verification = verification;
 
