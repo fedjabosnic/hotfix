@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace HotFix.Core
 {
@@ -18,5 +19,7 @@ namespace HotFix.Core
         public long OutboundSeqNum { get; set; }
 
         public string LogFile { get; set; }
+
+        public List<ISchedule> Schedules { get; set; } = new List<ISchedule>();
     }
 }

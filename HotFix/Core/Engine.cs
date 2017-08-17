@@ -1,4 +1,6 @@
 using System;
+using System.Diagnostics;
+using System.Threading;
 using HotFix.Transport;
 using HotFix.Utilities;
 
@@ -26,7 +28,7 @@ namespace HotFix.Core
 
             Clocks = c => clock;
             Loggers = c => c.LogFile != null ? new FileLogger(clock, c.LogFile) : null;
-            Transports = c => TcpTransport.Create(c.Role == Role.Acceptor, c.Host, c.Port);
+            Transports = c => TcpTransport.Create(clock, c.Role == Role.Acceptor, c.Host, c.Port);
 
             BufferSize = 65536;
             MaxMessageLength = 4096;
@@ -65,19 +67,40 @@ namespace HotFix.Core
         /// <param name="handler">The message handler.</param> 
         public void Run(IConfiguration configuration, Action<Session> logon, Action<Session> logout, Func<Session, FIXMessage, bool> handler)
         {
-            using (var session = this.Open(configuration))
+            while (true)
             {
-                session.LoggedOn += logon;
-                session.LoggedOut += logout;
-
-                session.Logon();
-
-                while (session.Active)
+                try
                 {
-                    if (session.Receive()) handler(session, session.Inbound);
-                }
+                    var clock = Clocks(configuration);
+                    var schedule = configuration.Schedules.GetActive(clock.Time);
 
-                session.Logout();
+                    if (schedule == null)
+                    {
+                        Thread.Sleep(1000);
+                        continue;
+                    }
+
+                    using (var session = this.Open(configuration))
+                    {
+                        session.LoggedOn += logon;
+                        session.LoggedOut += logout;
+
+                        session.Logon();
+
+                        while (session.Active && clock.Time < schedule.Close)
+                        {
+                            if (session.Receive()) handler(session, session.Inbound);
+                        }
+
+                        session.Logout();
+                    }
+                }
+                catch (Exception e)
+                {
+                    Debug.WriteLine(e);
+                    
+                    Thread.Sleep(10000);
+                }
             }
         }
     }
