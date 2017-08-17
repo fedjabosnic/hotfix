@@ -2,7 +2,7 @@
 
 namespace HotFix.Core
 {
-    public class Schedule : ISchedule
+    public class Schedule
     {
         public string Name { get; set; }
         public DayOfWeek OpenDay { get; set; }

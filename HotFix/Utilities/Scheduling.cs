@@ -12,7 +12,7 @@ namespace HotFix.Utilities
         /// <param name="schedules">A non-empty list of schedules.</param>
         /// <param name="at">The date and time to check against the schedules.</param>
         /// <returns>The active schedule, or null.</returns>
-        internal static ActiveSchedule GetActive(this List<ISchedule> schedules, DateTime at)
+        internal static ActiveSchedule GetActive(this List<Schedule> schedules, DateTime at)
         {
             foreach (var schedule in schedules)
             {
