@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace HotFix.Core
 {
-    public class Configuration : IConfiguration
+    public class Configuration
     {
         public Role Role { get; set; }
 
@@ -20,6 +20,6 @@ namespace HotFix.Core
 
         public string LogFile { get; set; }
 
-        public List<ISchedule> Schedules { get; set; } = new List<ISchedule>();
+        public List<Schedule> Schedules { get; set; } = new List<Schedule>();
     }
 }

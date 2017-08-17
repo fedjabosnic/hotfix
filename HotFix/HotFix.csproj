@@ -53,7 +53,6 @@
   <ItemGroup>
     <Compile Include="Core\Channel.cs" />
     <Compile Include="Core\Engine.cs" />
-    <Compile Include="Core\ISchedule.cs" />
     <Compile Include="Core\Role.cs" />
     <Compile Include="Core\ActiveSchedule.cs" />
     <Compile Include="Core\Schedule.cs" />
@@ -63,7 +62,6 @@
     <Compile Include="Core\State.cs" />
     <Compile Include="Encoding\FIXEncoding.cs" />
     <Compile Include="Core\FIXField.cs" />
-    <Compile Include="Core\IConfiguration.cs" />
     <Compile Include="Core\Segment.cs" />
     <Compile Include="Core\FIXMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

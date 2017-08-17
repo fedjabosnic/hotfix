@@ -13,7 +13,7 @@ namespace HotFix.Core
         public ILogger Logger { get; }
 
         /// <summary> The session configuration </summary>
-        public IConfiguration Configuration { get; }
+        public Configuration Configuration { get; }
         /// <summary> The session channel </summary>
         public Channel Channel { get; }
         /// <summary> The session state </summary>
@@ -46,7 +46,7 @@ namespace HotFix.Core
         /// <param name="bufferSize">The buffersize to use for buffering</param>
         /// <param name="maxMessageLength">The maximum supported length of a fix message</param>
         /// <param name="maxMessageFields">The maximum supported number of fields in a fix message</param>
-        public Session(IConfiguration configuration, IClock clock, ITransport transport, ILogger logger, int bufferSize, int maxMessageLength, int maxMessageFields)
+        public Session(Configuration configuration, IClock clock, ITransport transport, ILogger logger, int bufferSize, int maxMessageLength, int maxMessageFields)
         {
             Clock = clock;
             Logger = logger;

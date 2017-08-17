@@ -9,11 +9,11 @@ namespace HotFix.Core
     public class Engine
     {
         /// <summary> A factory method for clocks </summary>
-        public Func<IConfiguration, IClock> Clocks { get; set; }
+        public Func<Configuration, IClock> Clocks { get; set; }
         /// <summary> A factory method for loggers </summary>
-        public Func<IConfiguration, ILogger> Loggers { get; set; }
+        public Func<Configuration, ILogger> Loggers { get; set; }
         /// <summary> A factory method for transports </summary>
-        public Func<IConfiguration, ITransport> Transports { get; set; }
+        public Func<Configuration, ITransport> Transports { get; set; }
 
         /// <summary> Gets or sets the buffer size used for transport and session buffering </summary>
         public int BufferSize { get; set; }
@@ -43,7 +43,7 @@ namespace HotFix.Core
         /// </summary>
         /// <param name="configuration">The session configuration.</param>
         /// <returns>The connected session.</returns>
-        public Session Open(IConfiguration configuration)
+        public Session Open(Configuration configuration)
         {
             var clock = Clocks(configuration);
             var logger = Loggers(configuration);
@@ -66,7 +66,7 @@ namespace HotFix.Core
         /// <param name="logout">The logout callback.</param> 
         /// <param name="inbound">The inbound message callback.</param>
         /// <param name="outbound">The outbound message callback.</param> 
-        public void Run(IConfiguration configuration, Action<Session> logon = null, Action<Session> logout = null, Action<Session, FIXMessage> inbound = null, Action<Session, FIXMessageWriter> outbound = null)
+        public void Run(Configuration configuration, Action<Session> logon = null, Action<Session> logout = null, Action<Session, FIXMessage> inbound = null, Action<Session, FIXMessageWriter> outbound = null)
         {
             while (true)
             {
