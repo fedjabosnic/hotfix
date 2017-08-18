@@ -11,7 +11,7 @@ namespace HotFix.Test.utilities.reading
         [TestMethod]
         public void timestamp()
         {
-            var result = System.Text.Encoding.ASCII.GetBytes("20170327-15:45:13").ReadDateTime();
+            var result = "20170327-15:45:13".AsBytes().ReadDateTime();
 
             result.Should().Be("2017/03/27 15:45:13.000".AsDateTime());
         }
@@ -19,7 +19,7 @@ namespace HotFix.Test.utilities.reading
         [TestMethod]
         public void timestamp_with_milliseconds()
         {
-            var result = System.Text.Encoding.ASCII.GetBytes("20170327-15:45:13.596").ReadDateTime();
+            var result = "20170327-15:45:13.596".AsBytes().ReadDateTime();
 
             result.Should().Be("2017/03/27 15:45:13.596".AsDateTime());
         }
