@@ -66,7 +66,7 @@ namespace HotFix.Core
         /// <param name="logout">The logout callback.</param> 
         /// <param name="inbound">The inbound message callback.</param>
         /// <param name="outbound">The outbound message callback.</param> 
-        public void Run(Configuration configuration, Action<Session> logon = null, Action<Session> logout = null, Action<Session, FIXMessage> inbound = null, Action<Session, FIXMessageWriter> outbound = null)
+        public void Run(Configuration configuration, Action<Session> logon = null, Action<Session> logout = null, Action<Session, FIXMessage> inbound = null, Action<Session, FIXMessageWriter> outbound = null, Action<Exception> error = null)
         {
             while (true)
             {
@@ -106,6 +106,8 @@ namespace HotFix.Core
                 catch (Exception e)
                 {
                     Debug.WriteLine(e);
+
+                    error?.Invoke(e);
                     
                     Thread.Sleep(10000);
                 }
