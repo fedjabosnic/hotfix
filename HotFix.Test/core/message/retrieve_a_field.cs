@@ -21,7 +21,7 @@ namespace HotFix.Test.core.message
         [TestMethod]
         public void succeeds_when_the_field_exists()
         {
-            var bytes = System.Text.Encoding.ASCII.GetBytes(Logon);
+            var bytes = Logon.AsBytes();
             Message.Parse(bytes, 0, bytes.Length);
 
             Message[  8].AsString.Should().Be("FIX.4.2");
