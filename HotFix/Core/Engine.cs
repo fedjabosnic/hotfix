@@ -60,9 +60,9 @@ namespace HotFix.Core
         /// <param name="configuration">The session configuration.</param> 
         /// <param name="logon">Invoked after a session has successfully logged on.</param> 
         /// <param name="logout">Invoked after a session has successfully logged out.</param> 
-        /// <param name="inbound">Invoked after a message is received.</param>
+        /// <param name="inbound">Invoked after a message is received (validated but not consumed by the session).</param>
         /// <param name="outbound">Invoked after a message is sent.</param>
-        /// <param name="error">Invoked when the session throws an exception - the session is then restarted.</param> 
+        /// <param name="error">Invoked when the session throws an exception before the session is restarted.</param> 
         public void Run(Configuration configuration, Action<Session> logon = null, Action<Session> logout = null, Action<Session, FIXMessage> inbound = null, Action<Session, FIXMessageWriter> outbound = null, Action<Exception> error = null)
         {
             while (true)
@@ -102,8 +102,6 @@ namespace HotFix.Core
                 }
                 catch (Exception e)
                 {
-                    Debug.WriteLine(e);
-
                     error?.Invoke(e);
                     
                     Thread.Sleep(10000);
