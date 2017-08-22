@@ -55,19 +55,14 @@ namespace HotFix.Core
         }
 
         /// <summary> 
-        /// Runs a session for the provided configuration, allowing logon, logout and message handler to be specified. 
-        /// <remarks> 
-        /// The logon and logout callbacks are invoked after the session has successfully logged on or out. 
-        /// The inbound and outbound callbacks are invoked after a message is received or sent.
-        /// The error callback is invoked when the session throws an exception - the session is then restarted.
-        /// </remarks> 
+        /// Runs a session for the provided configuration, allowing callbacks to be specified for different events.
         /// </summary> 
         /// <param name="configuration">The session configuration.</param> 
-        /// <param name="logon">The logon callback.</param> 
-        /// <param name="logout">The logout callback.</param> 
-        /// <param name="inbound">The inbound message callback.</param>
-        /// <param name="outbound">The outbound message callback.</param>
-        /// <param name="error">The error callback.</param> 
+        /// <param name="logon">Invoked after a session has successfully logged on.</param> 
+        /// <param name="logout">Invoked after a session has successfully logged out.</param> 
+        /// <param name="inbound">Invoked after a message is received.</param>
+        /// <param name="outbound">Invoked after a message is sent.</param>
+        /// <param name="error">Invoked when the session throws an exception - the session is then restarted.</param> 
         public void Run(Configuration configuration, Action<Session> logon = null, Action<Session> logout = null, Action<Session, FIXMessage> inbound = null, Action<Session, FIXMessageWriter> outbound = null, Action<Exception> error = null)
         {
             while (true)
