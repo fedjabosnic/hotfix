@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using HotFix.Transport;
@@ -94,11 +93,6 @@ namespace HotFix.Core
                         }
 
                         session.Logout();
-
-                        session.Sent -= outbound;
-                        session.Received -= inbound;
-                        session.LoggedOut -= logout;
-                        session.LoggedOn -= logon;
                     }
                 }
                 catch (Exception e)
@@ -152,11 +146,6 @@ namespace HotFix.Core
                             }
 
                             session.Logout();
-
-                            session.Sent -= outbound;
-                            session.Received -= inbound;
-                            session.LoggedOut -= logout;
-                            session.LoggedOn -= logon;
                         }
                     }
                     catch (Exception e)
