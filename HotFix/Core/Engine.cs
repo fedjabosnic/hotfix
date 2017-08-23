@@ -111,9 +111,9 @@ namespace HotFix.Core
         /// <param name="token">The cancellation token that stops the session.</param>
         /// <param name="logon">Invoked after a session has successfully logged on.</param> 
         /// <param name="logout">Invoked after a session has successfully logged out.</param> 
-        /// <param name="inbound">Invoked after a message is received.</param>
+        /// <param name="inbound">Invoked after a message is received (validated but not consumed by the session).</param>
         /// <param name="outbound">Invoked after a message is sent.</param>
-        /// <param name="error">Invoked when the session throws an exception - the session is then restarted.</param> 
+        /// <param name="error">Invoked when the session throws an exception before the session is restarted.</param> 
         public Task RunAsync(Configuration configuration, CancellationToken token, Action<Session> logon = null, Action<Session> logout = null, Action<Session, FIXMessage> inbound = null, Action<Session, FIXMessageWriter> outbound = null, Action<Exception> error = null)
         {
             return Task.Factory.StartNew(() =>
