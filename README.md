@@ -108,7 +108,7 @@ session.Received += (s,m) => Console.WriteLine($"Received message of type  {m[35
 
 Copyright (C) 2017 Fedja Bosnic and contributors
 
-Still trying to decide which license would be most suitable...
+Released under the [GNU Lesser General Public License V3](http://www.gnu.org/licenses/lgpl.html)
 
 ## Contributors
 
