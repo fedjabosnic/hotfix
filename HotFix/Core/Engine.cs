@@ -62,7 +62,7 @@ namespace HotFix.Core
         /// <param name="logout">Invoked after a session has successfully logged out.</param> 
         /// <param name="inbound">Invoked after a message is received (validated but not consumed by the session).</param>
         /// <param name="outbound">Invoked after a message is sent.</param>
-        /// <param name="error">Invoked when the session throws an exception before the session is restarted.</param> 
+        /// <param name="error">Invoked when the session throws an exception (before the session is restarted).</param> 
         public void Run(Configuration configuration, Action<Session> logon = null, Action<Session> logout = null, Action<Session, FIXMessage> inbound = null, Action<Session, FIXMessageWriter> outbound = null, Action<Exception> error = null)
         {
             while (true)
@@ -113,7 +113,7 @@ namespace HotFix.Core
         /// <param name="logout">Invoked after a session has successfully logged out.</param> 
         /// <param name="inbound">Invoked after a message is received (validated but not consumed by the session).</param>
         /// <param name="outbound">Invoked after a message is sent.</param>
-        /// <param name="error">Invoked when the session throws an exception before the session is restarted.</param> 
+        /// <param name="error">Invoked when the session throws an exception (before the session is restarted).</param> 
         public Task RunAsync(Configuration configuration, CancellationToken token, Action<Session> logon = null, Action<Session> logout = null, Action<Session, FIXMessage> inbound = null, Action<Session, FIXMessageWriter> outbound = null, Action<Exception> error = null)
         {
             return Task.Factory.StartNew(() =>
