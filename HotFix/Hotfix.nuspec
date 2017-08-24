@@ -9,6 +9,7 @@
     <summary>Hotfix is a FIX engine written in pure .net geared towards low latency and high throughput.</summary>
     <description>A FIX engine written in pure .net geared towards low latency and high throughput.</description>
     <projectUrl>https://github.com/fedjabosnic/hotfix</projectUrl>
+    <licenseUrl>https://github.com/fedjabosnic/hotfix/blob/master/LICENSE</licenseUrl>
     <copyright>Copyright © Fedja Bosnic 2017</copyright>
     <releaseNotes></releaseNotes>
     <tags>hotfix fix engine finance low latency high throughput</tags>
