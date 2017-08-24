@@ -161,8 +161,6 @@ namespace HotFix.Core
                     }
                     catch (Exception e)
                     {
-                        Debug.WriteLine(e);
-
                         error?.Invoke(e);
 
                         Thread.Sleep(10000);
