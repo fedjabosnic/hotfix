@@ -419,6 +419,11 @@ namespace HotFix.Core
         {
             Channel?.Transport?.Dispose();
             Logger?.Dispose();
+
+            LoggedOn = null;
+            LoggedOut = null;
+            Received = null;
+            Sent = null;
         }
     }
 
