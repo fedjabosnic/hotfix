@@ -1,6 +1,6 @@
 using System;
-using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using HotFix.Transport;
 using HotFix.Utilities;
 
@@ -55,14 +55,14 @@ namespace HotFix.Core
         }
 
         /// <summary> 
-        /// Runs a session for the provided configuration, allowing callbacks to be specified for different events.
+        /// Runs a session for the provided configuration synchronously, allowing callbacks to be specified for different events.
         /// </summary> 
         /// <param name="configuration">The session configuration.</param> 
         /// <param name="logon">Invoked after a session has successfully logged on.</param> 
         /// <param name="logout">Invoked after a session has successfully logged out.</param> 
         /// <param name="inbound">Invoked after a message is received (validated but not consumed by the session).</param>
         /// <param name="outbound">Invoked after a message is sent.</param>
-        /// <param name="error">Invoked when the session throws an exception before the session is restarted.</param> 
+        /// <param name="error">Invoked when the session throws an exception (before the session is restarted).</param> 
         public void Run(Configuration configuration, Action<Session> logon = null, Action<Session> logout = null, Action<Session, FIXMessage> inbound = null, Action<Session, FIXMessageWriter> outbound = null, Action<Exception> error = null)
         {
             while (true)
@@ -93,11 +93,6 @@ namespace HotFix.Core
                         }
 
                         session.Logout();
-
-                        session.Sent -= outbound;
-                        session.Received -= inbound;
-                        session.LoggedOut -= logout;
-                        session.LoggedOn -= logon;
                     }
                 }
                 catch (Exception e)
@@ -107,6 +102,61 @@ namespace HotFix.Core
                     Thread.Sleep(10000);
                 }
             }
+        }
+
+        /// <summary> 
+        /// Runs a session for the provided configuration asynchronously, allowing callbacks to be specified for different events.
+        /// </summary> 
+        /// <param name="configuration">The session configuration.</param>
+        /// <param name="token">The cancellation token that stops the session.</param>
+        /// <param name="logon">Invoked after a session has successfully logged on.</param> 
+        /// <param name="logout">Invoked after a session has successfully logged out.</param> 
+        /// <param name="inbound">Invoked after a message is received (validated but not consumed by the session).</param>
+        /// <param name="outbound">Invoked after a message is sent.</param>
+        /// <param name="error">Invoked when the session throws an exception (before the session is restarted).</param> 
+        public Task RunAsync(Configuration configuration, CancellationToken token, Action<Session> logon = null, Action<Session> logout = null, Action<Session, FIXMessage> inbound = null, Action<Session, FIXMessageWriter> outbound = null, Action<Exception> error = null)
+        {
+            return Task.Factory.StartNew(() =>
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    try
+                    {
+                        var clock = Clocks(configuration);
+                        var schedule = configuration.Schedules.GetActive(clock.Time);
+
+                        if (schedule == null)
+                        {
+                            Thread.Sleep(1000);
+                            continue;
+                        }
+
+                        using (var session = this.Open(configuration))
+                        {
+                            session.LoggedOn += logon;
+                            session.LoggedOut += logout;
+                            session.Received += inbound;
+                            session.Sent += outbound;
+
+                            session.Logon();
+
+                            while (session.Active && clock.Time < schedule.Close && !token.IsCancellationRequested)
+                            {
+                                session.Receive();
+                            }
+
+                            session.Logout();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        error?.Invoke(e);
+
+                        Thread.Sleep(10000);
+                    }
+                }
+
+            }, token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
         }
     }
 }
