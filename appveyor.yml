@@ -5,6 +5,8 @@
     - master
   skip_tags: true
   image: Visual Studio 2017
+  before_build:
+    - cmd: dotnet restore
   build:
     verbosity: normal
 - 
@@ -22,6 +24,8 @@
     package_version: '{version}'
     assembly_version: '{version}'
     file_version: '{version}'
+  before_build:
+    - cmd: dotnet restore
   build:
     verbosity: minimal
   artifacts:
