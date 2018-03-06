@@ -4,9 +4,7 @@
     except:
     - master
   skip_tags: true
-  image: Visual Studio 2015
-  before_build:
-  - cmd: nuget restore
+  image: Visual Studio 2017
   build:
     verbosity: normal
 - 
@@ -16,18 +14,15 @@
     - master
   skip_tags: true
   configuration: Release
-  image: Visual Studio 2015
-  assembly_info:
+  image: Visual Studio 2017
+  dotnet_csproj:
     patch: true
-    file: '**\AssemblyInfo.*'
+    file: '**\*.csproj'
+    version: '{version}'
+    package_version: '{version}'
     assembly_version: '{version}'
-    assembly_file_version: '{version}'
-    assembly_informational_version: '{version}'
-  before_build:
-  - cmd: nuget restore
+    file_version: '{version}'
   build:
-    publish_nuget: true
-    publish_nuget_symbols: true
     verbosity: minimal
   artifacts:
   - path: '**\HotFix*.nupkg'

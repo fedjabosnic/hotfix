@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading;
 using HdrHistogram;
 using HotFix.Core;
@@ -134,9 +135,10 @@ namespace HotFix.Demo.Initiator
 
         private static void SaveStatistics()
         {
-            using (var writer = new StreamWriter(@"..\..\..\.bench\histogram-rtt.hgrm")) Rtt.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
-            using (var writer = new StreamWriter(@"..\..\..\.bench\histogram-encode.hgrm")) Encode.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
-            using (var writer = new StreamWriter(@"..\..\..\.bench\histogram-decode.hgrm")) Decode.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
+            Directory.CreateDirectory(@"..\.bench");
+            using (var writer = new StreamWriter(@"..\.bench\histogram-rtt.hgrm")) Rtt.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
+            using (var writer = new StreamWriter(@"..\.bench\histogram-encode.hgrm")) Encode.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
+            using (var writer = new StreamWriter(@"..\.bench\histogram-decode.hgrm")) Decode.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
         }
     }
 }

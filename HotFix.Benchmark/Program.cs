@@ -12,7 +12,7 @@ namespace HotFix.Benchmark
     {
         static void Main(string[] args)
         {
-            if(Directory.Exists(@"..\..\..\.bench")) Directory.Delete(@"..\..\..\.bench", true);
+            if (Directory.Exists(@"..\.bench")) Directory.Delete(@"..\.bench", true);
 
             BenchmarkRunner.Run<basic>();
 
@@ -33,7 +33,8 @@ namespace HotFix.Benchmark
 
             BenchmarkRunner.Run<session_receive>();
 
-            Directory.Move(@"BenchmarkDotNet.Artifacts\results", @"..\..\..\.bench");
+            Directory.Move(@"BenchmarkDotNet.Artifacts\results", @"..\.bench");
+            Directory.Delete(@"BenchmarkDotNet.Artifacts", true);
         }
     }
 }
