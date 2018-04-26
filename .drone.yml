@@ -1,0 +1,7 @@
+pipeline:
+  build:
+    image: microsoft/dotnet:2.1-sdk
+    commands:
+      - dotnet restore
+      - dotnet build
+      - dotnet test
