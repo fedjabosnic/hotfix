@@ -57,6 +57,8 @@ namespace HotFix.Utilities
         {
             if (microseconds == 0) return socket.Available != 0;
 
+            return socket.Poll(microseconds, SelectMode.SelectRead);
+
             var tv = new Os.TimeValue { Seconds = microseconds / 1000000, Microseconds = microseconds % 1000000 };
             var descriptor = stackalloc IntPtr[2];
 

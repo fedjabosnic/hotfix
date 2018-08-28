@@ -27,9 +27,11 @@ namespace HotFix.Demo.Initiator
         {
             Console.WriteLine();
 
-            var host = args[0];
+            var host = System.Net.Dns.GetHostAddresses(args[0])[0].ToString();
             var port = int.Parse(args[1]);
             var count = int.Parse(args[2]);
+
+            Console.WriteLine($"host");
 
             Rtt = new LongHistogram(1, 10000000, 5);
             Encode = new LongHistogram(1, 10000000, 5);
@@ -65,7 +67,7 @@ namespace HotFix.Demo.Initiator
                 GC1 = GC.CollectionCount(1);
                 GC2 = GC.CollectionCount(2);
 
-                Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+                //Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
                 Thread.CurrentThread.Priority = ThreadPriority.Highest;
                 Thread.BeginThreadAffinity();
 
@@ -135,10 +137,10 @@ namespace HotFix.Demo.Initiator
 
         private static void SaveStatistics()
         {
-            Directory.CreateDirectory(@"..\.bench");
-            using (var writer = new StreamWriter(@"..\.bench\histogram-rtt.hgrm")) Rtt.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
-            using (var writer = new StreamWriter(@"..\.bench\histogram-encode.hgrm")) Encode.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
-            using (var writer = new StreamWriter(@"..\.bench\histogram-decode.hgrm")) Decode.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
+            Directory.CreateDirectory(@".bench");
+            using (var writer = new StreamWriter(@".bench/histogram-rtt.hgrm")) Rtt.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
+            using (var writer = new StreamWriter(@".bench/histogram-encode.hgrm")) Encode.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
+            using (var writer = new StreamWriter(@".bench/histogram-decode.hgrm")) Decode.OutputPercentileDistribution(writer, outputValueUnitScalingRatio: 10);
         }
     }
 }
