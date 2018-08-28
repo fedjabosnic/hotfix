@@ -1,0 +1,20 @@
+version: '3'
+
+services:
+
+  hotfix.demo.acceptor:
+    image: hotfix.demo.acceptor
+    network_mode: "host"
+    build:
+      context: .
+      dockerfile: HotFix.Demo.Acceptor/Dockerfile
+
+  hotfix.demo.initiator:
+    image: hotfix.demo.initiator
+    network_mode: "host"
+    build:
+      context: .
+      dockerfile: HotFix.Demo.Initiator/Dockerfile
+    depends_on:
+      - hotfix.demo.acceptor
+

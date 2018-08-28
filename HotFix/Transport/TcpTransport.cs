@@ -23,7 +23,7 @@ namespace HotFix.Transport
             var endpoint = new IPEndPoint(IPAddress.Parse(address), port);
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { ReceiveTimeout = 1000, NoDelay = true };
 
-            socket.EnableFastPath();
+            //socket.EnableFastPath();
             socket.Connect(endpoint);
 
             return new TcpTransport(clock, socket);
@@ -34,7 +34,7 @@ namespace HotFix.Transport
             var endpoint = new IPEndPoint(IPAddress.Parse(address), port);
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { ReceiveTimeout = 1000, NoDelay = true };
 
-            socket.EnableFastPath();
+            //socket.EnableFastPath();
             socket.Bind(endpoint);
             socket.Listen(1);
 
