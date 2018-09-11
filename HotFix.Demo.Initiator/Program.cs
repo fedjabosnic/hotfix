@@ -31,8 +31,6 @@ namespace HotFix.Demo.Initiator
             var port = int.Parse(args[1]);
             var count = int.Parse(args[2]);
 
-            Console.WriteLine($"host");
-
             Rtt = new LongHistogram(1, 10000000, 5);
             Encode = new LongHistogram(1, 10000000, 5);
             Decode = new LongHistogram(1, 10000000, 5);

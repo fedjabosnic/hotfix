@@ -1,30 +1,51 @@
 {
     "version": "2.0.0",
+    "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true
+    },
     "tasks": [
         {
-            "label": "Build Debug",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "build",
-                "${workspaceFolder}/HotFix.sln",
-                "-c",
-                "Debug"
-            ],
+            "label": "Build - Debug",
+            "identifier": "build.debug",
+            "type": "shell",
+            "command": "dotnet build -c Debug ${workspaceFolder}/HotFix.sln",
             "problemMatcher": "$msCompile",
             "group": "build"
         },
         {
-            "label": "Build Release",
-            "command": "dotnet",
-            "type": "process",
-            "args": [
-                "build",
-                "${workspaceFolder}/HotFix.sln",
-                "-c",
-                "Release"
-            ],
+            "label": "Build - Release",
+            "identifier": "build.release",
+            "type": "shell",
+            "command": "dotnet build -c Release ${workspaceFolder}/HotFix.sln",
             "problemMatcher": "$msCompile",
+            "group": "build"
+        },
+        {
+            "label": "Package - Benchmark",
+            "identifier": "package.benchmark",
+            "type": "shell",
+            "command": "docker build --pull -t 'hotfix.benchmark:latest' -f HotFix.Benchmark/Dockerfile .",
+            "problemMatcher": "",
+            "group": "build"
+        },
+        {
+            "label": "Package - Acceptor",
+            "identifier": "package.acceptor",
+            "type": "shell",
+            "command": "docker build --pull -t 'hotfix.demo.acceptor:latest' -f HotFix.Demo.Acceptor/Dockerfile .",
+            "problemMatcher": "",
+            "group": "build"
+        },
+        {
+            "label": "Package - Initiator",
+            "identifier": "package.initiator",
+            "type": "shell",
+            "command": "docker build --pull -t 'hotfix.demo.initiator:latest' -f HotFix.Demo.Initiator/Dockerfile .",
+            "problemMatcher": "",
             "group": "build"
         }
     ]

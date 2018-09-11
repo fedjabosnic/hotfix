@@ -1,0 +1,8 @@
+# Ignore workspace folders
+.git
+.bench
+.vscode
+
+# Ignore local build artifacts
+**/bin
+**/obj

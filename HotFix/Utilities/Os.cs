@@ -56,8 +56,7 @@ namespace HotFix.Utilities
         internal static bool Poll(this Socket socket, int microseconds)
         {
             if (microseconds == 0) return socket.Available != 0;
-
-            return socket.Poll(microseconds, SelectMode.SelectRead);
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) return socket.Poll(microseconds, SelectMode.SelectRead);
 
             var tv = new Os.TimeValue { Seconds = microseconds / 1000000, Microseconds = microseconds % 1000000 };
             var descriptor = stackalloc IntPtr[2];
