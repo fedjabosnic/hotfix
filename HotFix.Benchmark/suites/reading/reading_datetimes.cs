@@ -14,7 +14,7 @@ namespace HotFix.Benchmark.suites.reading
     {
         public byte[] Raw;
 
-        [Setup]
+        [GlobalSetup]
         public void Setup()
         {
             Raw = System.Text.Encoding.ASCII.GetBytes("20170327-15:45:13.596");
