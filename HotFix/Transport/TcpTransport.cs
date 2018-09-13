@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using HotFix.Utilities;
 
 namespace HotFix.Transport
@@ -23,7 +24,7 @@ namespace HotFix.Transport
             var endpoint = new IPEndPoint(IPAddress.Parse(address), port);
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { ReceiveTimeout = 1000, NoDelay = true };
 
-            //socket.EnableFastPath();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) socket.EnableFastPath();
             socket.Connect(endpoint);
 
             return new TcpTransport(clock, socket);
@@ -34,7 +35,7 @@ namespace HotFix.Transport
             var endpoint = new IPEndPoint(IPAddress.Parse(address), port);
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp) { ReceiveTimeout = 1000, NoDelay = true };
 
-            //socket.EnableFastPath();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) socket.EnableFastPath();
             socket.Bind(endpoint);
             socket.Listen(1);
 
