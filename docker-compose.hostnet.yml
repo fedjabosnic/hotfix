@@ -7,14 +7,14 @@ services:
     network_mode: "host"
     build:
       context: .
-      dockerfile: HotFix.Demo.Acceptor/Dockerfile
+      dockerfile: HotFix.Demo.Acceptor/Dockerfile.alpine
 
   hotfix.demo.initiator:
     image: hotfix.demo.initiator
     network_mode: "host"
     build:
       context: .
-      dockerfile: HotFix.Demo.Initiator/Dockerfile
+      dockerfile: HotFix.Demo.Initiator/Dockerfile.alpine
     depends_on:
       - hotfix.demo.acceptor
 
