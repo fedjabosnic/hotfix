@@ -12,7 +12,6 @@ RUN dotnet publish -c Release -r ubuntu.18.04-x64 -o /app /src/HotFix.Demo.Accep
 
 FROM base AS production
 COPY --from=builder /app /app
-WORKDIR /app
 
-ENTRYPOINT ["./app/HotFix.Demo.Acceptor"]
-CMD ["127.0.0.1", "12345"]
+ENTRYPOINT ["/app/HotFix.Demo.Acceptor"]
+CMD ["0.0.0.0", "12345"]

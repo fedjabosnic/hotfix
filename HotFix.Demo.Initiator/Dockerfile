@@ -12,7 +12,6 @@ RUN dotnet publish -c Release -r ubuntu.18.04-x64 -o /app /src/HotFix.Demo.Initi
 
 FROM base AS production
 COPY --from=builder /app /app
-WORKDIR /app
 
-ENTRYPOINT ["./app/HotFix.Demo.Initiator"]
-CMD ["127.0.0.1", "12345", "100000"]
+ENTRYPOINT ["/app/HotFix.Demo.Initiator"]
+CMD ["127.0.0.1", "12345", "10000"]
