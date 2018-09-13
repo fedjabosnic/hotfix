@@ -8,8 +8,9 @@
             "name": "Benchmark (local)",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/HotFix.Benchmark/bin/Release/netcoreapp2.0/HotFix.Benchmark.dll",
             "cwd": "${workspaceFolder}/HotFix.Benchmark",
+            "program": "${workspaceFolder}/HotFix.Benchmark/bin/Release/netcoreapp2.1/HotFix.Benchmark.dll",
+            "args": [ "../.bench" ],
             "console": "internalConsole",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart"
@@ -17,9 +18,9 @@
             "name": "Acceptor (local)",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/HotFix.Demo.Acceptor/bin/Debug/netcoreapp2.0/HotFix.Demo.Acceptor.dll",
-            "args": [ "0.0.0.0", "12345" ],
             "cwd": "${workspaceFolder}/HotFix.Demo.Acceptor",
+            "program": "${workspaceFolder}/HotFix.Demo.Acceptor/bin/Debug/netcoreapp2.1/HotFix.Demo.Acceptor.dll",
+            "args": [ "0.0.0.0", "12345" ],
             "console": "internalConsole",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart"
@@ -28,9 +29,9 @@
             "name": "Initiator (local)",
             "type": "coreclr",
             "request": "launch",
-            "program": "${workspaceFolder}/HotFix.Demo.Initiator/bin/Debug/netcoreapp2.0/HotFix.Demo.Initiator.dll",
-            "args": [ "127.0.0.1", "12345", "100000" ],
             "cwd": "${workspaceFolder}/HotFix.Demo.Initiator",
+            "program": "${workspaceFolder}/HotFix.Demo.Initiator/bin/Debug/netcoreapp2.1/HotFix.Demo.Initiator.dll",
+            "args": [ "127.0.0.1", "12345", "10000" ],
             "console": "internalConsole",
             "stopAtEntry": false,
             "internalConsoleOptions": "openOnSessionStart"
@@ -41,7 +42,7 @@
             "request": "launch",
             "preLaunchTask": "package.benchmark",
             "cwd": "/src/HotFix.Benchmark",
-            "program": "bin/Release/netcoreapp2.0/HotFix.Benchmark.dll",
+            "program": "bin/Release/netcoreapp2.1/HotFix.Benchmark.dll",
             "sourceFileMap": { "/src": "${workspaceRoot}" },
             "pipeTransport": {
                 "pipeCwd": "${workspaceRoot}",
@@ -66,7 +67,7 @@
                 "pipeCwd": "${workspaceRoot}",
                 "debuggerPath": "/vsdbg/vsdbg",
                 "pipeProgram": "docker",
-                "pipeArgs": [ "run --rm -i --network host --entrypoint /bin/bash hotfix.demo.acceptor:latest -c \"${debuggerCommand}\"" ],
+                "pipeArgs": [ "run --rm -i --network host --entrypoint /bin/bash hotfix.demo.acceptor:debug -c \"${debuggerCommand}\"" ],
                 "quoteArgs": false
             },
             "requireExactSource": false,
@@ -86,7 +87,7 @@
                 "pipeCwd": "${workspaceRoot}",
                 "debuggerPath": "/vsdbg/vsdbg",
                 "pipeProgram": "docker",
-                "pipeArgs": [ "run --rm -i --network host --entrypoint /bin/bash hotfix.demo.initiator:latest -c \"${debuggerCommand}\"" ],
+                "pipeArgs": [ "run --rm -i --network host --entrypoint /bin/bash hotfix.demo.initiator:debug -c \"${debuggerCommand}\"" ],
                 "quoteArgs": false
             },
             "requireExactSource": false,

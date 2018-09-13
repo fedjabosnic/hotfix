@@ -1,0 +1,7 @@
+FROM microsoft/dotnet:2.1-sdk-alpine AS builder
+    
+ENV NUGET_XMLDOC_MODE skip
+COPY . /src
+RUN dotnet build -c Release -r alpine-x64 /src/HotFix.Benchmark/HotFix.Benchmark.csproj
+
+ENTRYPOINT ["dotnet", "run", "-c", "Release", "-r", "alpine-x64", "-p", "/src/HotFix.Benchmark/HotFix.Benchmark.csproj"]

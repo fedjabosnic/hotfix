@@ -28,7 +28,7 @@
             "label": "Package - Benchmark",
             "identifier": "package.benchmark",
             "type": "shell",
-            "command": "docker build --pull -t 'hotfix.benchmark:latest' -f HotFix.Benchmark/Dockerfile .",
+            "command": "docker build --pull -t 'hotfix.benchmark:latest' -f HotFix.Benchmark/Dockerfile.bionic .",
             "problemMatcher": "",
             "group": "build"
         },
@@ -36,7 +36,7 @@
             "label": "Package - Acceptor",
             "identifier": "package.acceptor",
             "type": "shell",
-            "command": "docker build --pull -t 'hotfix.demo.acceptor:latest' -f HotFix.Demo.Acceptor/Dockerfile .",
+            "command": "docker build --pull -t 'hotfix.demo.acceptor:debug' -f HotFix.Demo.Acceptor/Dockerfile.debug .",
             "problemMatcher": "",
             "group": "build"
         },
@@ -44,7 +44,7 @@
             "label": "Package - Initiator",
             "identifier": "package.initiator",
             "type": "shell",
-            "command": "docker build --pull -t 'hotfix.demo.initiator:latest' -f HotFix.Demo.Initiator/Dockerfile .",
+            "command": "docker build --pull -t 'hotfix.demo.initiator:debug' -f HotFix.Demo.Initiator/Dockerfile.debug .",
             "problemMatcher": "",
             "group": "build"
         }
