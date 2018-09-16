@@ -4,7 +4,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends unzip libunwind
     && rm -rf /var/lib/apt/lists/* \
     && curl -sSL https://aka.ms/getvsdbgsh | bash /dev/stdin -v latest -l /vsdbg
 
-FROM microsoft/dotnet:2.1-sdk-bionic AS builder
+FROM microsoft/dotnet:2.1-sdk-alpine AS builder
 ENV NUGET_XMLDOC_MODE skip
 COPY . /src
 RUN dotnet publish -c Release -r ubuntu.18.04-x64 -o /app /src/HotFix.Demo.Initiator/HotFix.Demo.Initiator.csproj
