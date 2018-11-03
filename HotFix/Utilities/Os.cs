@@ -38,8 +38,11 @@ namespace HotFix.Utilities
         {
             try
             {
-                // Attempt to set fast loopback if available
-                socket.IOControl(SIO_LOOPBACK_FAST_PATH, BitConverter.GetBytes(1), null);
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    // Attempt to set fast loopback if available
+                    socket.IOControl(SIO_LOOPBACK_FAST_PATH, BitConverter.GetBytes(1), null);
+                }
             }
             catch (SocketException e)
             {
