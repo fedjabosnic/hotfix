@@ -9,6 +9,9 @@
     - cmd: dotnet restore
   build:
     verbosity: normal
+  artifacts:
+  - path: '**\HotFix*.nupkg'
+    name: Nuget packages
 - 
   version: 0.4.0.{build}
   branches:
