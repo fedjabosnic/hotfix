@@ -103,7 +103,7 @@ namespace HotFix.Demo.Acceptor
             GC1 = GC.CollectionCount(1);
             GC2 = GC.CollectionCount(2);
 
-            Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
+            //Process.GetCurrentProcess().PriorityClass = ProcessPriorityClass.High;
             Thread.CurrentThread.Priority = ThreadPriority.Highest;
             Thread.BeginThreadAffinity();
         }

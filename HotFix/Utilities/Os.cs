@@ -38,8 +38,11 @@ namespace HotFix.Utilities
         {
             try
             {
-                // Attempt to set fast loopback if available
-                socket.IOControl(SIO_LOOPBACK_FAST_PATH, BitConverter.GetBytes(1), null);
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    // Attempt to set fast loopback if available
+                    socket.IOControl(SIO_LOOPBACK_FAST_PATH, BitConverter.GetBytes(1), null);
+                }
             }
             catch (SocketException e)
             {
@@ -56,6 +59,7 @@ namespace HotFix.Utilities
         internal static bool Poll(this Socket socket, int microseconds)
         {
             if (microseconds == 0) return socket.Available != 0;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) return socket.Poll(microseconds, SelectMode.SelectRead);
 
             var tv = new Os.TimeValue { Seconds = microseconds / 1000000, Microseconds = microseconds % 1000000 };
             var descriptor = stackalloc IntPtr[2];

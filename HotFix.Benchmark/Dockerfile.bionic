@@ -1,0 +1,7 @@
+FROM microsoft/dotnet:2.1-sdk-bionic AS builder
+    
+ENV NUGET_XMLDOC_MODE skip
+COPY . /src
+RUN dotnet build -c Release -r ubuntu-18.04-x64 /src/HotFix.Benchmark/HotFix.Benchmark.csproj
+
+ENTRYPOINT ["dotnet", "run", "-c", "Release", "-r", "ubuntu-18.04-x64", "-p", "/src/HotFix.Benchmark/HotFix.Benchmark.csproj"]

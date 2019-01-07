@@ -15,7 +15,7 @@ namespace HotFix.Benchmark.suites.writing
         public string String;
         public byte[] Buffer;
 
-        [Setup]
+        [GlobalSetup]
         public void Setup()
         {
             String = "random string";

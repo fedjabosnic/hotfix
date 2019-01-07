@@ -1,0 +1,98 @@
+{
+    // Use IntelliSense to find out which attributes exist for C# debugging
+    // Use hover for the description of the existing attributes
+    // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Benchmark (local)",
+            "type": "coreclr",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/HotFix.Benchmark",
+            "program": "${workspaceFolder}/HotFix.Benchmark/bin/Release/netcoreapp2.1/HotFix.Benchmark.dll",
+            "args": [ "../.bench" ],
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart"
+        },{
+            "name": "Acceptor (local)",
+            "type": "coreclr",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/HotFix.Demo.Acceptor",
+            "program": "${workspaceFolder}/HotFix.Demo.Acceptor/bin/Debug/netcoreapp2.1/HotFix.Demo.Acceptor.dll",
+            "args": [ "0.0.0.0", "12345" ],
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": "Initiator (local)",
+            "type": "coreclr",
+            "request": "launch",
+            "cwd": "${workspaceFolder}/HotFix.Demo.Initiator",
+            "program": "${workspaceFolder}/HotFix.Demo.Initiator/bin/Debug/netcoreapp2.1/HotFix.Demo.Initiator.dll",
+            "args": [ "127.0.0.1", "12345", "10000" ],
+            "console": "internalConsole",
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart"
+        },
+        {
+            "name": "Benchmark (docker)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "package.benchmark",
+            "cwd": "/src/HotFix.Benchmark",
+            "program": "bin/Release/netcoreapp2.1/HotFix.Benchmark.dll",
+            "sourceFileMap": { "/src": "${workspaceRoot}" },
+            "pipeTransport": {
+                "pipeCwd": "${workspaceRoot}",
+                "debuggerPath": "/vsdbg/vsdbg",
+                "pipeProgram": "docker",
+                "pipeArgs": [ "run --rm -i --network host --entrypoint /bin/bash hotfix.benchmark:latest -c \"${debuggerCommand}\"" ],
+                "quoteArgs": false
+            },
+            "requireExactSource": false,
+            "justMyCode": false,
+            "stopAtEntry": false
+        },{
+            "name": "Acceptor (docker)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "package.acceptor",
+            "cwd": "/app",
+            "program": "HotFix.Demo.Acceptor",
+            "args": [ "0.0.0.0", "12345" ],
+            "sourceFileMap": { "/src": "${workspaceRoot}" },
+            "pipeTransport": {
+                "pipeCwd": "${workspaceRoot}",
+                "debuggerPath": "/vsdbg/vsdbg",
+                "pipeProgram": "docker",
+                "pipeArgs": [ "run --rm -i --network host --entrypoint /bin/bash hotfix.demo.acceptor:debug -c \"${debuggerCommand}\"" ],
+                "quoteArgs": false
+            },
+            "requireExactSource": false,
+            "justMyCode": false,
+            "stopAtEntry": false
+        },
+        {
+            "name": "Initiator (docker)",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "package.initiator",
+            "cwd": "/app",
+            "program": "HotFix.Demo.Initiator",
+            "args": [ "127.0.0.1", "12345", "10000" ],
+            "sourceFileMap": { "/src": "${workspaceRoot}" },
+            "pipeTransport": {
+                "pipeCwd": "${workspaceRoot}",
+                "debuggerPath": "/vsdbg/vsdbg",
+                "pipeProgram": "docker",
+                "pipeArgs": [ "run --rm -i --network host --entrypoint /bin/bash hotfix.demo.initiator:debug -c \"${debuggerCommand}\"" ],
+                "quoteArgs": false
+            },
+            "requireExactSource": false,
+            "justMyCode": false,
+            "stopAtEntry": false
+        }
+    ]
+}

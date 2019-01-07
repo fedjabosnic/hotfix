@@ -15,7 +15,7 @@ namespace HotFix.Benchmark.suites.writing
         public int Number;
         public byte[] Buffer;
 
-        [Setup]
+        [GlobalSetup]
         public void Setup()
         {
             Number = 1234567890;

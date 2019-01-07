@@ -1,0 +1,28 @@
+version: '3'
+
+services:
+
+  hotfix.demo.acceptor:
+    image: hotfix.demo.acceptor
+    command: ["0.0.0.0", "12345"]
+    networks:
+      - dev
+    ports:
+      - 12345:12345
+    build:
+      context: .
+      dockerfile: HotFix.Demo.Acceptor/Dockerfile.alpine
+
+  hotfix.demo.initiator:
+    image: hotfix.demo.initiator
+    command: ["hotfix.demo.acceptor", "12345", "10000"]
+    networks:
+      - dev
+    build:
+      context: .
+      dockerfile: HotFix.Demo.Initiator/Dockerfile.alpine
+    depends_on:
+      - hotfix.demo.acceptor
+
+networks:
+  dev:
