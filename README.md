@@ -1,6 +1,6 @@
 ﻿# Hotfix
 
-[![AppVeyor](https://img.shields.io/appveyor/ci/fedjabosnic/hotfix.svg?style=flat-square)](https://ci.appveyor.com/project/fedjabosnic/hotfix/history) [![NuGet](https://img.shields.io/nuget/v/HotFix.svg?style=flat-square)](https://www.nuget.org/packages/Hotfix/)
+[![NuGet](https://img.shields.io/nuget/v/HotFix.svg?style=flat-square)](https://www.nuget.org/packages/Hotfix/) [![AppVeyor](https://img.shields.io/appveyor/ci/fedjabosnic/hotfix.svg?style=flat-square)](https://ci.appveyor.com/project/fedjabosnic/hotfix/history) [![Maintainability](https://api.codeclimate.com/v1/badges/d96a4242f70e61da0b84/maintainability)](https://codeclimate.com/github/fedjabosnic/hotfix/maintainability)
 
 Hotfix is a **FIX engine** written in pure .net geared towards **low latency** and **high throughput**.
 
