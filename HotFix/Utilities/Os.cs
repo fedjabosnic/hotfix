@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace HotFix.Utilities
 {
-    internal static class Os
+    internal unsafe static class Os
     {
         internal const int SIO_LOOPBACK_FAST_PATH = -1744830448;
         internal const int WSAEOPNOTSUPP = 10045;
@@ -15,9 +15,9 @@ namespace HotFix.Utilities
         [DllImport("ws2_32.dll", SetLastError = true)]
         internal static extern int select(
             [In] int ignoredParameter,
-            [In, Out] IntPtr[] readfds,
-            [In, Out] IntPtr[] writefds,
-            [In, Out] IntPtr[] exceptfds,
+            [In, Out] IntPtr* readfds,
+            [In, Out] IntPtr* writefds,
+            [In, Out] IntPtr* exceptfds,
             [In] ref TimeValue timeout);
 
         [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Auto)]
@@ -38,8 +38,11 @@ namespace HotFix.Utilities
         {
             try
             {
-                // Attempt to set fast loopback if available
-                socket.IOControl(SIO_LOOPBACK_FAST_PATH, BitConverter.GetBytes(1), null);
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    // Attempt to set fast loopback if available
+                    socket.IOControl(SIO_LOOPBACK_FAST_PATH, BitConverter.GetBytes(1), null);
+                }
             }
             catch (SocketException e)
             {
@@ -51,14 +54,15 @@ namespace HotFix.Utilities
         /// A garbage-free implementation of the <see cref="Socket.Poll"/> function (only providing read polling).
         /// </summary>
         /// <param name="socket">The socket to poll.</param>
-        /// <param name="descriptor">The socket descriptor.</param>
         /// <param name="microseconds">The duration to wait.</param>
         /// <returns>Whether there is data available to be read.</returns>
-        internal static bool Poll(this Socket socket, IntPtr[] descriptor, int microseconds)
+        internal static bool Poll(this Socket socket, int microseconds)
         {
             if (microseconds == 0) return socket.Available != 0;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) return socket.Poll(microseconds, SelectMode.SelectRead);
 
             var tv = new Os.TimeValue { Seconds = microseconds / 1000000, Microseconds = microseconds % 1000000 };
+            var descriptor = stackalloc IntPtr[2];
 
             descriptor[0] = (IntPtr)1;
             descriptor[1] = socket.Handle;

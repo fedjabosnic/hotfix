@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using HotFix.Utilities;
 
 namespace HotFix.Transport
@@ -11,7 +12,6 @@ namespace HotFix.Transport
         private readonly Socket _socket;
         private readonly TimeSpan _interval;
         private readonly TimeSpan _afterburn;
-        private readonly IntPtr[] _descriptor;
         private DateTime _last;
 
         public static TcpTransport Create(IClock clock, bool server, string address, int port)
@@ -52,7 +52,6 @@ namespace HotFix.Transport
             _socket = socket;
             _interval = TimeSpan.Parse("00:00:01");
             _afterburn = TimeSpan.Parse("00:00:01");
-            _descriptor = new IntPtr[2];
         }
 
         public int Read(byte[] buffer, int offset, int count)
@@ -68,7 +67,7 @@ namespace HotFix.Transport
             while (_clock.Time.Ticks < afterburn)
             {
                 // Check for data without blocking to avoid context switching
-                if (_socket.Poll(_descriptor, 0)) goto read;
+                if (_socket.Poll(0)) goto read;
             }
 
             var now = _clock.Time.Ticks;
@@ -78,7 +77,7 @@ namespace HotFix.Transport
             if (remaining > 0)
             {
                 // Block for data up to the remaining time (possible context switch if data isn't immediately available)
-                if (_socket.Poll(_descriptor, remaining / 10)) goto read;
+                if (_socket.Poll(remaining / 10)) goto read;
             }
 
             return 0;

@@ -6,9 +6,107 @@ Hotfix is a **FIX engine** written in pure .net geared towards **low latency** a
 
 The engine is _highly optimized_ and _garbage free_, exhibiting predictably low latency even to the higher percentiles. Messages can be encoded/decoded in **< 1 μs** and over loopback the engine can achieve a median **12 μs** round trip time...
 
+HotFix supports both `dotnet core 2.0` and `.net framework 4.7.2`...
+
 ## Install
 
 The library is available via Nuget as package [HotFix](https://www.nuget.org/packages/Hotfix/)
+
+#### Frameworks
+- **Version 0.5.0** and higher:
+    - `dotnet standard 2.0`
+    - `dotnet framework 4.7.2`
+- **Version 0.4.0** and lower:
+    - `dotnet framework 4.6.1`
+
+## Usage
+
+For detailed examples of usage, see [HotFix.Demo.Acceptor/Program.cs](https://github.com/fedjabosnic/hotfix/tree/master/HotFix.Demo.Acceptor/Program.cs) and [HotFix.Demo.Initiator/Program.cs](https://github.com/fedjabosnic/hotfix/tree/master/HotFix.Demo.Initiator/Program.cs).
+
+#### Usage example
+
+``` csharp
+var engine = new Engine();
+var configuration = new Configuration
+{
+    Role = Role.Initiator,
+    Version = "FIX.4.2",
+    Host = "127.0.0.1",
+    Port = 12345,
+    Sender = "Client",
+    Target = "Server",
+    InboundSeqNum = 1,
+    OutboundSeqNum = 1,
+    HeartbeatInterval = 5
+};
+
+engine.Run
+(
+    configuration,
+    logon: (session) => Console.WriteLine("Logged on"),
+    logout: (session) => Console.WriteLine("Logged out"),
+    inbound: (session, message) => Console.WriteLine($"Inbound message of type {session.Inbound[35].AsString}"),
+    outbound: (session, message) => Console.WriteLine($"Outbound message of type {session.Inbound[35].AsString}")
+);
+
+
+```
+
+For persistent sessions, the inbound and outbound sequence numbers can be stored and reused.
+
+#### Engine settings
+
+There are some additional engine settings that can be customized to further tweak performance:
+
+```csharp
+var engine = new Engine
+{
+    BufferSize = 8192,       // Data transmission buffer size - default 65536
+    MaxMessageLength = 8192, // Maximum expected length of messages - default 4096
+    MaxMessageFields = 2048, // Maximum expected number of fields in messages - default 1024
+};
+```
+
+#### Logging
+
+HotFix comes with a highly optimized built-in logging engine, which can be easily enabled by specifying a log file name:
+
+```csharp
+var configuration = new Configuration
+{
+    // ...
+    LogFile = "messages.log"
+};
+```
+
+#### Session schedules
+
+It is possible to setup simple session schedules using the built-in configuration:
+
+```csharp
+var configuration = new Configuration
+{
+    // ...
+    Schedules = new List<Schedule>
+    {
+        new Schedule
+        {
+            Name = "MON",
+            OpenDay = DayOfWeek.Monday, OpenTime = TimeSpan.Parse("09:00:00"),
+            CloseDay = DayOfWeek.Monday, CloseTime = TimeSpan.Parse("19:00:00")
+        },
+        new Schedule
+        {
+            Name = "TUE",
+            OpenDay = DayOfWeek.Tuesday, OpenTime = TimeSpan.Parse("09:00:00"),
+            CloseDay = DayOfWeek.Tuesday, CloseTime = TimeSpan.Parse("19:00:00")
+        },
+        // ...
+    }
+};
+```
+
+*It should be noted that all times are in UTC - session management in custom timezones is currently not provided out of the box.*
 
 ## Performance
 
@@ -55,54 +153,6 @@ These benchmarks show the latency for encoding and decoding FIX messages of vary
 ### Other benchmarks
 
 For more detailed benchmarks, see the `.bench` folder in the repository root
-
-## Usage
-
-For detailed examples of usage, see [HotFix.Demo.Acceptor/Program.cs](https://github.com/fedjabosnic/hotfix/tree/master/HotFix.Demo.Acceptor/Program.cs) and [HotFix.Demo.Initiator/Program.cs](https://github.com/fedjabosnic/hotfix/tree/master/HotFix.Demo.Initiator/Program.cs).
-
-#### Session management
-
-``` csharp
-var engine = new Engine();
-var configuration = new Configuration
-{
-    Role = Role.Initiator,
-    Version = "FIX.4.2",
-    Host = "127.0.0.1",
-    Port = 12345,
-    Sender = "Client",
-    Target = "Server",
-    InboundSeqNum = 1,
-    OutboundSeqNum = 1,
-    HeartbeatInterval = 5
-    LogFile = "messages.log"
-};
-
-using (var session = engine.Open(configuration))
-{
-    session.Logon();
-
-    while (session.Active)
-    {
-        if (session.Receive()) Console.WriteLine($"Received message of type {session.Inbound[35].AsString}");
-    }
-
-    session.Logout();
-}
-```
-
-#### Event handling
-
-The session exposes some events that you can handle:
-
-``` csharp
-session.LoggedOn += (s) => Console.WriteLine("Logged on");
-session.LoggedOut += (s) => Console.WriteLine("Logged out");
-
-session.Sent += (s,m) => Console.WriteLine($"Sent message of type  {m[35].AsString}");
-session.Received += (s,m) => Console.WriteLine($"Received message of type  {m[35].AsString}");
-
-```
 
 ## License
 

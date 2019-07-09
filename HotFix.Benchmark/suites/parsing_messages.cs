@@ -18,7 +18,7 @@ namespace HotFix.Benchmark.suites
 
         public FIXMessage Message;
 
-        [Setup]
+        [GlobalSetup]
         public void Setup()
         {
             Message = new FIXMessage();

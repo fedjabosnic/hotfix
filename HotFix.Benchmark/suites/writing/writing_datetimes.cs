@@ -15,7 +15,7 @@ namespace HotFix.Benchmark.suites.writing
         public DateTime DateTime;
         public byte[] Buffer;
 
-        [Setup]
+        [GlobalSetup]
         public void Setup()
         {
             DateTime = DateTime.ParseExact("2017/03/27 15:45:13.596", "yyyy/MM/dd HH:mm:ss.fff", null);

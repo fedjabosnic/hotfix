@@ -24,7 +24,7 @@ namespace HotFix.Utilities
                 Os.GetSystemTimePreciseAsFileTime(out filetime);
                 IsHighResolution = true;
             }
-            catch (EntryPointNotFoundException)
+            catch (Exception)
             {
                 IsHighResolution = false;
             }

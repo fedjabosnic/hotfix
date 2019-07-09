@@ -1,0 +1,6 @@
+{
+    "dotnet-test-explorer.testProjectPath": "*{Test,Specification}*",
+    "files.associations": {
+        "Dockerfile*": "dockerfile"
+    }
+}

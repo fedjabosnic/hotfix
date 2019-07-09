@@ -1,0 +1,15 @@
+# Ignore workspace folders
+.git
+.bench
+.vscode
+
+# Ignore workspace files
+appveyor.yml
+bump-version.sh
+docker-compose*.yml
+LICENSE
+README.md
+
+# Ignore local build artifacts
+**/bin
+**/obj

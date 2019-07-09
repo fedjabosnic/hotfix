@@ -13,7 +13,7 @@ namespace HotFix.Benchmark.suites
     {
         public byte[] Bytes;
 
-        [Setup]
+        [GlobalSetup]
         public void Setup()
         {
             Bytes = new byte[1024000];
