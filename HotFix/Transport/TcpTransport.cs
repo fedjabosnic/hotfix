@@ -63,7 +63,7 @@ namespace HotFix.Transport
 
             afterburn = interval < afterburn ? interval : afterburn;
 
-            // Afterburn mode
+            // Afterburn mode (burn baby burn)
             while (_clock.Time.Ticks < afterburn)
             {
                 // Check for data without blocking to avoid context switching
